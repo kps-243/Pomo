@@ -1,0 +1,49 @@
+services:
+  app:
+    image: node:20-alpine
+    container_name: pomo_app_dev
+    working_dir: /app
+
+    command: sh -c "npm install && node ace serve --watch"
+
+    volumes:
+      - .:/app
+      - /app/node_modules
+
+    ports:
+      - "3333:3333"
+
+    environment:
+      - PORT=3333
+      - HOST=0.0.0.0
+      - NODE_ENV=development
+
+      - DB_CONNECTION=pg
+      - PG_HOST=db
+      - PG_PORT=5432
+      - PG_USER=postgres
+      - PG_PASSWORD=postgres
+      - PG_DB_NAME=pomo
+
+    depends_on:
+      - db
+
+  db:
+    image: postgres:15
+    container_name: pomo_db_dev
+
+    restart: always
+
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: pomo
+
+    ports:
+      - "5432:5432"
+
+    volumes:
+      - pgdata_dev:/var/lib/postgresql/data
+
+volumes:
+  pgdata_dev:

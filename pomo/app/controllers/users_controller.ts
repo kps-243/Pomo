@@ -42,6 +42,15 @@ export default class UsersController {
     return response.json({ message: 'Logout successful' })
   }
 
+  async show({ params, response }: HttpContext) {
+    try {
+      const user = await User.findOrFail(params.id)
+      return user
+    } catch (error) {
+      return response.status(404).json({ message: 'User not found', error: error.message })
+    }
+  }
+
   async update({ request, response, params }: HttpContext) {
     const user = await User.findOrFail(params.id)
     const data = request.all()

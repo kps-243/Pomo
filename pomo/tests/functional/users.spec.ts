@@ -24,14 +24,14 @@ test.group('Users CRUD', () => {
   })
 
   test('get a paginated list of users', async ({ client }) => {
-    const response = await client.get('/users')
+    const response = await client.get('/api/users')
 
     response.assertStatus(200)
   })
 
   test('can update a user', async ({ client }) => {
     const user = await User.findByOrFail('email', 'test@mail.com')
-    const response = await client.put(`/users/${user.id}`).json({
+    const response = await client.put(`/api/users/${user.id}`).json({
       first_name: "OK",
       last_name: "Dac",
       username: "kokoji",
@@ -49,7 +49,7 @@ test.group('Users CRUD', () => {
 
   test('can delete a user', async ({ client }) => {
     const user = await User.findByOrFail('email', 'test@mail.com')
-    const response = await client.delete(`/users/${user.id}`)
+    const response = await client.delete(`/api/users/${user.id}`)
 
     response.assertStatus(200)
   })

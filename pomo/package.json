@@ -63,12 +63,15 @@
     "@adonisjs/static": "^1.1.1",
     "@adonisjs/vite": "^4.0.0",
     "@inertiajs/vue3": "^2.3.15",
+    "@nuxt/ui": "^4.5.1",
     "@vinejs/vine": "^3.0.1",
     "edge.js": "^6.2.1",
     "luxon": "^3.7.2",
     "pg": "^8.18.0",
     "reflect-metadata": "^0.2.2",
-    "vue": "^3.5.28"
+    "tailwindcss": "^4.2.1",
+    "vue": "^3.5.28",
+    "vue-cal": "^4.10.2"
   },
   "hotHook": {
     "boundaries": [

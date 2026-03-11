@@ -10,8 +10,9 @@
 import router from '@adonisjs/core/services/router'
 import UsersController from '#controllers/users_controller'
 import TasksController from '#controllers/tasks_controller'
+import HomeController from '#controllers/home_controller'
 
-router.on('/').renderInertia('home')
+router.get('/', [HomeController, 'index'])
 
 // User routes
 router.get('api/users', [UsersController, 'index'])

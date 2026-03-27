@@ -4,7 +4,7 @@ import { BaseModel, column } from '@adonisjs/lucid/orm'
 export default class Task extends BaseModel {
   @column({ isPrimary: true })
   declare id: number
-  
+
   @column()
   declare title: string
 
@@ -19,7 +19,7 @@ export default class Task extends BaseModel {
 
   @column()
   declare duration: number | null
-  
+
   @column()
   declare user_id: number
 

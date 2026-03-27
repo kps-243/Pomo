@@ -6,7 +6,12 @@ import ui from '@nuxt/ui/vite'
 import adonisjs from '@adonisjs/vite/client'
 
 export default defineConfig({
-  plugins: [inertia({ ssr: { enabled: false } }), vue(),ui({router: 'inertia'}), adonisjs({ entrypoints: ['inertia/app/app.ts'], reload: ['resources/views/**/*.edge'] })],
+  plugins: [
+    inertia({ ssr: { enabled: false } }),
+    vue(),
+    ui({ router: 'inertia' }),
+    adonisjs({ entrypoints: ['inertia/app/app.ts'], reload: ['resources/views/**/*.edge'] }),
+  ],
 
   /**
    * Define aliases for importing modules from

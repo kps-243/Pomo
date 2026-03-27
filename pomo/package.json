@@ -14,7 +14,8 @@
     "format": "prettier --write .",
     "typecheck": "tsc --noEmit",
     "check": "npm run lint && npm run typecheck",
-    "fix": "npm run lint:fix && npm run format"
+    "fix": "npm run lint:fix && npm run format",
+    "migrate": "node ace migration:fresh && node ace db:seed --files database/seeders/main_seeder.ts"
   },
   "imports": {
     "#controllers/*": "./app/controllers/*.js",

@@ -8,9 +8,9 @@
 */
 
 import router from '@adonisjs/core/services/router'
-import UsersController from '#controllers/users_controller'
-import TasksController from '#controllers/tasks_controller'
-import HomeController from '#controllers/home_controller'
+const UsersController = () => import('#controllers/users_controller')
+const TasksController = () => import('#controllers/tasks_controller')
+const HomeController = () => import('#controllers/home_controller')
 
 router.get('/', [HomeController, 'index'])
 

@@ -1,39 +1,34 @@
-import User from '#models/user';
+import User from '#models/user'
 import type { HttpContext } from '@adonisjs/core/http'
-import {
-  registerValidator,
-  loginValidator,
-  updateUserValidator
-} from '#validators/auth'
+import { registerValidator, loginValidator, updateUserValidator } from '#validators/auth'
 
 export default class UsersController {
-  
   index() {
     return User.all()
   }
 
   async register({ request, response }: HttpContext) {
-    const data = request.all();
+    const data = request.all()
     try {
-      const validatedData = await request.validateUsing(registerValidator, data);
-      await User.create(validatedData); 
-        return response.status(201).json({ message: 'User registered successfully' });
+      const validatedData = await request.validateUsing(registerValidator, data)
+      await User.create(validatedData)
+      return response.status(201).json({ message: 'User registered successfully' })
     } catch (error) {
-        return response.status(400).json({ message: 'Registration failed', error: error.message });
+      return response.status(400).json({ message: 'Registration failed', error: error.message })
     }
   }
 
   async login({ request, response, auth }: HttpContext) {
     const data = request.only(['email', 'password'])
     try {
-      const validatedData = await request.validateUsing(loginValidator, {data})
+      const validatedData = await request.validateUsing(loginValidator, { data })
       const user = await User.verifyCredentials(validatedData.email, validatedData.password)
-      
+
       await auth.use('web').login(user)
-      
-      return response.status(201).json({ message: 'Login successful', user });
+
+      return response.status(201).json({ message: 'Login successful', user })
     } catch (error) {
-        return response.status(400).json({ message: 'Login failed', error: error.message });
+      return response.status(400).json({ message: 'Login failed', error: error.message })
     }
   }
 

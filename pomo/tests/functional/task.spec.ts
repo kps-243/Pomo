@@ -1,12 +1,9 @@
-import { test } from '@japa/runner';
-import Task from '#models/task';
-import User from '#models/user';
-
+import { test } from '@japa/runner'
+import Task from '#models/task'
+import User from '#models/user'
 
 test.group('Tasks CRUD', () => {
-
   test('can create a task', async ({ client }) => {
-
     const response = await client.post('/api/tasks').json({
       title: 'Test Task',
       description: 'This is a test task',

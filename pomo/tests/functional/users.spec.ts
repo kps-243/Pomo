@@ -1,15 +1,14 @@
-import { test } from '@japa/runner';
-import User from '#models/user';
+import { test } from '@japa/runner'
+import User from '#models/user'
 
 test.group('Users CRUD', () => {
-
   test('can create a user', async ({ client }) => {
     const response = await client.post('/register').json({
       last_name: 'User',
       first_name: 'Test',
       email: 'test@mail.com',
       password: 'password123',
-      username: 'Test User'
+      username: 'Test User',
     })
 
     response.assertStatus(201)
@@ -18,7 +17,7 @@ test.group('Users CRUD', () => {
   test('can login a user', async ({ client }) => {
     const response = await client.post('/login').json({
       email: 'test@mail.com',
-      password: 'password123'
+      password: 'password123',
     })
     response.assertStatus(201)
   })
@@ -32,10 +31,10 @@ test.group('Users CRUD', () => {
   test('can update a user', async ({ client }) => {
     const user = await User.findByOrFail('email', 'test@mail.com')
     const response = await client.put(`/api/users/${user.id}`).json({
-      first_name: "OK",
-      last_name: "Dac",
-      username: "kokoji",
-      password: 'newpassword123'
+      first_name: 'OK',
+      last_name: 'Dac',
+      username: 'kokoji',
+      password: 'newpassword123',
     })
 
     response.assertStatus(200)

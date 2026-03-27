@@ -8,3 +8,38 @@ body {
   height: 100%;
   width: 100%;
 }
+
+/* Calendar Styles */
+
+.vuecal {
+  --vuecal-primary-color: #22c55e;
+  height: 256px;
+}
+
+.vuecal__title-bar {
+  background-color: #22c55e !important;
+  color: white;
+}
+
+.vuecal__menu {
+  background-color: #dcfce7;
+}
+
+.vuecal__cell--today {
+  background-color: #bbf7d0;
+}
+
+.vuecal__event.done {
+  background-color: #22c55e;
+  border: none;
+  color: white;
+}
+
+.vuecal__event.in_progress {
+  background-color: #4ade80;
+}
+
+.vuecal__event.pending {
+  background-color: #86efac;
+}
+

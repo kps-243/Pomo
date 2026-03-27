@@ -6,11 +6,13 @@ import { createApp, h } from 'vue'
 import type { DefineComponent } from 'vue'
 import { createInertiaApp } from '@inertiajs/vue3'
 import { resolvePageComponent } from '@adonisjs/inertia/helpers'
+import ui from '@nuxt/ui/vue-plugin'
 
-const appName = import.meta.env.VITE_APP_NAME || 'AdonisJS'
+
+const appName = import.meta.env.VITE_APP_NAME || 'Pomo'
 
 createInertiaApp({
-  progress: { color: '#5468FF' },
+  progress: { color: '#55E0A9' },
 
   title: (title) => `${title} - ${appName}`,
 
@@ -26,6 +28,7 @@ createInertiaApp({
     createApp({ render: () => h(App, props) })
     
       .use(plugin)
+      .use(ui)
       .mount(el)
   },
 })

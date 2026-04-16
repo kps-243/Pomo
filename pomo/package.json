@@ -15,7 +15,8 @@
     "typecheck": "tsc --noEmit",
     "check": "npm run lint && npm run typecheck",
     "fix": "npm run lint:fix && npm run format",
-    "migrate": "node ace migration:fresh && node ace db:seed --files database/seeders/main_seeder.ts"
+    "migrate": "node ace migration:fresh && node ace db:seed --files database/seeders/main_seeder.ts",
+    "docker": "npm run migrate && node ace serve --hmr"
   },
   "imports": {
     "#controllers/*": "./app/controllers/*.js",

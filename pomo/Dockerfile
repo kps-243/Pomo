@@ -1,5 +1,5 @@
-FROM node:20-alpine
-
+FROM node:24.14.0-alpine
+RUN apk --no-cache add dumb-init
 WORKDIR /app
 
 COPY package*.json ./
@@ -9,4 +9,4 @@ COPY . .
 
 EXPOSE 3333
 
-CMD ["node", "ace", "serve", "--watch"]
+CMD ["dumb-init", "npm", "run", "docker"]

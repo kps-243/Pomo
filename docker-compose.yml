@@ -6,6 +6,7 @@ services:
       - "3333:3333"
     volumes:
       - ./pomo:/app
+      - /app/node_modules
     depends_on:
       - postgres
       - redis
@@ -15,6 +16,7 @@ services:
       - DB_USER=pomo_admin
       - DB_PASSWORD=pomo123
       - DB_DATABASE=pomodb
+      - HOST=0.0.0.0
 
   postgres:
     image: postgres:15

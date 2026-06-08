@@ -7,15 +7,23 @@ export default class UsersController {
     return User.all()
   }
 
-  async register({ request, response }: HttpContext) {
+  create({ inertia }: HttpContext) {
+    return inertia.render('Auth/Register')
+  }
+
+  async store({ request, response }: HttpContext) {
     const data = request.all()
     try {
       const validatedData = await request.validateUsing(registerValidator, data)
       await User.create(validatedData)
-      return response.status(201).json({ message: 'User registered successfully' })
+      return response.redirect('/')
     } catch (error) {
       return response.status(400).json({ message: 'Registration failed', error: error.message })
     }
+  }
+
+  connection({ inertia }: HttpContext) {
+    return inertia.render('Auth/Login')
   }
 
   async login({ request, response, auth }: HttpContext) {
@@ -26,7 +34,7 @@ export default class UsersController {
 
       await auth.use('web').login(user)
 
-      return response.status(201).json({ message: 'Login successful', user })
+      return response.redirect('/')
     } catch (error) {
       return response.status(400).json({ message: 'Login failed', error: error.message })
     }
@@ -34,7 +42,7 @@ export default class UsersController {
 
   async logout({ auth, response }: HttpContext) {
     await auth.use('web').logout()
-    return response.json({ message: 'Logout successful' })
+    return response.redirect('/login')
   }
 
   async show({ params, response }: HttpContext) {

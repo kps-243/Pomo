@@ -1,30 +1,40 @@
 import { test } from '@japa/runner'
 import User from '#models/user'
 
-test.group('Users CRUD', () => {
-  test('can create a user', async ({ client }) => {
-    const response = await client.post('/register').json({
-      last_name: 'User',
-      first_name: 'Test',
-      email: 'test@mail.com',
-      password: 'password123',
-      username: 'Test User',
-    })
+test.group('Users CRUD', (group) => {
+  group.setup(async () => {
+    await User.query().delete()
+  })
 
-    response.assertStatus(201)
+  test('can create a user', async ({ client }) => {
+    const response = await client
+      .post('/register')
+      .json({
+        last_name: 'User',
+        first_name: 'Test',
+        email: 'test@mail.com',
+        password: 'password123',
+        username: 'Test User',
+      })
+      .redirects(0)
+
+    response.assertStatus(302)
   })
 
   test('can login a user', async ({ client }) => {
-    const response = await client.post('/login').json({
-      email: 'test@mail.com',
-      password: 'password123',
-    })
-    response.assertStatus(201)
+    const response = await client
+      .post('/login')
+      .json({
+        email: 'test@mail.com',
+        password: 'password123',
+      })
+      .redirects(0)
+
+    response.assertStatus(302)
   })
 
   test('get a paginated list of users', async ({ client }) => {
     const response = await client.get('/api/users')
-
     response.assertStatus(200)
   })
 
@@ -41,9 +51,8 @@ test.group('Users CRUD', () => {
   })
 
   test('can logout a user', async ({ client }) => {
-    const response = await client.post('/logout')
-
-    response.assertStatus(200)
+    const response = await client.post('/logout').redirects(0)
+    response.assertStatus(302)
   })
 
   test('can delete a user', async ({ client }) => {

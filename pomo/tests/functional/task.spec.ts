@@ -1,17 +1,47 @@
 import { test } from '@japa/runner'
+import { DateTime } from 'luxon'
 import Task from '#models/task'
 import User from '#models/user'
 
-test.group('Tasks CRUD', () => {
+test.group('Tasks CRUD', (group) => {
+  let userId: number
+
+  group.setup(async () => {
+    await Task.query().delete()
+    await User.query().delete()
+    const user = await User.create({
+      first_name: 'Test',
+      last_name: 'User',
+      email: 'test-tasks@example.com',
+      password: 'password123',
+      username: null,
+    })
+    userId = user.id
+    await Task.create({
+      title: 'Seed Task',
+      description: 'Task created for tests',
+      status: 'todo',
+      user_id: userId,
+      duration: 25,
+      start_date: DateTime.now(),
+    })
+  })
+
+  group.teardown(async () => {
+    await Task.query().delete()
+    await User.query().delete()
+  })
+
   test('can create a task', async ({ client }) => {
     const response = await client.post('/api/tasks').json({
       title: 'Test Task',
       description: 'This is a test task',
       status: 'todo',
-      user_id: 2,
+      user_id: userId,
       duration: 25,
       start_date: new Date().toISOString(),
     })
+
     response.assertStatus(201)
   })
 
@@ -26,7 +56,7 @@ test.group('Tasks CRUD', () => {
       title: 'Updated Test Task',
       description: 'This is an updated test task',
       status: 'done',
-      user_id: 2,
+      user_id: userId,
       duration: 30,
       start_date: new Date().toISOString(),
     })

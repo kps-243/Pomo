@@ -4,6 +4,7 @@ import inertia from '@adonisjs/inertia/client'
 import vue from '@vitejs/plugin-vue'
 import ui from '@nuxt/ui/vite'
 import adonisjs from '@adonisjs/vite/client'
+import tailwindcss from '@tailwindcss/vite'
 
 export default defineConfig({
   plugins: [
@@ -11,6 +12,7 @@ export default defineConfig({
     vue(),
     ui({ router: 'inertia' }),
     adonisjs({ entrypoints: ['inertia/app/app.ts'], reload: ['resources/views/**/*.edge'] }),
+    tailwindcss(),
   ],
 
   /**

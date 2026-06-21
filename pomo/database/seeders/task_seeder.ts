@@ -11,7 +11,7 @@ export default class extends BaseSeeder {
         status: 'todo',
         start_date: DateTime.now().plus({ hours: 1 }),
         duration: 60,
-        user_id: 1,
+        userId: 1,
       },
       {
         title: 'Coder projet Adonis',
@@ -19,7 +19,7 @@ export default class extends BaseSeeder {
         status: 'in_progress',
         start_date: DateTime.now().plus({ hours: 2 }),
         duration: 120,
-        user_id: 1,
+        userId: 1,
       },
       {
         title: 'Réviser',
@@ -27,7 +27,7 @@ export default class extends BaseSeeder {
         status: 'done',
         start_date: DateTime.now().minus({ days: 1 }),
         duration: 90,
-        user_id: 2,
+        userId: 2,
       },
       {
         title: 'Musculation',
@@ -35,7 +35,7 @@ export default class extends BaseSeeder {
         status: 'todo',
         start_date: DateTime.now().plus({ hours: 1 }),
         duration: 60,
-        user_id: 1,
+        userId: 1,
       },
       {
         title: 'Run 5km',
@@ -43,7 +43,7 @@ export default class extends BaseSeeder {
         status: 'in_progress',
         start_date: DateTime.now().plus({ hours: 3 }),
         duration: 30,
-        user_id: 1,
+        userId: 1,
       },
       {
         title: 'Dev Adonis API',
@@ -51,7 +51,7 @@ export default class extends BaseSeeder {
         status: 'done',
         start_date: DateTime.now().minus({ hours: 5 }),
         duration: 120,
-        user_id: 1,
+        userId: 1,
       },
 
       {
@@ -60,7 +60,7 @@ export default class extends BaseSeeder {
         status: 'todo',
         start_date: DateTime.now().plus({ days: 1 }),
         duration: 45,
-        user_id: 2,
+        userId: 2,
       },
       {
         title: 'Refactor code',
@@ -68,7 +68,7 @@ export default class extends BaseSeeder {
         status: 'in_progress',
         start_date: DateTime.now().plus({ hours: 6 }),
         duration: 90,
-        user_id: 2,
+        userId: 2,
       },
 
       {
@@ -77,7 +77,7 @@ export default class extends BaseSeeder {
         status: 'done',
         start_date: DateTime.now().minus({ days: 1 }),
         duration: 120,
-        user_id: 3,
+        userId: 3,
       },
       {
         title: 'Tests utilisateurs',
@@ -85,7 +85,7 @@ export default class extends BaseSeeder {
         status: 'todo',
         start_date: DateTime.now().plus({ days: 2 }),
         duration: 60,
-        user_id: 3,
+        userId: 3,
       },
 
       {
@@ -94,7 +94,7 @@ export default class extends BaseSeeder {
         status: 'in_progress',
         start_date: DateTime.now().plus({ hours: 8 }),
         duration: 180,
-        user_id: 4,
+        userId: 4,
       },
       {
         title: 'Monitoring',
@@ -102,7 +102,7 @@ export default class extends BaseSeeder {
         status: 'todo',
         start_date: DateTime.now().plus({ days: 3 }),
         duration: 60,
-        user_id: 4,
+        userId: 4,
       },
     ])
   }

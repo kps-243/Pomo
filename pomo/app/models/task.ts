@@ -1,5 +1,7 @@
 import { DateTime } from 'luxon'
-import { BaseModel, column } from '@adonisjs/lucid/orm'
+import { BaseModel, belongsTo, column } from '@adonisjs/lucid/orm'
+import type { BelongsTo } from '@adonisjs/lucid/types/relations'
+import ToDoList from '#models/to_do_list'
 
 export default class Task extends BaseModel {
   @column({ isPrimary: true })
@@ -21,7 +23,13 @@ export default class Task extends BaseModel {
   declare duration: number | null
 
   @column()
-  declare user_id: number
+  declare userId: number
+
+  @column()
+  declare toDoListId: number | null
+
+  @belongsTo(() => ToDoList)
+  declare toDoList: BelongsTo<typeof ToDoList>
 
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime

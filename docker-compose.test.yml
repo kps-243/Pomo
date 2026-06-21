@@ -15,6 +15,7 @@ services:
       - redis
     env_file:
       - ./pomo/.env.docker
+      - ./pomo/.env.test
 
   postgres:
     image: postgres:15

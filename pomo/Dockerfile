@@ -11,3 +11,7 @@ FROM base AS dev
 EXPOSE 3333
 
 CMD ["npm", "run", "docker"]
+
+FROM base AS test
+
+CMD ["npm", "run", "test"]

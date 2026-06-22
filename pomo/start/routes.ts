@@ -20,6 +20,8 @@ router.get('/todolists', [ToDoListsController, 'page']).use(middleware.auth())
 
 router
   .group(() => {
+    router.post('/todolists', [ToDoListsController, 'storeFromBoard'])
+    router.delete('/todolists/:id', [ToDoListsController, 'destroyFromBoard'])
     router.post('/todolists/:todoListId/tasks', [TasksController, 'storeFromBoard'])
     router.put('/tasks/:id', [TasksController, 'updateFromBoard'])
     router.delete('/tasks/:id', [TasksController, 'destroyFromBoard'])

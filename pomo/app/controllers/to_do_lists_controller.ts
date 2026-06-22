@@ -33,6 +33,32 @@ export default class ToDoListsController {
     })
   }
 
+  async storeFromBoard({ request, auth, response }: HttpContext) {
+    const user = auth.getUserOrFail()
+    const payload = await request.validateUsing(createToDoListValidator)
+    await ToDoList.create({ ...payload, userId: user.id })
+    return response.redirect().back()
+  }
+
+  async destroyFromBoard({ params, auth, response }: HttpContext) {
+    const user = auth.getUserOrFail()
+    const toDoList = await ToDoList.query()
+      .where('id', params.id)
+      .where('user_id', user.id)
+      .withCount('tasks')
+      .first()
+    if (!toDoList) {
+      return response.notFound({ message: 'ToDoList not found' })
+    }
+
+    if (Number(toDoList.$extras.tasks_count) > 0) {
+      return response.redirect().back()
+    }
+
+    await toDoList.delete()
+    return response.redirect().back()
+  }
+
   async store({ request, auth, response }: HttpContext) {
     const user = auth.getUserOrFail()
     const payload = await request.validateUsing(createToDoListValidator)

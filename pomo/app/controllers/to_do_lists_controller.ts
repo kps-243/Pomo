@@ -23,6 +23,7 @@ export default class ToDoListsController {
         tasks: list.tasks.map((task) => ({
           id: task.id,
           title: task.title,
+          description: task.description,
           status: task.status,
           assignees: task.user
             ? [{ firstName: task.user.first_name, lastName: task.user.last_name }]

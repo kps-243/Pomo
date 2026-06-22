@@ -6,11 +6,6 @@ import type { ToDoListItem } from '~/types/todo'
 defineProps<{
   toDoLists: ToDoListItem[]
 }>()
-
-// TODO: implémenter la création d'une nouvelle task plus tard.
-const onAddTask = (toDoListId: number) => {
-  console.info('Ajout d’une task à la todolist', toDoListId)
-}
 </script>
 
 <template>
@@ -24,7 +19,6 @@ const onAddTask = (toDoListId: number) => {
           :key="list.id"
           :list="list"
           class="w-[85vw] max-w-xs shrink-0 snap-start sm:w-72 md:w-80"
-          @add-task="onAddTask"
         />
 
         <p v-if="!toDoLists.length" class="text-sm text-gray-400">

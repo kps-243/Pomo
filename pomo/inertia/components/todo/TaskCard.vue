@@ -2,6 +2,7 @@
 import { computed, ref } from 'vue'
 import StatusBadge from './StatusBadge.vue'
 import TaskModal from './TaskModal.vue'
+import MemberAvatar from './MemberAvatar.vue'
 import type { TaskItem } from '~/types/todo'
 
 const props = defineProps<{
@@ -13,9 +14,6 @@ const isModalOpen = ref(false)
 const openModal = () => {
   isModalOpen.value = true
 }
-
-const initials = (firstName: string, lastName: string) =>
-  `${firstName?.[0] ?? ''}${lastName?.[0] ?? ''}`.toUpperCase()
 
 const assignees = computed(() => props.task.assignees ?? [])
 </script>
@@ -36,14 +34,7 @@ const assignees = computed(() => props.task.assignees ?? [])
 
       <div class="flex min-h-7 items-center justify-end">
         <div v-if="assignees.length" class="flex items-center -space-x-2">
-          <span
-            v-for="(person, index) in assignees"
-            :key="index"
-            :title="`${person.firstName} ${person.lastName}`"
-            class="flex h-7 w-7 items-center justify-center rounded-full bg-green-500 text-[11px] font-semibold text-white ring-2 ring-white"
-          >
-            {{ initials(person.firstName, person.lastName) }}
-          </span>
+          <MemberAvatar v-for="(person, index) in assignees" :key="index" :member="person" />
         </div>
       </div>
     </button>

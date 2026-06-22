@@ -8,6 +8,7 @@ export interface Assignee {
 export interface TaskItem {
   id: number
   title: string
+  description: string | null
   status: TaskStatus
   assignees: Assignee[]
 }

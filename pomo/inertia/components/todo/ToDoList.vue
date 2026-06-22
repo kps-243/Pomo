@@ -8,10 +8,6 @@ const props = defineProps<{
   list: ToDoListItem
 }>()
 
-const emit = defineEmits<{
-  addTask: [toDoListId: number]
-}>()
-
 const taskCount = computed(() => props.list.tasks?.length ?? 0)
 </script>
 
@@ -34,7 +30,7 @@ const taskCount = computed(() => props.list.tasks?.length ?? 0)
     </div>
 
     <footer class="border-t border-green-100 px-3 py-3">
-      <AddTaskCard :to-do-list-id="list.id" @add="emit('addTask', $event)" />
+      <AddTaskCard :to-do-list-id="list.id" />
     </footer>
   </section>
 </template>

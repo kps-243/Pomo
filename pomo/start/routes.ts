@@ -18,6 +18,14 @@ router.get('/', [HomeController, 'index']).use(middleware.auth())
 
 router.get('/todolists', [ToDoListsController, 'page']).use(middleware.auth())
 
+router
+  .group(() => {
+    router.post('/todolists/:todoListId/tasks', [TasksController, 'storeFromBoard'])
+    router.put('/tasks/:id', [TasksController, 'updateFromBoard'])
+    router.delete('/tasks/:id', [TasksController, 'destroyFromBoard'])
+  })
+  .use(middleware.auth())
+
 // User routes
 router.get('api/users', [UsersController, 'index'])
 router.get('register', [UsersController, 'create'])

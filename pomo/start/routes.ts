@@ -16,6 +16,8 @@ const ToDoListsController = () => import('#controllers/to_do_lists_controller')
 
 router.get('/', [HomeController, 'index']).use(middleware.auth())
 
+router.get('/todolists', [ToDoListsController, 'page']).use(middleware.auth())
+
 // User routes
 router.get('api/users', [UsersController, 'index'])
 router.get('register', [UsersController, 'create'])

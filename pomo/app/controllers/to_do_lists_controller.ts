@@ -9,6 +9,29 @@ export default class ToDoListsController {
     return ToDoList.query().where('user_id', user.id)
   }
 
+  async page({ inertia, auth }: HttpContext) {
+    const user = auth.getUserOrFail()
+    const toDoLists = await ToDoList.query()
+      .where('user_id', user.id)
+      .preload('tasks', (taskQuery) => taskQuery.preload('user'))
+      .orderBy('created_at', 'asc')
+
+    return inertia.render('ToDoLists', {
+      toDoLists: toDoLists.map((list) => ({
+        id: list.id,
+        name: list.name,
+        tasks: list.tasks.map((task) => ({
+          id: task.id,
+          title: task.title,
+          status: task.status,
+          assignees: task.user
+            ? [{ firstName: task.user.first_name, lastName: task.user.last_name }]
+            : [],
+        })),
+      })),
+    })
+  }
+
   async store({ request, auth, response }: HttpContext) {
     const user = auth.getUserOrFail()
     const payload = await request.validateUsing(createToDoListValidator)

@@ -1,0 +1,109 @@
+import Task from '#models/task'
+import { BaseSeeder } from '@adonisjs/lucid/seeders'
+import { DateTime } from 'luxon'
+
+export default class extends BaseSeeder {
+  async run() {
+    await Task.createMany([
+      {
+        title: 'Faire du sport',
+        description: 'Séance de musculation',
+        status: 'todo',
+        start_date: DateTime.now().plus({ hours: 1 }),
+        duration: 60,
+        user_id: 1,
+      },
+      {
+        title: 'Coder projet Adonis',
+        description: 'Créer API CRUD',
+        status: 'in_progress',
+        start_date: DateTime.now().plus({ hours: 2 }),
+        duration: 120,
+        user_id: 1,
+      },
+      {
+        title: 'Réviser',
+        description: 'Préparer entretien',
+        status: 'done',
+        start_date: DateTime.now().minus({ days: 1 }),
+        duration: 90,
+        user_id: 2,
+      },
+      {
+        title: 'Musculation',
+        description: 'Séance haut du corps',
+        status: 'todo',
+        start_date: DateTime.now().plus({ hours: 1 }),
+        duration: 60,
+        user_id: 1,
+      },
+      {
+        title: 'Run 5km',
+        description: 'Objectif 4:30/km',
+        status: 'in_progress',
+        start_date: DateTime.now().plus({ hours: 3 }),
+        duration: 30,
+        user_id: 1,
+      },
+      {
+        title: 'Dev Adonis API',
+        description: 'CRUD + Auth',
+        status: 'done',
+        start_date: DateTime.now().minus({ hours: 5 }),
+        duration: 120,
+        user_id: 1,
+      },
+
+      {
+        title: 'Meeting client',
+        description: 'Projet site web',
+        status: 'todo',
+        start_date: DateTime.now().plus({ days: 1 }),
+        duration: 45,
+        user_id: 2,
+      },
+      {
+        title: 'Refactor code',
+        description: 'Clean architecture',
+        status: 'in_progress',
+        start_date: DateTime.now().plus({ hours: 6 }),
+        duration: 90,
+        user_id: 2,
+      },
+
+      {
+        title: 'Design UI',
+        description: 'Figma dashboard',
+        status: 'done',
+        start_date: DateTime.now().minus({ days: 1 }),
+        duration: 120,
+        user_id: 3,
+      },
+      {
+        title: 'Tests utilisateurs',
+        description: 'Feedback UX',
+        status: 'todo',
+        start_date: DateTime.now().plus({ days: 2 }),
+        duration: 60,
+        user_id: 3,
+      },
+
+      {
+        title: 'Déploiement',
+        description: 'Docker + CI/CD',
+        status: 'in_progress',
+        start_date: DateTime.now().plus({ hours: 8 }),
+        duration: 180,
+        user_id: 4,
+      },
+      {
+        title: 'Monitoring',
+        description: 'Setup logs',
+        status: 'todo',
+        start_date: DateTime.now().plus({ days: 3 }),
+        duration: 60,
+        user_id: 4,
+      },
+    ])
+  }
+}

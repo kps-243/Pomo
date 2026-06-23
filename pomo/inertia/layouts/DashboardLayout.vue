@@ -10,6 +10,7 @@ const logout = () => {
 
 const links = [
   { label: 'Home', icon: 'i-heroicons-home', href: '/' },
+  { label: 'ToDoLists', icon: 'i-heroicons-view-columns', href: '/todolists' },
   { label: 'Tasks', icon: 'i-heroicons-check-circle', href: '/tasks' },
   { label: 'Calendar', icon: 'i-heroicons-calendar', href: '/calendar' },
 ]

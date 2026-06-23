@@ -45,7 +45,7 @@ test.group('Register', (group) => {
     assert.isTrue(await hash.verify(user.password, VALID_USER.password))
   })
 
-  test('échoue si l\'email est déjà utilisé', async ({ client }) => {
+  test("échoue si l'email est déjà utilisé", async ({ client }) => {
     await createUser()
 
     const response = await client.post('/register').json(VALID_USER).redirects(0)
@@ -61,7 +61,7 @@ test.group('Register', (group) => {
     response.assertStatus(400)
   })
 
-  test('échoue si l\'email est invalide', async ({ client }) => {
+  test("échoue si l'email est invalide", async ({ client }) => {
     const response = await client
       .post('/register')
       .json({ ...VALID_USER, email: 'pas-un-email' })
@@ -138,7 +138,7 @@ test.group('Login', (group) => {
 test.group('Logout', (group) => {
   group.each.setup(() => cleanUsers())
 
-  test('déconnecte l\'utilisateur et redirige vers /login', async ({ client }) => {
+  test("déconnecte l'utilisateur et redirige vers /login", async ({ client }) => {
     const user = await createUser()
 
     const response = await client.post('/logout').loginAs(user).redirects(0)

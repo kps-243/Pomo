@@ -21,7 +21,7 @@ test.group('Tasks CRUD', (group) => {
       title: 'Seed Task',
       description: 'Task created for tests',
       status: 'todo',
-      user_id: userId,
+      userId,
       duration: 25,
       start_date: DateTime.now(),
     })
@@ -37,7 +37,7 @@ test.group('Tasks CRUD', (group) => {
       title: 'Test Task',
       description: 'This is a test task',
       status: 'todo',
-      user_id: userId,
+      userId,
       duration: 25,
       start_date: new Date().toISOString(),
     })
@@ -56,7 +56,7 @@ test.group('Tasks CRUD', (group) => {
       title: 'Updated Test Task',
       description: 'This is an updated test task',
       status: 'done',
-      user_id: userId,
+      userId,
       duration: 30,
       start_date: new Date().toISOString(),
     })

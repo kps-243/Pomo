@@ -5,10 +5,6 @@ import ToDoList from '#models/to_do_list'
 import { createTaskValidator, updateTaskValidator } from '#validators/task'
 
 export default class TasksController {
-  /**
-   * Liste les tasks d'une todolist, seulement si elle appartient
-   * à l'utilisateur connecté (sinon 404).
-   */
   async indexForToDoList({ params, auth, response }: HttpContext) {
     const user = auth.getUserOrFail()
     const toDoList = await ToDoList.query()
@@ -21,10 +17,6 @@ export default class TasksController {
     return toDoList.related('tasks').query()
   }
 
-  /**
-   * Ajoute une task dans une todolist, seulement si elle appartient
-   * à l'utilisateur connecté (sinon 404).
-   */
   async storeForToDoList({ params, request, auth, response }: HttpContext) {
     const user = auth.getUserOrFail()
     const payload = await request.validateUsing(createTaskValidator)
@@ -43,6 +35,17 @@ export default class TasksController {
       userId: user.id,
     })
     return response.status(201).json({ message: 'Task created successfully', task })
+  }
+
+  async storeFromHome({ request, auth, response }: HttpContext) {
+    const user = auth.getUserOrFail()
+    const payload = await request.validateUsing(createTaskValidator)
+    await Task.create({
+      ...payload,
+      start_date: payload.start_date ? DateTime.fromISO(payload.start_date) : null,
+      userId: user.id,
+    })
+    return response.redirect().back()
   }
 
   async storeFromBoard({ params, request, auth, response }: HttpContext) {

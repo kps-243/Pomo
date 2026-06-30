@@ -25,7 +25,9 @@ const deleteList = () => {
 </script>
 
 <template>
-  <section class="flex max-h-full w-full flex-col rounded-2xl border border-green-500 bg-gray-50 shadow-md">
+  <section
+    class="flex max-h-full w-full flex-col rounded-2xl border border-green-500 bg-gray-50 shadow-md"
+  >
     <header class="flex items-center justify-between gap-2 border-b border-green-100 px-4 py-3">
       <h3 class="truncate text-base font-semibold text-green-600">{{ list.name }}</h3>
 

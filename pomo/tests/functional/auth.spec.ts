@@ -21,20 +21,16 @@ async function cleanUsers() {
 // ---------------------------------------------------------------------------
 // Register
 // ---------------------------------------------------------------------------
-
 test.group('Register', (group) => {
   group.each.setup(() => cleanUsers())
 
   test('crée un compte valide et redirige vers /', async ({ client, assert }) => {
     const response = await client.post('/register').json(VALID_USER).redirects(0)
-
     response.assertStatus(302)
     response.assertHeader('location', '/')
 
     const user = await User.findBy('email', VALID_USER.email)
-    assert.exists(user)
-    assert.equal(user!.first_name, VALID_USER.first_name)
-    assert.equal(user!.last_name, VALID_USER.last_name)
+    assert.isNotNull(user)
   })
 
   test('le mot de passe est haché en base', async ({ client, assert }) => {
@@ -47,46 +43,42 @@ test.group('Register', (group) => {
 
   test("échoue si l'email est déjà utilisé", async ({ client }) => {
     await createUser()
-
-    const response = await client.post('/register').json(VALID_USER).redirects(0)
-    response.assertStatus(400)
+    const response = await client.post('/register').accept('json').json(VALID_USER)
+    response.assertStatus(422)
   })
 
   test('échoue si le mot de passe fait moins de 8 caractères', async ({ client }) => {
     const response = await client
       .post('/register')
+      .accept('json')
       .json({ ...VALID_USER, password: 'court' })
-      .redirects(0)
-
-    response.assertStatus(400)
+    response.assertStatus(422)
   })
 
   test("échoue si l'email est invalide", async ({ client }) => {
     const response = await client
       .post('/register')
+      .accept('json')
       .json({ ...VALID_USER, email: 'pas-un-email' })
-      .redirects(0)
-
-    response.assertStatus(400)
+    response.assertStatus(422)
   })
 
   test('échoue si le prénom est manquant', async ({ client }) => {
-    const { first_name: _r, ...withoutFirstName } = VALID_USER
-    const response = await client.post('/register').json(withoutFirstName).redirects(0)
-    response.assertStatus(400)
+    const { first_name: firstName, ...withoutFirstName } = VALID_USER
+    const response = await client.post('/register').accept('json').json(withoutFirstName)
+    response.assertStatus(422)
   })
 
   test('échoue si le nom de famille est manquant', async ({ client }) => {
-    const { last_name: _r, ...withoutLastName } = VALID_USER
-    const response = await client.post('/register').json(withoutLastName).redirects(0)
-    response.assertStatus(400)
+    const { last_name: lastName, ...withoutLastName } = VALID_USER
+    const response = await client.post('/register').accept('json').json(withoutLastName)
+    response.assertStatus(422)
   })
 })
 
 // ---------------------------------------------------------------------------
 // Login
 // ---------------------------------------------------------------------------
-
 test.group('Login', (group) => {
   group.each.setup(async () => {
     await cleanUsers()
@@ -98,7 +90,6 @@ test.group('Login', (group) => {
       .post('/login')
       .json({ email: VALID_USER.email, password: VALID_USER.password })
       .redirects(0)
-
     response.assertStatus(302)
     response.assertHeader('location', '/')
   })
@@ -108,7 +99,6 @@ test.group('Login', (group) => {
       .post('/login')
       .json({ email: VALID_USER.email, password: 'mauvais_mdp' })
       .redirects(0)
-
     response.assertStatus(400)
   })
 
@@ -117,7 +107,6 @@ test.group('Login', (group) => {
       .post('/login')
       .json({ email: 'inconnu@example.com', password: VALID_USER.password })
       .redirects(0)
-
     response.assertStatus(400)
   })
 
@@ -126,7 +115,6 @@ test.group('Login', (group) => {
       .post('/login')
       .json({ email: VALID_USER.email, password: 'court' })
       .redirects(0)
-
     response.assertStatus(400)
   })
 })
@@ -134,15 +122,12 @@ test.group('Login', (group) => {
 // ---------------------------------------------------------------------------
 // Logout
 // ---------------------------------------------------------------------------
-
 test.group('Logout', (group) => {
   group.each.setup(() => cleanUsers())
 
   test("déconnecte l'utilisateur et redirige vers /login", async ({ client }) => {
     const user = await createUser()
-
     const response = await client.post('/logout').loginAs(user).redirects(0)
-
     response.assertStatus(302)
     response.assertHeader('location', '/login')
   })

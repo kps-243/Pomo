@@ -14,7 +14,6 @@ const inertiaConfig = defineConfig({
   sharedData: {
     user: (ctx) => {
       const user = ctx.auth.user as User | undefined
-      console.log(user)
       return user
         ? { id: user.id, first_name: user.first_name, last_name: user.last_name, email: user.email }
         : null

@@ -9,17 +9,29 @@
 
 import router from '@adonisjs/core/services/router'
 import { middleware } from '#start/kernel'
+
 const UsersController = () => import('#controllers/users_controller')
 const TasksController = () => import('#controllers/tasks_controller')
 const HomeController = () => import('#controllers/home_controller')
 const ToDoListsController = () => import('#controllers/to_do_lists_controller')
 
+/*
+|--------------------------------------------------------------------------
+| Pages Inertia (réservées à l'utilisateur connecté)
+|--------------------------------------------------------------------------
+*/
 router.get('/', [HomeController, 'index']).use(middleware.auth())
-
 router.get('/todolists', [ToDoListsController, 'page']).use(middleware.auth())
 
+/*
+|--------------------------------------------------------------------------
+| Actions "home/board" (formulaires Inertia -> redirect back)
+| Toutes réservées à l'utilisateur connecté
+|--------------------------------------------------------------------------
+*/
 router
   .group(() => {
+    router.post('/tasks', [TasksController, 'storeFromHome'])
     router.post('/todolists', [ToDoListsController, 'storeFromBoard'])
     router.delete('/todolists/:id', [ToDoListsController, 'destroyFromBoard'])
     router.post('/todolists/:todoListId/tasks', [TasksController, 'storeFromBoard'])
@@ -28,25 +40,43 @@ router
   })
   .use(middleware.auth())
 
-// User routes
-router.get('api/users', [UsersController, 'index'])
+/*
+|--------------------------------------------------------------------------
+| Auth & comptes (publiques)
+|--------------------------------------------------------------------------
+*/
 router.get('register', [UsersController, 'create'])
 router.post('register', [UsersController, 'store'])
-router.get('api/users/:id', [UsersController, 'show'])
-router.put('api/users/:id', [UsersController, 'update'])
-router.delete('api/users/:id', [UsersController, 'destroy'])
 router.get('login', [UsersController, 'connection'])
 router.post('login', [UsersController, 'login'])
 router.post('logout', [UsersController, 'logout'])
 
-// Task routes
-router.get('api/tasks', [TasksController, 'index'])
-router.post('api/tasks', [TasksController, 'store'])
-router.get('api/tasks/:id', [TasksController, 'show'])
-router.put('api/tasks/:id', [TasksController, 'update'])
-router.delete('api/tasks/:id', [TasksController, 'destroy'])
+// ⚠️ À sécuriser plus tard : ce CRUD users est encore public
+router.get('api/users', [UsersController, 'index'])
+router.get('api/users/:id', [UsersController, 'show'])
+router.put('api/users/:id', [UsersController, 'update'])
+router.delete('api/users/:id', [UsersController, 'destroy'])
 
-// ToDoList routes
+/*
+|--------------------------------------------------------------------------
+| API Tasks (CRUD générique, scopé à l'utilisateur connecté)
+|--------------------------------------------------------------------------
+*/
+router
+  .group(() => {
+    router.get('api/tasks', [TasksController, 'index'])
+    router.post('api/tasks', [TasksController, 'store'])
+    router.get('api/tasks/:id', [TasksController, 'show'])
+    router.put('api/tasks/:id', [TasksController, 'update'])
+    router.delete('api/tasks/:id', [TasksController, 'destroy'])
+  })
+  .use(middleware.auth())
+
+/*
+|--------------------------------------------------------------------------
+| API ToDoLists (scopées au propriétaire) + tasks d'une liste
+|--------------------------------------------------------------------------
+*/
 router
   .group(() => {
     router.get('todolists', [ToDoListsController, 'index'])

@@ -12,7 +12,6 @@ services:
       - /app/node_modules
     depends_on:
       - postgres
-      - redis
     env_file:
       - ./pomo/.env.docker
 
@@ -26,12 +25,6 @@ services:
       - postgres_data:/var/lib/postgresql/data
     env_file:
       - ./pomo/.env.docker
-
-  redis:
-    image: redis:alpine
-    container_name: pomo_redis
-    ports:
-      - "6379:6379"
 
   adminer:
     image: adminer:latest

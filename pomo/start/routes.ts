@@ -9,11 +9,17 @@
 
 import router from '@adonisjs/core/services/router'
 import { middleware } from '#start/kernel'
-
+import { healthChecks } from '#start/health'
 const UsersController = () => import('#controllers/users_controller')
 const TasksController = () => import('#controllers/tasks_controller')
 const HomeController = () => import('#controllers/home_controller')
 const ToDoListsController = () => import('#controllers/to_do_lists_controller')
+
+// Healthcheck Docker
+router.get('/health', async ({ response }) => {
+  const report = await healthChecks.run()
+  return report.isHealthy ? response.ok(report) : response.serviceUnavailable(report)
+})
 
 /*
 |--------------------------------------------------------------------------

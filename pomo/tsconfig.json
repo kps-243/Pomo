@@ -8,5 +8,13 @@
     }
   },
   "exclude": ["./inertia/**/*", "node_modules", "build"],
-  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue", "auto-imports.d.ts", "components.d.ts"]
+  "include": [
+    "adonisrc.ts",
+    "bin/**/*.ts",
+    "config/**/*.ts",
+    "app/**/*.ts",
+    "start/**/*.ts",
+    "database/**/*.ts",
+    "tests/**/*.ts"
+  ]
 }

@@ -11,15 +11,11 @@ export default class UsersController {
     return inertia.render('Auth/Register')
   }
 
-  async store({ request, response }: HttpContext) {
-    const data = request.all()
-    try {
-      const validatedData = await request.validateUsing(registerValidator, data)
-      await User.create(validatedData)
-      return response.redirect('/')
-    } catch (error) {
-      return response.status(400).json({ message: 'Registration failed', error: error.message })
-    }
+  async store({ request, response, auth }: HttpContext) {
+    const payload = await request.validateUsing(registerValidator)
+    const user = await User.create(payload)
+    await auth.use('web').login(user)
+    return response.redirect('/')
   }
 
   connection({ inertia }: HttpContext) {

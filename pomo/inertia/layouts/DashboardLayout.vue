@@ -2,16 +2,24 @@
 import { router } from '@inertiajs/vue3'
 import { usePage } from '@inertiajs/vue3'
 
-const user = usePage().props.user as { id: number; first_name: string; last_name: string; email: string } | null
+const user = usePage().props.user as {
+  id: number
+  first_name: string
+  last_name: string
+  email: string
+} | null
 
 const logout = () => {
   router.post('/logout')
 }
 
 const links = [
-  { label: 'Home', icon: 'i-heroicons-home', href: '/' },
-  { label: 'Tasks', icon: 'i-heroicons-check-circle', href: '/tasks' },
-  { label: 'Calendar', icon: 'i-heroicons-calendar', href: '/calendar' },
+  { label: 'Dashboard', icon: 'i-heroicons-home', href: '/' },
+  { label: 'To do lists', icon: 'i-heroicons-view-columns', href: '/todolists' },
+  // À rebrancher quand les pages existeront (phase front) :
+  // { label: 'Calendrier', icon: 'i-heroicons-calendar', href: '/calendar' },
+  // { label: 'Évènements', icon: 'i-heroicons-sparkles', href: '/events' },
+  // { label: 'Tchats', icon: 'i-heroicons-chat-bubble-left-right', href: '/chats' },
 ]
 
 const items = [

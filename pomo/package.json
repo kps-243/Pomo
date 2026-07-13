@@ -8,14 +8,15 @@
     "start": "node bin/server.js",
     "build": "node ace build",
     "dev": "node ace serve --hmr",
-    "test": "node ace test",
+    "test": "SESSION_DRIVER=memory node ace test",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
     "typecheck": "tsc --noEmit",
     "check": "npm run lint && npm run typecheck",
     "fix": "npm run lint:fix && npm run format",
-    "migrate": "node ace migration:fresh && node ace db:seed --files database/seeders/main_seeder.ts"
+    "migrate": "node ace migration:fresh && node ace db:seed --files database/seeders/main_seeder.ts",
+    "docker": "npm run migrate && node ace serve --hmr"
   },
   "imports": {
     "#controllers/*": "./app/controllers/*.js",

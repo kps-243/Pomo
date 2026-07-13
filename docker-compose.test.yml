@@ -2,7 +2,7 @@ services:
   app:
     build:
       context: ./pomo
-      target: dev
+      target: test
     container_name: pomo_app
     ports:
       - "3333:3333"
@@ -14,6 +14,7 @@ services:
       - postgres
     env_file:
       - ./pomo/.env.docker
+      - ./pomo/.env.test
 
   postgres:
     image: postgres:15

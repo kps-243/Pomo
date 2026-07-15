@@ -31,7 +31,7 @@ export default class TasksController {
 
     const task = await toDoList.related('tasks').create({
       ...payload,
-      start_date: payload.start_date ? DateTime.fromISO(payload.start_date) : null,
+      due_date: payload.due_date ? DateTime.fromISO(payload.due_date) : null,
       userId: user.id,
     })
     return response.status(201).json({ message: 'Task created successfully', task })
@@ -42,7 +42,7 @@ export default class TasksController {
     const payload = await request.validateUsing(createTaskValidator)
     await Task.create({
       ...payload,
-      start_date: payload.start_date ? DateTime.fromISO(payload.start_date) : null,
+      due_date: payload.due_date ? DateTime.fromISO(payload.due_date) : null,
       userId: user.id,
     })
     return response.redirect().back()
@@ -62,7 +62,7 @@ export default class TasksController {
 
     await toDoList.related('tasks').create({
       ...payload,
-      start_date: payload.start_date ? DateTime.fromISO(payload.start_date) : null,
+      due_date: payload.due_date ? DateTime.fromISO(payload.due_date) : null,
       userId: user.id,
     })
     return response.redirect().back()
@@ -70,7 +70,7 @@ export default class TasksController {
 
   async updateFromBoard({ params, request, auth, response }: HttpContext) {
     const user = auth.getUserOrFail()
-    const { start_date: startDate, ...payload } = await request.validateUsing(updateTaskValidator)
+    const { due_date: dueDate, ...payload } = await request.validateUsing(updateTaskValidator)
 
     const task = await Task.query().where('id', params.id).where('user_id', user.id).first()
     if (!task) {
@@ -78,8 +78,8 @@ export default class TasksController {
     }
 
     task.merge(payload)
-    if (startDate !== undefined) {
-      task.start_date = startDate ? DateTime.fromISO(startDate) : null
+    if (dueDate !== undefined) {
+      task.due_date = dueDate ? DateTime.fromISO(dueDate) : null
     }
     await task.save()
     return response.redirect().back()
@@ -106,7 +106,7 @@ export default class TasksController {
     const payload = await request.validateUsing(createTaskValidator)
     const task = await Task.create({
       ...payload,
-      start_date: payload.start_date ? DateTime.fromISO(payload.start_date) : null,
+      due_date: payload.due_date ? DateTime.fromISO(payload.due_date) : null,
       userId: user.id,
     })
     return response.status(201).json({ message: 'Task created successfully', task })
@@ -123,14 +123,14 @@ export default class TasksController {
 
   async update({ params, request, auth, response }: HttpContext) {
     const user = auth.getUserOrFail()
-    const { start_date: startDate, ...payload } = await request.validateUsing(updateTaskValidator)
+    const { due_date: dueDate, ...payload } = await request.validateUsing(updateTaskValidator)
     const task = await Task.query().where('id', params.id).where('user_id', user.id).first()
     if (!task) {
       return response.notFound({ message: 'Task not found' })
     }
     task.merge(payload)
-    if (startDate !== undefined) {
-      task.start_date = startDate ? DateTime.fromISO(startDate) : null
+    if (dueDate !== undefined) {
+      task.due_date = dueDate ? DateTime.fromISO(dueDate) : null
     }
     await task.save()
     return response.json({ message: 'Task updated successfully', task })

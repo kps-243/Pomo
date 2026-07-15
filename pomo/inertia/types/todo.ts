@@ -10,6 +10,7 @@ export interface TaskItem {
   title: string
   description: string | null
   status: TaskStatus
+  dueDate: string | null
   assignees: Assignee[]
 }
 

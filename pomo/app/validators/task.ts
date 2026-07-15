@@ -10,7 +10,7 @@ export const createTaskValidator = vine.compile(
     title: vine.string().trim().minLength(1),
     description: vine.string().trim().nullable().optional(),
     status: vine.enum(STATUSES).optional(),
-    start_date: vine.string().nullable().optional(),
+    due_date: vine.string().nullable().optional(),
     duration: vine.number().positive().nullable().optional(),
   })
 )
@@ -23,7 +23,7 @@ export const updateTaskValidator = vine.compile(
     title: vine.string().trim().minLength(1).optional(),
     description: vine.string().trim().nullable().optional(),
     status: vine.enum(STATUSES).optional(),
-    start_date: vine.string().nullable().optional(),
+    due_date: vine.string().nullable().optional(),
     duration: vine.number().positive().nullable().optional(),
   })
 )

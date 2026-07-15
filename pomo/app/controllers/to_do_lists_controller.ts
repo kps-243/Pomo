@@ -25,6 +25,7 @@ export default class ToDoListsController {
           title: task.title,
           description: task.description,
           status: task.status,
+          dueDate: task.due_date?.toISO() ?? null,
           assignees: task.user
             ? [{ firstName: task.user.first_name, lastName: task.user.last_name }]
             : [],

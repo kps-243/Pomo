@@ -12,16 +12,16 @@ const props = defineProps<{
     title: string
     description: string
     status: string
-    startDate: string
+    dueDate: string
     duration: number
   }[]
 }>()
 
 const tasksParsed = computed(() => {
   return props.tasks
-    .filter((t) => t.startDate && t.duration)
+    .filter((t) => t.dueDate && t.duration)
     .map((task) => {
-      const start = new Date(task.startDate)
+      const start = new Date(task.dueDate)
       return {
         start,
         end: new Date(start.getTime() + task.duration * 60000),
@@ -37,7 +37,7 @@ const isModalOpen = ref(false)
 
 const form = useForm({
   title: '',
-  start_date: '',
+  due_date: '',
   duration: 60,
   description: '',
 })
@@ -50,7 +50,7 @@ const toDatetimeLocal = (date: Date): string =>
 const onCellClick = (date: Date) => {
   form.reset()
   form.title = ''
-  form.start_date = toDatetimeLocal(date)
+  form.due_date = toDatetimeLocal(date)
   form.duration = 60
   form.description = ''
   isModalOpen.value = true
@@ -142,7 +142,7 @@ const submit = () => {
             <div>
               <label class="mb-1 block text-sm font-medium text-gray-700">Date et heure</label>
               <input
-                v-model="form.start_date"
+                v-model="form.due_date"
                 type="datetime-local"
                 class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-green-400 focus:outline-none focus:ring-2 focus:ring-green-100"
               />

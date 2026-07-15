@@ -22,7 +22,7 @@ test.group('Tasks CRUD', (group) => {
       status: 'todo',
       userId: user.id,
       duration: 25,
-      start_date: DateTime.now(),
+      due_date: DateTime.now(),
     })
   })
 
@@ -42,7 +42,7 @@ test.group('Tasks CRUD', (group) => {
       description: 'This is a test task',
       status: 'todo',
       duration: 25,
-      start_date: new Date().toISOString(),
+      due_date: new Date().toISOString(),
     })
 
     response.assertStatus(201)
@@ -60,7 +60,7 @@ test.group('Tasks CRUD', (group) => {
       description: 'This is an updated test task',
       status: 'done',
       duration: 30,
-      start_date: new Date().toISOString(),
+      due_date: new Date().toISOString(),
     })
 
     response.assertStatus(200)

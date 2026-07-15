@@ -19,8 +19,9 @@ describe('Échéance d’une tâche (due_date)', () => {
     // Ouvre la première tâche
     cy.get('[data-cy=task-card]').first().click()
 
-    // Ouvre le sélecteur d'échéance depuis le badge de date
-    cy.get('[data-cy=date-badge]').first().click()
+    // Ouvre le sélecteur d'échéance depuis le badge de date DU MODAL
+    // (il en existe un aussi sur la carte, derrière l'overlay -> non cliquable)
+    cy.get('[role=dialog]').find('[data-cy=date-badge]').click()
     cy.get('[data-cy=calendar-picker]').should('be.visible')
 
     // Choisit le 20 du mois affiché dans le calendrier
@@ -43,7 +44,7 @@ describe('Échéance d’une tâche (due_date)', () => {
 
   it('permet d’effacer une échéance existante', () => {
     cy.get('[data-cy=task-card]').first().click()
-    cy.get('[data-cy=date-badge]').first().click()
+    cy.get('[role=dialog]').find('[data-cy=date-badge]').click()
     cy.get('[data-cy=calendar-picker]').should('be.visible')
 
     // Le bouton "Effacer" n'est présent que si une échéance existe déjà

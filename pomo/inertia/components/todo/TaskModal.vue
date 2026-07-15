@@ -80,7 +80,7 @@ const close = () => {
             <p v-if="form.errors.title" class="mt-1 px-1 text-xs text-red-500">
               {{ form.errors.title }}
             </p>
-            <StatusBadge :status="task.status" class="ml-1 mt-1.5" />
+            <StatusBadge :status="task.status" :task-id="task.id" class="ml-1 mt-1.5" />
           </div>
 
           <div class="relative flex shrink-0 items-center gap-1">

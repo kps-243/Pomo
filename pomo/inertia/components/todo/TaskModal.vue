@@ -2,6 +2,8 @@
 import { ref, watch } from 'vue'
 import { router, useForm } from '@inertiajs/vue3'
 import StatusBadge from './StatusBadge.vue'
+import DateBadge from './DateBadge.vue'
+import CalendarPicker from './CalendarPicker.vue'
 import MemberAvatar from './MemberAvatar.vue'
 import type { TaskItem } from '~/types/todo'
 
@@ -37,9 +39,13 @@ const saveDescription = () => {
 const blurOnEnter = (event: KeyboardEvent) => (event.target as HTMLInputElement).blur()
 
 const confirmingDelete = ref(false)
+const isCalendarOpen = ref(false)
 
 watch(open, (isOpen) => {
-  if (!isOpen) confirmingDelete.value = false
+  if (!isOpen) {
+    confirmingDelete.value = false
+    isCalendarOpen.value = false
+  }
 })
 
 const deleteTask = () => {
@@ -80,7 +86,10 @@ const close = () => {
             <p v-if="form.errors.title" class="mt-1 px-1 text-xs text-red-500">
               {{ form.errors.title }}
             </p>
-            <StatusBadge :status="task.status" :task-id="task.id" class="ml-1 mt-1.5" />
+            <div class="ml-1 mt-1.5 flex flex-wrap items-center gap-2">
+              <StatusBadge :status="task.status" :task-id="task.id" />
+              <DateBadge :due-date="task.dueDate" @click="isCalendarOpen = !isCalendarOpen" />
+            </div>
           </div>
 
           <div class="relative flex shrink-0 items-center gap-1">
@@ -129,6 +138,21 @@ const close = () => {
         </header>
 
         <div class="space-y-6 overflow-y-auto px-4 py-4 sm:px-6">
+          <section v-if="isCalendarOpen">
+            <h3
+              class="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-gray-400"
+            >
+              <UIcon name="i-heroicons-calendar-days" class="h-4 w-4" />
+              Échéance
+            </h3>
+            <CalendarPicker
+              :task-id="task.id"
+              :due-date="task.dueDate"
+              @saved="isCalendarOpen = false"
+              @cancel="isCalendarOpen = false"
+            />
+          </section>
+
           <section>
             <h3
               class="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-gray-400"

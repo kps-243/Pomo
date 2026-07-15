@@ -14,9 +14,12 @@ EXPOSE 3333 24678
 CMD ["npm", "run", "docker"]
 
 # Test
-FROM deps AS test
+FROM cypress/base:latest AS test
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm install
 COPY . .
-CMD ["npm", "run", "test"]
+CMD ["npm", "run", "test:all"]
 
 # Build
 FROM deps AS build

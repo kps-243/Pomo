@@ -30,6 +30,7 @@ const cycleStatus = () => {
 <template>
   <button
     type="button"
+    data-cy="status-badge"
     class="inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-xs font-medium whitespace-nowrap transition hover:opacity-80 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-500"
     :class="current.classes"
     :aria-label="`Statut : ${current.label}. Cliquer pour changer.`"

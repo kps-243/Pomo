@@ -1,16 +1,34 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { router } from '@inertiajs/vue3'
+import { VueDraggable } from 'vue-draggable-plus'
 import TaskCard from './TaskCard.vue'
 import AddTaskCard from './AddTaskCard.vue'
-import type { ToDoListItem } from '~/types/todo'
+import type { TaskItem, ToDoListItem } from '~/types/todo'
 
 const props = defineProps<{
   list: ToDoListItem
 }>()
 
-const taskCount = computed(() => props.list.tasks?.length ?? 0)
+const taskCount = computed(() => tasks.value.length)
 const isEmpty = computed(() => taskCount.value === 0)
+
+const tasks = ref<TaskItem[]>([...(props.list.tasks ?? [])])
+
+watch(
+  () => props.list.tasks,
+  (nouvellesTasks) => {
+    tasks.value = [...(nouvellesTasks ?? [])]
+  }
+)
+
+const enregistrerOrdre = () => {
+  router.put(
+    `/todolists/${props.list.id}/tasks/reorder`,
+    { taskIds: tasks.value.map((task) => task.id) },
+    { preserveScroll: true, preserveState: true }
+  )
+}
 
 const confirmingDelete = ref(false)
 
@@ -77,8 +95,20 @@ const deleteList = () => {
       </div>
     </header>
 
-    <div class="flex-1 space-y-3 overflow-y-auto px-3 py-3">
-      <TaskCard v-for="task in list.tasks" :key="task.id" :task="task" :list-name="list.name" />
+    <div class="flex-1 overflow-y-auto px-3 py-3">
+      <VueDraggable
+        v-model="tasks"
+        class="space-y-3"
+        :animation="150"
+        :delay="150"
+        :delay-on-touch-only="true"
+        :force-fallback="true"
+        ghost-class="opacity-40"
+        drag-class="rotate-2"
+        @end="enregistrerOrdre"
+      >
+        <TaskCard v-for="task in tasks" :key="task.id" :task="task" :list-name="list.name" />
+      </VueDraggable>
       <p v-if="!taskCount" class="px-1 py-6 text-center text-xs text-dimmed">
         Aucune task pour le moment.
       </p>

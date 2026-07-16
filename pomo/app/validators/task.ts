@@ -16,6 +16,15 @@ export const createTaskValidator = vine.compile(
 )
 
 /**
+ * Valide le réordonnancement d'une todolist.
+ */
+export const reorderTasksValidator = vine.compile(
+  vine.object({
+    taskIds: vine.array(vine.number().positive()).minLength(1),
+  })
+)
+
+/**
  * Valide la mise à jour d'une task.
  */
 export const updateTaskValidator = vine.compile(

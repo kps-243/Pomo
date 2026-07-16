@@ -12,6 +12,7 @@ export default class extends BaseSeeder {
         due_date: DateTime.now().plus({ hours: 1 }),
         duration: 60,
         userId: 1,
+        position: 0,
         toDoListId: 1,
       },
       {
@@ -21,6 +22,7 @@ export default class extends BaseSeeder {
         due_date: DateTime.now().plus({ hours: 2 }),
         duration: 120,
         userId: 1,
+        position: 1,
         toDoListId: 1,
       },
       {
@@ -30,6 +32,7 @@ export default class extends BaseSeeder {
         due_date: DateTime.now().minus({ days: 1 }),
         duration: 90,
         userId: 2,
+        position: 2,
         toDoListId: 1,
       },
       {
@@ -39,6 +42,7 @@ export default class extends BaseSeeder {
         due_date: DateTime.now().plus({ hours: 1 }),
         duration: 60,
         userId: 1,
+        position: 3,
         toDoListId: 1,
       },
       {
@@ -48,6 +52,7 @@ export default class extends BaseSeeder {
         due_date: DateTime.now().plus({ hours: 3 }),
         duration: 30,
         userId: 1,
+        position: 4,
         toDoListId: 1,
       },
       {
@@ -57,6 +62,7 @@ export default class extends BaseSeeder {
         due_date: DateTime.now().minus({ hours: 5 }),
         duration: 120,
         userId: 1,
+        position: 5,
         toDoListId: 1,
       },
       {
@@ -66,6 +72,7 @@ export default class extends BaseSeeder {
         due_date: DateTime.now().plus({ days: 1 }),
         duration: 45,
         userId: 2,
+        position: 0,
         toDoListId: 2,
       },
       {
@@ -75,6 +82,7 @@ export default class extends BaseSeeder {
         due_date: DateTime.now().plus({ hours: 6 }),
         duration: 90,
         userId: 2,
+        position: 1,
         toDoListId: 2,
       },
       {
@@ -84,6 +92,7 @@ export default class extends BaseSeeder {
         due_date: DateTime.now().minus({ days: 1 }),
         duration: 120,
         userId: 3,
+        position: 2,
         toDoListId: 2,
       },
       {
@@ -93,6 +102,7 @@ export default class extends BaseSeeder {
         due_date: DateTime.now().plus({ days: 2 }),
         duration: 60,
         userId: 3,
+        position: 3,
         toDoListId: 2,
       },
       {
@@ -102,6 +112,7 @@ export default class extends BaseSeeder {
         due_date: DateTime.now().plus({ hours: 8 }),
         duration: 180,
         userId: 4,
+        position: 4,
         toDoListId: 2,
       },
       {
@@ -111,6 +122,7 @@ export default class extends BaseSeeder {
         due_date: DateTime.now().plus({ days: 3 }),
         duration: 60,
         userId: 4,
+        position: 5,
         toDoListId: 2,
       },
     ])

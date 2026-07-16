@@ -30,6 +30,7 @@ export default class extends BaseSeeder {
         due_date: jour.plus({ hours: 9, minutes: 30 }),
         duration: 15,
         userId: user.id,
+        position: 0,
         toDoListId: sprint.id,
       },
       {
@@ -39,6 +40,7 @@ export default class extends BaseSeeder {
         due_date: jour.plus({ hours: 10 }),
         duration: 90,
         userId: user.id,
+        position: 1,
         toDoListId: sprint.id,
       },
       {
@@ -48,6 +50,7 @@ export default class extends BaseSeeder {
         due_date: jour.plus({ hours: 14 }),
         duration: 45,
         userId: user.id,
+        position: 2,
         toDoListId: sprint.id,
       },
       {
@@ -57,6 +60,7 @@ export default class extends BaseSeeder {
         due_date: jour.plus({ days: 1, hours: 11 }),
         duration: 60,
         userId: user.id,
+        position: 3,
         toDoListId: sprint.id,
       },
       {
@@ -66,6 +70,7 @@ export default class extends BaseSeeder {
         due_date: jour.minus({ days: 1 }).plus({ hours: 14 }),
         duration: 90,
         userId: user.id,
+        position: 0,
         toDoListId: revisions.id,
       },
       {
@@ -75,6 +80,7 @@ export default class extends BaseSeeder {
         due_date: jour.plus({ days: 1, hours: 16 }),
         duration: 120,
         userId: user.id,
+        position: 1,
         toDoListId: revisions.id,
       },
       {
@@ -84,6 +90,7 @@ export default class extends BaseSeeder {
         due_date: jour.plus({ days: 2, hours: 10 }),
         duration: 120,
         userId: user.id,
+        position: 2,
         toDoListId: revisions.id,
       },
       {
@@ -93,6 +100,7 @@ export default class extends BaseSeeder {
         due_date: jour.minus({ days: 1 }).plus({ hours: 18, minutes: 30 }),
         duration: 60,
         userId: user.id,
+        position: 0,
         toDoListId: perso.id,
       },
       {
@@ -102,6 +110,7 @@ export default class extends BaseSeeder {
         due_date: jour.plus({ hours: 18 }),
         duration: 45,
         userId: user.id,
+        position: 1,
         toDoListId: perso.id,
       },
       {
@@ -111,6 +120,7 @@ export default class extends BaseSeeder {
         due_date: jour.plus({ days: 2, hours: 9 }),
         duration: 15,
         userId: user.id,
+        position: 2,
         toDoListId: perso.id,
       },
     ])

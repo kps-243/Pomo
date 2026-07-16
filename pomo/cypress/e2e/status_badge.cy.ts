@@ -9,7 +9,7 @@ const USER = { email: 'morgan@test.com', password: 'password' }
 const NEXT_LABEL: Record<string, string> = {
   'À faire': 'En cours',
   'En cours': 'Terminé',
-  Terminé: 'À faire',
+  'Terminé': 'À faire',
 }
 
 describe('Cycle de statut (StatusBadge)', () => {

@@ -43,7 +43,10 @@ test.group('Task due_date (API)', (group) => {
 
   test('définit la due_date d’une task', async ({ client, assert }) => {
     const instant = '2026-07-15T10:30:00.000Z'
-    const response = await client.put(`/api/tasks/${task.id}`).loginAs(owner).json({ due_date: instant })
+    const response = await client
+      .put(`/api/tasks/${task.id}`)
+      .loginAs(owner)
+      .json({ due_date: instant })
 
     response.assertStatus(200)
     const updated = await Task.findOrFail(task.id)
@@ -67,7 +70,10 @@ test.group('Task due_date (API)', (group) => {
     task.due_date = DateTime.fromISO('2026-07-15T10:30:00.000Z')
     await task.save()
 
-    const response = await client.put(`/api/tasks/${task.id}`).loginAs(owner).json({ due_date: null })
+    const response = await client
+      .put(`/api/tasks/${task.id}`)
+      .loginAs(owner)
+      .json({ due_date: null })
 
     response.assertStatus(200)
     const updated = await Task.findOrFail(task.id)

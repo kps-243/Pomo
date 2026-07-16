@@ -8,6 +8,7 @@ import type { TaskItem } from '~/types/todo'
 
 const props = defineProps<{
   task: TaskItem
+  listName: string
 }>()
 
 const isModalOpen = ref(false)
@@ -47,6 +48,6 @@ const assignees = computed(() => props.task.assignees ?? [])
       </div>
     </div>
 
-    <TaskModal v-model:open="isModalOpen" :task="task" />
+    <TaskModal v-model:open="isModalOpen" :task="task" :list-name="listName" />
   </div>
 </template>

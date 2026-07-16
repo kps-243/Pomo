@@ -78,7 +78,12 @@ const deleteList = () => {
     </header>
 
     <div class="flex-1 space-y-3 overflow-y-auto px-3 py-3">
-      <TaskCard v-for="task in list.tasks" :key="task.id" :task="task" />
+      <TaskCard
+        v-for="task in list.tasks"
+        :key="task.id"
+        :task="task"
+        :list-name="list.name"
+      />
       <p v-if="!taskCount" class="px-1 py-6 text-center text-xs text-gray-400">
         Aucune task pour le moment.
       </p>

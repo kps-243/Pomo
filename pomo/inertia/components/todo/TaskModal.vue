@@ -3,12 +3,14 @@ import { ref, watch } from 'vue'
 import { router, useForm } from '@inertiajs/vue3'
 import StatusBadge from './StatusBadge.vue'
 import DateBadge from './DateBadge.vue'
+import ListBadge from './ListBadge.vue'
 import CalendarPicker from './CalendarPicker.vue'
 import MemberAvatar from './MemberAvatar.vue'
 import type { TaskItem } from '~/types/todo'
 
 const props = defineProps<{
   task: TaskItem
+  listName: string
 }>()
 
 const open = defineModel<boolean>('open', { default: false })
@@ -89,6 +91,7 @@ const close = () => {
             <div class="ml-1 mt-1.5 flex flex-wrap items-center gap-2">
               <StatusBadge :status="task.status" :task-id="task.id" />
               <DateBadge :due-date="task.dueDate" @click="isCalendarOpen = !isCalendarOpen" />
+              <ListBadge :name="listName" />
             </div>
           </div>
 

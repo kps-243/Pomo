@@ -123,7 +123,10 @@ jobs:
         uses: cypress-io/github-action@v6
         with:
           working-directory: pomo
-          build: node ace migration:fresh --force && node ace db:seed --files database/seeders/main_seeder.ts
+          # `build` n'est pas exécuté dans un shell : un `&&` y serait passé comme simple
+          # argument et tout finirait dans une seule invocation `node ace`. On passe donc
+          # par le script npm, dont le `&&` est interprété par npm.
+          build: npm run migrate
           start: node ace serve
           wait-on: 'http://127.0.0.1:3333/login'
           wait-on-timeout: 120

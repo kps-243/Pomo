@@ -46,7 +46,7 @@ test.group('Tasks dans une ToDoList', (group) => {
       title: 'Ma task',
       status: 'todo',
       duration: 25,
-      start_date: new Date().toISOString(),
+      due_date: new Date().toISOString(),
     })
 
     response.assertStatus(201)

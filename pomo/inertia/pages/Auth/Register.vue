@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { router } from '@inertiajs/vue3'
 
 const form = ref({
@@ -12,6 +12,16 @@ const form = ref({
 
 const errors = ref<any>({})
 
+const errorList = computed(() => Object.values(errors.value ?? {}))
+
+const fields = [
+  { id: 'username', label: 'Username (optional)', type: 'text', autocomplete: 'username' },
+  { id: 'first_name', label: 'First name', type: 'text', autocomplete: 'given-name' },
+  { id: 'last_name', label: 'Last name', type: 'text', autocomplete: 'family-name' },
+  { id: 'email', label: 'Email', type: 'email', autocomplete: 'email' },
+  { id: 'password', label: 'Password', type: 'password', autocomplete: 'new-password' },
+] as const
+
 const submit = async () => {
   errors.value = {}
   try {
@@ -23,45 +33,28 @@ const submit = async () => {
 </script>
 
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-gray-50">
-    <div class="w-full max-w-md bg-white shadow-lg rounded-2xl p-8 border border-gray-200">
+  <div class="flex min-h-screen items-center justify-center bg-muted px-4 text-default">
+    <div class="w-full max-w-md rounded-2xl border border-default bg-default p-8 shadow-lg">
       <!-- Title -->
-      <h1 class="text-2xl font-bold text-center text-green-600 mb-6">Create account</h1>
+      <h1 class="mb-6 text-center text-2xl font-bold text-primary">Create account</h1>
 
       <!-- Form -->
-      <form @submit.prevent="submit" class="space-y-4">
-        <!-- Username -->
-        <div>
+      <form class="space-y-4" @submit.prevent="submit">
+        <div v-for="field in fields" :key="field.id">
+          <label :for="field.id" class="mb-1 block text-sm font-medium text-toned">
+            {{ field.label }}
+          </label>
           <input
-            v-model="form.username"
-            type="text"
-            placeholder="Username (optional)"
+            :id="field.id"
+            v-model="form[field.id]"
+            :type="field.type"
+            :autocomplete="field.autocomplete"
             class="input"
           />
         </div>
 
-        <!-- First name -->
-        <div>
-          <input v-model="form.first_name" type="text" placeholder="First name" class="input" />
-        </div>
-
-        <!-- Last name -->
-        <div>
-          <input v-model="form.last_name" type="text" placeholder="Last name" class="input" />
-        </div>
-
-        <!-- Email -->
-        <div>
-          <input v-model="form.email" type="email" placeholder="Email" class="input" />
-        </div>
-
-        <!-- Password -->
-        <div>
-          <input v-model="form.password" type="password" placeholder="Password" class="input" />
-        </div>
-
         <!-- Errors -->
-        <div v-if="errors" class="text-red-500 text-sm">
+        <div v-if="errorList.length" role="alert" class="space-y-1 text-sm text-error">
           <div v-for="(err, key) in errors" :key="key">
             {{ err }}
           </div>
@@ -70,7 +63,7 @@ const submit = async () => {
         <!-- Button -->
         <button
           type="submit"
-          class="w-full bg-green-500 hover:bg-green-600 text-white font-medium py-2 rounded-lg transition"
+          class="w-full rounded-lg bg-primary py-2 font-medium text-inverted transition hover:bg-primary/90 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
         >
           Register
         </button>

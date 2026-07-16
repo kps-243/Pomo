@@ -15,7 +15,7 @@ export default class HomeController {
         title: task.title,
         description: task.description ?? '',
         status: task.status,
-        startDate: task.start_date?.toISO() ?? null,
+        dueDate: task.due_date?.toISO() ?? null,
         duration: task.duration ?? 0,
       })),
     })

@@ -2,9 +2,23 @@ import type { HttpContext } from '@adonisjs/core/http'
 import { DateTime } from 'luxon'
 import Task from '#models/task'
 import ToDoList from '#models/to_do_list'
-import { createTaskValidator, updateTaskValidator } from '#validators/task'
+import { createTaskValidator, reorderTasksValidator, updateTaskValidator } from '#validators/task'
+import db from '@adonisjs/lucid/services/db'
 
 export default class TasksController {
+  /**
+   * Place une nouvelle task en fin de liste. Sans ça elle prendrait la position 0
+   * (valeur par défaut de la colonne) et s'afficherait en tête.
+   */
+  private async nextPosition(toDoListId: number) {
+    const result = await db
+      .from('tasks')
+      .where('to_do_list_id', toDoListId)
+      .max('position as max')
+      .first()
+    return result?.max === null || result?.max === undefined ? 0 : Number(result.max) + 1
+  }
+
   async indexForToDoList({ params, auth, response }: HttpContext) {
     const user = auth.getUserOrFail()
     const toDoList = await ToDoList.query()
@@ -31,7 +45,8 @@ export default class TasksController {
 
     const task = await toDoList.related('tasks').create({
       ...payload,
-      start_date: payload.start_date ? DateTime.fromISO(payload.start_date) : null,
+      due_date: payload.due_date ? DateTime.fromISO(payload.due_date) : null,
+      position: await this.nextPosition(toDoList.id),
       userId: user.id,
     })
     return response.status(201).json({ message: 'Task created successfully', task })
@@ -42,7 +57,7 @@ export default class TasksController {
     const payload = await request.validateUsing(createTaskValidator)
     await Task.create({
       ...payload,
-      start_date: payload.start_date ? DateTime.fromISO(payload.start_date) : null,
+      due_date: payload.due_date ? DateTime.fromISO(payload.due_date) : null,
       userId: user.id,
     })
     return response.redirect().back()
@@ -62,15 +77,53 @@ export default class TasksController {
 
     await toDoList.related('tasks').create({
       ...payload,
-      start_date: payload.start_date ? DateTime.fromISO(payload.start_date) : null,
+      due_date: payload.due_date ? DateTime.fromISO(payload.due_date) : null,
+      position: await this.nextPosition(toDoList.id),
       userId: user.id,
     })
     return response.redirect().back()
   }
 
+  async reorderFromBoard({ params, request, auth, response }: HttpContext) {
+    const user = auth.getUserOrFail()
+    const { taskIds } = await request.validateUsing(reorderTasksValidator)
+
+    const toDoList = await ToDoList.query()
+      .where('id', params.todoListId)
+      .where('user_id', user.id)
+      .first()
+    if (!toDoList) {
+      return response.notFound({ message: 'ToDoList not found' })
+    }
+
+    const tasksDeLaListe = await toDoList.related('tasks').query().select('id')
+    const idsAttendus = tasksDeLaListe.map((task) => task.id)
+
+    const idsRecus = new Set(taskIds)
+    const memesIds =
+      idsRecus.size === taskIds.length &&
+      taskIds.length === idsAttendus.length &&
+      idsAttendus.every((id) => idsRecus.has(id))
+    if (!memesIds) {
+      return response.unprocessableEntity({
+        message: 'taskIds must contain exactly the tasks of this todolist',
+      })
+    }
+
+    await db.transaction(async (trx) => {
+      await Promise.all(
+        taskIds.map((id, index) =>
+          trx.from('tasks').where('id', id).where('user_id', user.id).update({ position: index })
+        )
+      )
+    })
+
+    return response.redirect().back()
+  }
+
   async updateFromBoard({ params, request, auth, response }: HttpContext) {
     const user = auth.getUserOrFail()
-    const { start_date: startDate, ...payload } = await request.validateUsing(updateTaskValidator)
+    const { due_date: dueDate, ...payload } = await request.validateUsing(updateTaskValidator)
 
     const task = await Task.query().where('id', params.id).where('user_id', user.id).first()
     if (!task) {
@@ -78,8 +131,8 @@ export default class TasksController {
     }
 
     task.merge(payload)
-    if (startDate !== undefined) {
-      task.start_date = startDate ? DateTime.fromISO(startDate) : null
+    if (dueDate !== undefined) {
+      task.due_date = dueDate ? DateTime.fromISO(dueDate) : null
     }
     await task.save()
     return response.redirect().back()
@@ -106,7 +159,7 @@ export default class TasksController {
     const payload = await request.validateUsing(createTaskValidator)
     const task = await Task.create({
       ...payload,
-      start_date: payload.start_date ? DateTime.fromISO(payload.start_date) : null,
+      due_date: payload.due_date ? DateTime.fromISO(payload.due_date) : null,
       userId: user.id,
     })
     return response.status(201).json({ message: 'Task created successfully', task })
@@ -123,14 +176,14 @@ export default class TasksController {
 
   async update({ params, request, auth, response }: HttpContext) {
     const user = auth.getUserOrFail()
-    const { start_date: startDate, ...payload } = await request.validateUsing(updateTaskValidator)
+    const { due_date: dueDate, ...payload } = await request.validateUsing(updateTaskValidator)
     const task = await Task.query().where('id', params.id).where('user_id', user.id).first()
     if (!task) {
       return response.notFound({ message: 'Task not found' })
     }
     task.merge(payload)
-    if (startDate !== undefined) {
-      task.start_date = startDate ? DateTime.fromISO(startDate) : null
+    if (dueDate !== undefined) {
+      task.due_date = dueDate ? DateTime.fromISO(dueDate) : null
     }
     await task.save()
     return response.json({ message: 'Task updated successfully', task })

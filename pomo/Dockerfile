@@ -13,11 +13,6 @@ COPY . .
 EXPOSE 3333 24678
 CMD ["npm", "run", "docker"]
 
-# Test
-FROM deps AS test
-COPY . .
-CMD ["npm", "run", "test"]
-
 # Build
 FROM deps AS build
 COPY . .

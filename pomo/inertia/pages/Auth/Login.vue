@@ -22,43 +22,65 @@ const submit = async () => {
 </script>
 
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-gray-50">
-    <div class="w-full max-w-md bg-white shadow-lg rounded-2xl p-8 border border-gray-200">
+  <div class="flex min-h-screen items-center justify-center bg-muted px-4 text-default">
+    <div class="w-full max-w-md rounded-2xl border border-default bg-default p-8 shadow-lg">
       <!-- Title -->
-      <h1 class="text-2xl font-bold text-center text-green-600 mb-6">Log in to your account</h1>
+      <h1 class="mb-6 text-center text-2xl font-bold text-primary">Log in to your account</h1>
 
       <!-- General error -->
-      <div v-if="errors.general" class="text-red-500 text-sm mb-2">
+      <div v-if="errors.general" role="alert" class="mb-2 text-sm text-error">
         {{ errors.general }}
       </div>
 
       <!-- Form -->
-      <form @submit.prevent="submit" class="space-y-4">
+      <form class="space-y-4" @submit.prevent="submit">
         <!-- Email -->
         <div>
-          <input v-model="form.email" type="email" placeholder="Email" class="input" />
-          <p v-if="errors.email" class="text-red-500 text-sm mt-1">{{ errors.email }}</p>
+          <label for="email" class="mb-1 block text-sm font-medium text-toned">Email</label>
+          <input
+            id="email"
+            v-model="form.email"
+            type="email"
+            autocomplete="email"
+            class="input"
+            :aria-invalid="Boolean(errors.email)"
+            :aria-describedby="errors.email ? 'email-error' : undefined"
+          />
+          <p v-if="errors.email" id="email-error" class="mt-1 text-sm text-error">
+            {{ errors.email }}
+          </p>
         </div>
 
         <!-- Password -->
         <div>
-          <input v-model="form.password" type="password" placeholder="Password" class="input" />
-          <p v-if="errors.password" class="text-red-500 text-sm mt-1">{{ errors.password }}</p>
+          <label for="password" class="mb-1 block text-sm font-medium text-toned">Password</label>
+          <input
+            id="password"
+            v-model="form.password"
+            type="password"
+            autocomplete="current-password"
+            class="input"
+            :aria-invalid="Boolean(errors.password)"
+            :aria-describedby="errors.password ? 'password-error' : undefined"
+          />
+          <p v-if="errors.password" id="password-error" class="mt-1 text-sm text-error">
+            {{ errors.password }}
+          </p>
         </div>
 
         <!-- Submit -->
         <button
           type="submit"
-          class="w-full bg-green-500 hover:bg-green-600 text-white font-medium py-2 rounded-lg transition"
+          class="w-full rounded-lg bg-primary py-2 font-medium text-inverted transition hover:bg-primary/90 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
         >
           Log in
         </button>
       </form>
 
       <!-- Optional -->
-      <p class="text-center text-gray-500 text-sm mt-4">
+      <p class="mt-4 text-center text-sm text-muted">
         Don't have an account?
-        <a href="/register" class="text-green-500 hover:underline">Sign up</a>
+        <a href="/register" class="text-primary underline-offset-2 hover:underline">Sign up</a>
       </p>
     </div>
   </div>

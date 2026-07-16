@@ -22,7 +22,7 @@ const sizeClasses = computed(() =>
 <template>
   <span
     :title="`${member.firstName} ${member.lastName}`"
-    class="flex shrink-0 items-center justify-center rounded-full bg-green-500 font-semibold text-white ring-2 ring-white"
+    class="flex shrink-0 items-center justify-center rounded-full bg-primary font-semibold text-inverted ring-2 ring-bg"
     :class="sizeClasses"
   >
     {{ initials }}

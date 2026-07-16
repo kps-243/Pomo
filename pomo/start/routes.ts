@@ -41,6 +41,7 @@ router
     router.post('/todolists', [ToDoListsController, 'storeFromBoard'])
     router.delete('/todolists/:id', [ToDoListsController, 'destroyFromBoard'])
     router.post('/todolists/:todoListId/tasks', [TasksController, 'storeFromBoard'])
+    router.put('/todolists/:todoListId/tasks/reorder', [TasksController, 'reorderFromBoard'])
     router.put('/tasks/:id', [TasksController, 'updateFromBoard'])
     router.delete('/tasks/:id', [TasksController, 'destroyFromBoard'])
   })

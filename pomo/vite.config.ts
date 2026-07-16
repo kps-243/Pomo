@@ -10,7 +10,20 @@ export default defineConfig({
   plugins: [
     inertia({ ssr: { enabled: false } }),
     vue(),
-    ui({ router: 'inertia' }),
+    ui({
+      router: 'inertia',
+      ui: {
+        colors: {
+          primary: 'green',
+          secondary: 'blue',
+          success: 'green',
+          info: 'blue',
+          warning: 'amber',
+          error: 'red',
+          neutral: 'slate',
+        },
+      },
+    }),
     adonisjs({ entrypoints: ['inertia/app/app.ts'], reload: ['resources/views/**/*.edge'] }),
     tailwindcss(),
   ],

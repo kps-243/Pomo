@@ -1,9 +1,20 @@
 <script setup lang="ts">
+import { ref, watch } from 'vue'
 import { router } from '@inertiajs/vue3'
 import { usePage } from '@inertiajs/vue3'
 import { useTheme } from '~/composables/use_theme'
 
 const { isDark, toggleTheme } = useTheme()
+
+const page = usePage()
+const menuOpen = ref(false)
+
+watch(
+  () => page.url,
+  () => {
+    menuOpen.value = false
+  }
+)
 
 const user = usePage().props.user as {
   id: number
@@ -17,7 +28,7 @@ const logout = () => {
 }
 
 const links = [
-  { label: 'Dashboard', icon: 'i-heroicons-home', href: '/' },
+  { label: 'Dashboard', icon: 'i-heroicons-home', href: '/', exact: true },
   { label: 'To do lists', icon: 'i-heroicons-view-columns', href: '/todolists' },
   // À rebrancher quand les pages existeront (phase front) :
   // { label: 'Calendrier', icon: 'i-heroicons-calendar', href: '/calendar' },
@@ -49,8 +60,21 @@ const items = [
     </a>
 
     <!-- HEADER -->
-    <header class="flex h-16 items-center justify-between border-b border-default px-6">
-      <h1 class="text-lg font-semibold text-highlighted">Pomo</h1>
+    <header class="flex h-16 items-center justify-between border-b border-default px-4 lg:px-6">
+      <div class="flex items-center gap-2">
+        <!-- Burger : la navigation passe en slideover sous lg -->
+        <UButton
+          icon="i-heroicons-bars-3"
+          aria-label="Ouvrir le menu"
+          aria-controls="navigation-mobile"
+          :aria-expanded="menuOpen"
+          variant="ghost"
+          color="neutral"
+          class="lg:hidden"
+          @click="menuOpen = true"
+        />
+        <h1 class="text-lg font-semibold text-highlighted">Pomo</h1>
+      </div>
 
       <div class="flex items-center gap-2">
         <UButton
@@ -71,7 +95,9 @@ const items = [
             type="button"
             class="flex cursor-pointer items-center gap-2 rounded-md px-1 py-0.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
           >
-            <span class="text-sm font-medium text-highlighted">{{ user.first_name }}</span>
+            <span class="hidden text-sm font-medium text-highlighted sm:inline">
+              {{ user.first_name }}
+            </span>
             <UIcon name="i-heroicons-user-circle" class="h-7 w-7 text-muted" />
           </button>
         </UDropdownMenu>
@@ -88,11 +114,26 @@ const items = [
       </div>
     </header>
 
+    <!-- Navigation mobile -->
+    <USlideover
+      v-model:open="menuOpen"
+      side="left"
+      title="Navigation"
+      :ui="{ content: 'w-64 max-w-[80vw]' }"
+    >
+      <template #body>
+        <nav id="navigation-mobile">
+          <UNavigationMenu orientation="vertical" :items="links" />
+        </nav>
+      </template>
+    </USlideover>
+
     <div class="flex flex-1 overflow-hidden">
-      <aside class="w-64 border-r border-default p-4">
+      <!-- Navigation desktop -->
+      <aside class="hidden w-64 shrink-0 border-r border-default p-4 lg:block">
         <UNavigationMenu orientation="vertical" :items="links" />
       </aside>
-      <main id="contenu" class="flex-1 overflow-y-auto p-6">
+      <main id="contenu" class="flex-1 overflow-y-auto p-4 lg:p-6">
         <slot />
       </main>
     </div>

@@ -67,24 +67,25 @@ const clear = () => submit(null)
 
 const calendarUi = {
   cellTrigger: [
-    'data-[selected]:bg-green-700 data-[selected]:text-white',
-    'data-today:not-data-[selected]:text-green-700',
-    'hover:not-data-[selected]:bg-green-100',
-    'data-[highlighted]:bg-green-100',
-    'focus-visible:ring-green-600',
+    'data-[selected]:bg-primary data-[selected]:text-inverted',
+    'data-today:not-data-[selected]:text-primary',
+    'hover:not-data-[selected]:bg-primary/10',
+    'data-[highlighted]:bg-primary/10',
+    'focus-visible:ring-primary',
   ].join(' '),
 }
 </script>
 
 <template>
-  <div data-cy="calendar-picker" class="rounded-xl border border-green-200 bg-green-50/40 p-3">
+  <div data-cy="calendar-picker" class="rounded-xl border border-default bg-muted p-3">
     <div class="flex justify-center">
       <UCalendar v-model="calendarValue" color="neutral" :ui="calendarUi" class="w-full max-w-76" />
     </div>
 
     <div class="mt-3">
-      <label class="mb-1 block text-sm font-medium text-gray-700">Heure</label>
+      <label for="due-time" class="mb-1 block text-sm font-medium text-toned">Heure</label>
       <USelect
+        id="due-time"
         v-model="time"
         :items="timeOptions"
         icon="i-heroicons-clock"
@@ -93,7 +94,9 @@ const calendarUi = {
       />
     </div>
 
-    <p class="mt-3 flex items-center gap-2 rounded-lg bg-green-100 px-3 py-2 text-sm text-green-800">
+    <p
+      class="mt-3 flex items-center gap-2 rounded-lg bg-primary/10 px-3 py-2 text-sm text-primary-800 dark:text-primary-300"
+    >
       <UIcon name="i-heroicons-calendar-days" class="h-4 w-4 shrink-0" />
       <span class="first-letter:uppercase">{{ summary }}</span>
     </p>
@@ -121,9 +124,8 @@ const calendarUi = {
         </UButton>
         <UButton
           type="button"
-          color="neutral"
+          color="primary"
           variant="solid"
-          class="bg-green-700 text-white hover:bg-green-800 focus-visible:ring-2 focus-visible:ring-green-600"
           :loading="processing"
           data-cy="save-due-date"
           @click="save"

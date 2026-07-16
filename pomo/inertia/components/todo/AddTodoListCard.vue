@@ -38,7 +38,7 @@ const submit = () => {
   <button
     v-if="!isComposing"
     type="button"
-    class="flex items-center gap-2 rounded-xl bg-green-500 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-green-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-2"
+    class="flex items-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm font-medium text-inverted shadow-sm transition hover:bg-primary/90 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
     @click="open"
   >
     <UIcon name="i-heroicons-plus" class="h-4 w-4" />
@@ -48,22 +48,22 @@ const submit = () => {
   <!-- État ouvert : mini-formulaire -->
   <div
     v-else
-    class="w-full max-w-xs rounded-xl border border-green-300 bg-white p-3 shadow-md sm:w-72"
+    class="w-full max-w-xs rounded-xl border border-primary bg-default p-3 shadow-md sm:w-72"
   >
     <input
       ref="inputRef"
       v-model="form.name"
       type="text"
       placeholder="Nom de la liste..."
-      class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-800 placeholder:text-gray-400 focus:border-green-400 focus:outline-none focus:ring-2 focus:ring-green-100"
+      class="w-full rounded-lg border border-accented bg-default px-3 py-2 text-sm text-highlighted placeholder:text-dimmed focus:border-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
       @keydown.enter.prevent="submit"
       @keydown.esc="close"
     />
-    <p v-if="form.errors.name" class="mt-1 px-1 text-xs text-red-500">{{ form.errors.name }}</p>
+    <p v-if="form.errors.name" class="mt-1 px-1 text-xs text-error">{{ form.errors.name }}</p>
     <div class="mt-2 flex items-center gap-2">
       <button
         type="button"
-        class="rounded-lg bg-green-500 px-3 py-1.5 text-sm font-medium text-white transition hover:bg-green-600 disabled:opacity-60"
+        class="rounded-lg bg-primary px-3 py-1.5 text-sm font-medium text-inverted transition hover:bg-primary/90 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:opacity-60"
         :disabled="form.processing"
         @click="submit"
       >
@@ -71,7 +71,7 @@ const submit = () => {
       </button>
       <button
         type="button"
-        class="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 transition hover:bg-gray-100 hover:text-gray-600"
+        class="flex h-8 w-8 items-center justify-center rounded-lg text-dimmed transition hover:bg-elevated hover:text-toned"
         aria-label="Annuler"
         @click="close"
       >

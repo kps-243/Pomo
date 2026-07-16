@@ -14,7 +14,7 @@ defineProps<{
     <div class="flex h-full flex-col gap-4">
       <!-- Titre (gauche) + ajout d'une todolist (droite), façon Trello -->
       <div class="flex flex-wrap items-start justify-between gap-3">
-        <h1 class="text-xl font-bold text-green-600 sm:text-2xl">Mes ToDoLists</h1>
+        <h1 class="text-xl font-bold text-primary sm:text-2xl">Mes ToDoLists</h1>
         <AddTodoListCard />
       </div>
 
@@ -26,9 +26,7 @@ defineProps<{
           class="w-[85vw] max-w-xs shrink-0 snap-start sm:w-72 md:w-80"
         />
 
-        <p v-if="!toDoLists.length" class="text-sm text-gray-400">
-          Aucune todolist pour le moment.
-        </p>
+        <p v-if="!toDoLists.length" class="text-sm text-muted">Aucune todolist pour le moment.</p>
       </div>
     </div>
   </DashboardLayout>

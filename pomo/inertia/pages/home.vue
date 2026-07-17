@@ -149,9 +149,7 @@ const submit = () => {
             </div>
 
             <div>
-              <label class="mb-1 block text-sm font-medium text-gray-700">
-                Durée (minutes)
-              </label>
+              <label class="mb-1 block text-sm font-medium text-gray-700"> Durée (minutes) </label>
               <input
                 v-model.number="form.duration"
                 type="number"
@@ -162,9 +160,7 @@ const submit = () => {
             </div>
 
             <div>
-              <label class="mb-1 block text-sm font-medium text-gray-700">
-                Description
-              </label>
+              <label class="mb-1 block text-sm font-medium text-gray-700"> Description </label>
               <textarea
                 v-model="form.description"
                 rows="2"
@@ -174,12 +170,7 @@ const submit = () => {
             </div>
 
             <div class="flex justify-end gap-2 pt-1">
-              <UButton
-                type="button"
-                color="neutral"
-                variant="ghost"
-                @click="isModalOpen = false"
-              >
+              <UButton type="button" color="neutral" variant="ghost" @click="isModalOpen = false">
                 Annuler
               </UButton>
               <UButton

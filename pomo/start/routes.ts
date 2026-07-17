@@ -8,6 +8,7 @@
 */
 
 import router from '@adonisjs/core/services/router'
+import User from '#models/user'
 import { middleware } from '#start/kernel'
 import { healthChecks } from '#start/health'
 const UsersController = () => import('#controllers/users_controller')
@@ -19,6 +20,80 @@ const ToDoListsController = () => import('#controllers/to_do_lists_controller')
 router.get('/health', async ({ response }) => {
   const report = await healthChecks.run()
   return report.isHealthy ? response.ok(report) : response.serviceUnavailable(report)
+})
+
+/*
+|--------------------------------------------------------------------------
+| OAuth (Ally) — GitHub & Google
+|--------------------------------------------------------------------------
+*/
+
+// GitHub
+router.get('/github/redirect', ({ ally, session }) => {
+  session.put('redirect.previousUrl', '/login')
+  return ally.use('github').redirect()
+})
+
+router.get('/github/callback', async ({ ally, auth, response }) => {
+  const github = ally.use('github')
+
+  if (github.accessDenied()) {
+    return response.redirect('/login')
+  }
+  if (github.stateMisMatch() || github.hasError()) {
+    return response.redirect('/login')
+  }
+
+  const githubUser = await github.user()
+  const [firstName = '', lastName = ''] = (githubUser.name ?? '').split(' ')
+
+  const user = await User.firstOrCreate(
+    { email: githubUser.email },
+    {
+      username: githubUser.nickName,
+      email: githubUser.email,
+      password: crypto.randomUUID(),
+      first_name: firstName,
+      last_name: lastName,
+    }
+  )
+
+  await auth.use('web').login(user)
+  return response.redirect('/')
+})
+
+// Google
+router.get('/google/redirect', ({ ally, session }) => {
+  session.put('redirect.previousUrl', '/login')
+  return ally.use('google').redirect()
+})
+
+router.get('/google/callback', async ({ ally, auth, response }) => {
+  const google = ally.use('google')
+
+  if (google.accessDenied()) {
+    return response.redirect('/login')
+  }
+  if (google.stateMisMatch() || google.hasError()) {
+    return response.redirect('/login')
+  }
+
+  const googleUser = await google.user()
+  const [firstName = '', lastName = ''] = (googleUser.name ?? '').split(' ')
+
+  const user = await User.firstOrCreate(
+    { email: googleUser.email },
+    {
+      username: googleUser.nickName,
+      email: googleUser.email,
+      password: crypto.randomUUID(),
+      first_name: firstName,
+      last_name: lastName,
+    }
+  )
+
+  await auth.use('web').login(user)
+  return response.redirect('/')
 })
 
 /*

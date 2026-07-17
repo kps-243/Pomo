@@ -53,10 +53,7 @@ export default defineConfig({
     () => import('@adonisjs/lucid/database_provider'),
     () => import('@adonisjs/auth/auth_provider'),
     () => import('@adonisjs/inertia/inertia_provider'),
-<<<<<<< HEAD
-=======
     () => import('@adonisjs/ally/ally_provider'),
->>>>>>> 6d74b10 (fix(lint): Corrige les erreurs de formatage)
   ],
 
   /*

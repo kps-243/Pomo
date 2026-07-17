@@ -123,42 +123,6 @@ openssl rand -base64 24    # → DB_PASSWORD
 > premier démarrage. Le modifier ensuite dans `.env` ne le change pas dans la
 > base — il faudra le faire en SQL, ou détruire le volume (et les données avec).
 
-> **Ce fichier vit uniquement sur le VPS. La pipeline ne le touche jamais** — le
-> job `deploy` ne copie que `docker-compose.prod.yml`. Tes secrets survivent donc
-> à chaque `git push`. La contrepartie : **toute nouvelle variable ajoutée au code
-> (`start/env.ts`) doit être reportée ici à la main**, sinon le conteneur `app`
-> refuse de démarrer (échec de validation de l'environnement).
-
-### Variables OAuth (connexion GitHub / Google)
-
-`start/env.ts` exige `APP_URL` et les quatre secrets OAuth. Sans eux, le boot
-échoue. `APP_URL` doit être l'URL publique **en https** (le `DOMAIN`), car elle
-construit les callback :
-
-```
-APP_URL=https://pomo.willix.fr
-GITHUB_CLIENT_ID=...
-GITHUB_CLIENT_SECRET=...
-GOOGLE_CLIENT_ID=...
-GOOGLE_CLIENT_SECRET=...
-```
-
-Crée les identifiants dans chaque console, en enregistrant **exactement** ces
-callback (sinon le fournisseur rejette la requête) :
-
-| Fournisseur | Où | Authorization callback URL |
-|---|---|---|
-| GitHub | *Settings → Developer settings → OAuth Apps* | `https://pomo.willix.fr/github/callback` |
-| Google | *Cloud Console → Credentials → OAuth 2.0 Client ID* | `https://pomo.willix.fr/google/callback` |
-
-Les identifiants de dev (callback en `http://localhost:3333/...`) sont différents
-de ceux de prod : soit tu ajoutes les deux callback à la même app (Google et
-GitHub acceptent plusieurs URLs), soit tu crées une app dédiée à la prod.
-
-Côté Google, tant que l'écran de consentement est en mode *Testing*, seuls les
-comptes déclarés comme *test users* peuvent se connecter ; publie l'app pour
-ouvrir à tout le monde.
-
 ---
 
 ## 4. Les secrets GitHub

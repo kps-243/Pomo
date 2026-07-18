@@ -1,23 +1,16 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { router } from '@inertiajs/vue3'
+import { useForm } from '@inertiajs/vue3'
 
-const form = ref({
+const form = useForm({
   email: '',
   password: '',
 })
 
-const errors = ref<any>({})
-
-const submit = async () => {
-  errors.value = {}
-
-  try {
-    await router.post('/login', form.value)
-  } catch (err: any) {
-    // Adonis renvoie errors dans error.messages ou message
-    errors.value = err?.response?.data?.errors || { general: err?.response?.data?.message }
-  }
+const submit = () => {
+  form.post('/login', {
+    preserveScroll: true,
+    onSuccess: () => form.reset('password'),
+  })
 }
 </script>
 
@@ -27,29 +20,27 @@ const submit = async () => {
       <!-- Title -->
       <h1 class="text-2xl font-bold text-center text-green-600 mb-6">Log in to your account</h1>
 
-      <!-- General error -->
-      <div v-if="errors.general" class="text-red-500 text-sm mb-2">
-        {{ errors.general }}
-      </div>
-
       <!-- Form -->
       <form @submit.prevent="submit" class="space-y-4">
         <!-- Email -->
         <div>
           <input v-model="form.email" type="email" placeholder="Email" class="input" />
-          <p v-if="errors.email" class="text-red-500 text-sm mt-1">{{ errors.email }}</p>
+          <p v-if="form.errors.email" class="text-red-500 text-sm mt-1">{{ form.errors.email }}</p>
         </div>
 
         <!-- Password -->
         <div>
           <input v-model="form.password" type="password" placeholder="Password" class="input" />
-          <p v-if="errors.password" class="text-red-500 text-sm mt-1">{{ errors.password }}</p>
+          <p v-if="form.errors.password" class="text-red-500 text-sm mt-1">
+            {{ form.errors.password }}
+          </p>
         </div>
 
         <!-- Submit -->
         <button
           type="submit"
-          class="w-full bg-green-500 hover:bg-green-600 text-white font-medium py-2 rounded-lg transition"
+          :disabled="form.processing"
+          class="w-full bg-green-500 hover:bg-green-600 text-white font-medium py-2 rounded-lg transition disabled:opacity-50"
         >
           Log in
         </button>

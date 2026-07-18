@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { Head, router } from '@inertiajs/vue3'
+import { Head, useForm } from '@inertiajs/vue3'
 import SocialAuthButtons from '~/components/auth/SocialAuthButtons.vue'
 
-const form = ref({
+const form = useForm({
   email: '',
   password: '',
 })
@@ -11,18 +11,11 @@ const form = ref({
 const errors = ref<any>({})
 const loading = ref(false)
 
-const submit = async () => {
-  errors.value = {}
-  loading.value = true
-
-  try {
-    await router.post('/login', form.value)
-  } catch (err: any) {
-    // Adonis renvoie les erreurs dans error.messages ou message
-    errors.value = err?.response?.data?.errors || { general: err?.response?.data?.message }
-  } finally {
-    loading.value = false
-  }
+const submit = () => {
+  form.post('/login', {
+    preserveScroll: true,
+    onSuccess: () => form.reset('password'),
+  })
 }
 </script>
 
@@ -59,9 +52,6 @@ const submit = async () => {
             :aria-invalid="Boolean(errors.email)"
             :aria-describedby="errors.email ? 'email-error' : undefined"
           />
-          <p v-if="errors.email" id="email-error" class="mt-1 text-sm text-error">
-            {{ errors.email }}
-          </p>
         </div>
 
         <!-- Password -->
@@ -78,16 +68,16 @@ const submit = async () => {
             :aria-invalid="Boolean(errors.password)"
             :aria-describedby="errors.password ? 'password-error' : undefined"
           />
-          <p v-if="errors.password" id="password-error" class="mt-1 text-sm text-error">
-            {{ errors.password }}
+          <p v-if="form.errors.password || form.errors.email" class="text-red-500 text-sm mt-1">
+            Email ou mot de passe incorrect.
           </p>
         </div>
 
         <!-- Submit -->
         <button
           type="submit"
-          :disabled="loading"
-          class="w-full rounded-lg bg-primary py-2 font-medium text-inverted transition hover:bg-primary/90 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
+          :disabled="form.processing"
+          class="w-full bg-green-500 hover:bg-green-600 text-white font-medium py-2 rounded-lg transition disabled:opacity-50"
         >
           {{ loading ? 'Connexion…' : 'Se connecter' }}
         </button>

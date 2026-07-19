@@ -99,7 +99,9 @@ test.group('Login', (group) => {
       .post('/login')
       .json({ email: VALID_USER.email, password: 'mauvais_mdp' })
       .redirects(0)
-    response.assertStatus(400)
+    response.assertStatus(302)
+    response.assertHeader('location', '/')
+    response.assertFlashMessage('errorsBag', { email: 'Email ou mot de passe incorrect' })
   })
 
   test('échoue avec un email inconnu', async ({ client }) => {
@@ -107,7 +109,9 @@ test.group('Login', (group) => {
       .post('/login')
       .json({ email: 'inconnu@example.com', password: VALID_USER.password })
       .redirects(0)
-    response.assertStatus(400)
+    response.assertStatus(302)
+    response.assertHeader('location', '/')
+    response.assertFlashMessage('errorsBag', { email: 'Email ou mot de passe incorrect' })
   })
 
   test('échoue si le mot de passe fait moins de 8 caractères', async ({ client }) => {
@@ -115,7 +119,9 @@ test.group('Login', (group) => {
       .post('/login')
       .json({ email: VALID_USER.email, password: 'court' })
       .redirects(0)
-    response.assertStatus(400)
+    response.assertStatus(302)
+    response.assertHeader('location', '/')
+    response.assertValidationError('password', 'The password field must have at least 8 characters')
   })
 })
 

@@ -1,53 +1,114 @@
 @import 'tailwindcss';
 @import '@nuxt/ui';
 
-* {
-  margin: 0;
-  padding: 0;
+@theme {
+  --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;
 }
 
-html,
-body {
-  height: 100%;
-  width: 100%;
+html:not(.dark) {
+  --ui-primary: var(--ui-color-primary-700);
+  --ui-secondary: var(--ui-color-secondary-700);
+  --ui-success: var(--ui-color-success-700);
+  --ui-info: var(--ui-color-info-700);
+  --ui-warning: var(--ui-color-warning-700);
+  --ui-error: var(--ui-color-error-700);
+
+  --ui-text-dimmed: var(--ui-color-neutral-500);
+  --ui-text-muted: var(--ui-color-neutral-600);
+  --ui-text-toned: var(--ui-color-neutral-700);
+  --ui-text: var(--ui-color-neutral-800);
+  --ui-text-highlighted: var(--ui-color-neutral-900);
+
+  --ui-border-accented: var(--ui-color-neutral-500);
 }
 
-.input {
-  @apply w-full px-4 py-2 border border-gray-300 rounded-lg
-  focus:outline-none focus:ring-2 focus:ring-green-500
-  focus:border-transparent transition;
+html.dark {
+  --ui-primary: var(--ui-color-primary-400);
+  --ui-secondary: var(--ui-color-secondary-400);
+  --ui-success: var(--ui-color-success-400);
+  --ui-info: var(--ui-color-info-400);
+  --ui-warning: var(--ui-color-warning-400);
+  --ui-error: var(--ui-color-error-400);
+
+  --ui-text-dimmed: var(--ui-color-neutral-400);
+  --ui-text-muted: var(--ui-color-neutral-300);
+  --ui-text-toned: var(--ui-color-neutral-200);
+  --ui-text: var(--ui-color-neutral-100);
+  --ui-text-highlighted: #fff;
+
+  --ui-border-accented: var(--ui-color-neutral-500);
 }
 
-/* Calendar Styles */
+@layer base {
+  html,
+  body {
+    height: 100%;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--ui-primary);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer components {
+  .input {
+    @apply w-full rounded-lg border border-accented bg-default px-4 py-2 text-default
+    transition placeholder:text-dimmed focus:border-primary focus:outline-none
+    focus-visible:ring-2 focus-visible:ring-primary;
+  }
+}
 
 .vuecal {
-  --vuecal-primary-color: #22c55e;
+  --vuecal-primary-color: var(--ui-primary);
   height: 256px;
+  color: var(--ui-text);
 }
 
-.vuecal__title-bar {
-  background-color: #22c55e !important;
-  color: white;
+.vuecal .vuecal__title-bar {
+  background-color: var(--ui-primary);
+  color: var(--ui-text-inverted);
 }
 
-.vuecal__menu {
-  background-color: #dcfce7;
+.vuecal .vuecal__menu {
+  background-color: var(--ui-bg-elevated);
+  color: var(--ui-text);
 }
 
-.vuecal__cell--today {
-  background-color: #bbf7d0;
+.vuecal .vuecal__cell--today {
+  background-color: color-mix(in oklab, var(--ui-primary) 12%, var(--ui-bg));
 }
 
-.vuecal__event.done {
-  background-color: #22c55e;
+.vuecal .vuecal__cell,
+.vuecal .vuecal__heading {
+  border-color: var(--ui-border);
+}
+
+.vuecal .vuecal__event {
+  color: var(--ui-text-inverted);
+}
+
+.vuecal .vuecal__event.done {
+  background-color: var(--ui-success);
   border: none;
-  color: white;
 }
 
-.vuecal__event.in_progress {
-  background-color: #4ade80;
+.vuecal .vuecal__event.in_progress {
+  background-color: var(--ui-warning);
 }
 
-.vuecal__event.pending {
-  background-color: #86efac;
+.vuecal .vuecal__event.pending,
+.vuecal .vuecal__event.todo {
+  background-color: var(--ui-bg-inverted);
 }

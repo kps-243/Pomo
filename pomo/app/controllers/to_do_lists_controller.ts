@@ -13,7 +13,9 @@ export default class ToDoListsController {
     const user = auth.getUserOrFail()
     const toDoLists = await ToDoList.query()
       .where('user_id', user.id)
-      .preload('tasks', (taskQuery) => taskQuery.preload('user'))
+      .preload('tasks', (taskQuery) =>
+        taskQuery.preload('user').orderBy('position', 'asc').orderBy('id', 'asc')
+      )
       .orderBy('created_at', 'asc')
 
     return inertia.render('ToDoLists', {
@@ -25,6 +27,7 @@ export default class ToDoListsController {
           title: task.title,
           description: task.description,
           status: task.status,
+          dueDate: task.due_date?.toISO() ?? null,
           assignees: task.user
             ? [{ firstName: task.user.first_name, lastName: task.user.last_name }]
             : [],

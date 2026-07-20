@@ -18,10 +18,13 @@ export default class Task extends BaseModel {
   declare status: 'todo' | 'in_progress' | 'done'
 
   @column.dateTime()
-  declare start_date: DateTime | null
+  declare due_date: DateTime | null
 
   @column()
   declare duration: number | null
+
+  @column()
+  declare position: number
 
   @column()
   declare userId: number

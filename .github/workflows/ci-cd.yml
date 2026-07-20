@@ -41,6 +41,13 @@ jobs:
       DB_USER: pomo_test
       DB_PASSWORD: pomo_test
       DB_DATABASE: pomo_test
+      # OAuth (Ally) : requis par start/env.ts. Valeurs factices — le flux OAuth
+      # n'est pas testé de bout en bout, seule la validation du schéma doit passer.
+      APP_URL: http://localhost:3333
+      GITHUB_CLIENT_ID: test_github_client_id
+      GITHUB_CLIENT_SECRET: test_github_client_secret
+      GOOGLE_CLIENT_ID: test_google_client_id
+      GOOGLE_CLIENT_SECRET: test_google_client_secret
 
     defaults:
       run:
@@ -67,12 +74,81 @@ jobs:
       - name: Appliquer les migrations
         run: node ace migration:run --force
 
-      - name: Tests
+      - name: Tests d'intégration (Japa)
         run: npm run test
+
+      - name: Tests unitaires (Vitest)
+        run: npm run test:unit
+
+  e2e:
+    name: Tests end-to-end (Cypress)
+    needs: quality
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_USER: pomo_test
+          POSTGRES_PASSWORD: pomo_test
+          POSTGRES_DB: pomo_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      NODE_ENV: development
+      PORT: 3333
+      HOST: 127.0.0.1
+      LOG_LEVEL: info
+      APP_KEY: cle_de_test_github_actions_32_caracteres
+      SESSION_DRIVER: cookie
+      DB_HOST: 127.0.0.1
+      DB_PORT: 5432
+      DB_USER: pomo_test
+      DB_PASSWORD: pomo_test
+      DB_DATABASE: pomo_test
+      # OAuth (Ally) : requis par start/env.ts. Valeurs factices — le flux OAuth
+      # n'est pas testé de bout en bout, seule la validation du schéma doit passer.
+      APP_URL: http://localhost:3333
+      GITHUB_CLIENT_ID: test_github_client_id
+      GITHUB_CLIENT_SECRET: test_github_client_secret
+      GOOGLE_CLIENT_ID: test_google_client_id
+      GOOGLE_CLIENT_SECRET: test_google_client_secret
+
+    defaults:
+      run:
+        working-directory: pomo
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: pomo/package-lock.json
+
+      - name: Cypress
+        uses: cypress-io/github-action@v6
+        with:
+          working-directory: pomo
+          # `build` n'est pas exécuté dans un shell : un `&&` y serait passé comme simple
+          # argument et tout finirait dans une seule invocation `node ace`. On passe donc
+          # par le script npm, dont le `&&` est interprété par npm.
+          build: npm run migrate
+          start: node ace serve
+          wait-on: 'http://127.0.0.1:3333/login'
+          wait-on-timeout: 120
+          browser: chrome
 
   build-image:
     name: Construire et publier l'image
-    needs: quality
+    needs: [quality, e2e]
     runs-on: ubuntu-latest
     permissions:
       contents: read

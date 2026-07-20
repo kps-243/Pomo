@@ -42,6 +42,11 @@ const items = [
     icon: 'i-heroicons-user',
   },
   {
+    label: 'Sécurité',
+    icon: 'i-heroicons-shield-check',
+    onClick: () => router.visit('/settings/security'),
+  },
+  {
     label: 'Logout',
     icon: 'i-heroicons-arrow-right-on-rectangle',
     onClick: logout,

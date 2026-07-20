@@ -15,6 +15,7 @@ const UsersController = () => import('#controllers/users_controller')
 const TasksController = () => import('#controllers/tasks_controller')
 const HomeController = () => import('#controllers/home_controller')
 const ToDoListsController = () => import('#controllers/to_do_lists_controller')
+const TwoFactorController = () => import('#controllers/two_factor_controller')
 
 // Healthcheck Docker
 router.get('/health', async ({ response }) => {
@@ -132,6 +133,18 @@ router.post('register', [UsersController, 'store'])
 router.get('login', [UsersController, 'connection'])
 router.post('login', [UsersController, 'login'])
 router.post('logout', [UsersController, 'logout'])
+
+// 2FA — login flow (public, session pending)
+router.get('/two-factor/verify', [TwoFactorController, 'showVerify'])
+router.post('/two-factor/verify', [TwoFactorController, 'verify'])
+
+// 2FA — gestion (authentifié)
+router.get('/two-factor/setup', [TwoFactorController, 'showSetup']).use(middleware.auth())
+router.post('/two-factor/enable', [TwoFactorController, 'enable']).use(middleware.auth())
+router.post('/two-factor/disable', [TwoFactorController, 'disable']).use(middleware.auth())
+
+// Paramètres sécurité
+router.get('/settings/security', [TwoFactorController, 'securityPage']).use(middleware.auth())
 
 // ⚠️ À sécuriser plus tard : ce CRUD users est encore public
 router.get('api/users', [UsersController, 'index'])

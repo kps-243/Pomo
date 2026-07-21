@@ -24,15 +24,12 @@
     <script>
       (() => {
         try {
-          const stored = localStorage.getItem('vueuse-color-scheme') || 'auto'
-          const isDark =
-            stored === 'dark' ||
-            (stored === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches)
-          document.documentElement.classList.toggle('dark', isDark)
+          const stored = localStorage.getItem("vueuse-color-scheme") || "auto";
+          const isDark = stored === "dark" || stored === "auto" && window.matchMedia("(prefers-color-scheme: dark)").matches;
+          document.documentElement.classList.toggle("dark", isDark);
         } catch {
-          /* localStorage indisponible (navigation privée stricte) : on reste en clair. */
-        }
-      })()
+          /* localStorage indisponible (navigation privée stricte) : on reste en clair. */}
+      })();
     </script>
 
     @vite(['inertia/app/app.ts', `inertia/pages/${page.component}.vue`])

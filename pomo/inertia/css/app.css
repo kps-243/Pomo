@@ -5,7 +5,6 @@
   --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;
 }
 
-
 html:not(.dark) {
   --ui-primary: var(--ui-color-primary-700);
   --ui-secondary: var(--ui-color-secondary-700);

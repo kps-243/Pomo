@@ -28,6 +28,7 @@ npm run test:integration  # suite functional uniquement
 > Les tests tournent sur une base **dédiée** `pomodb_test` grâce à `.env.test`
 > (`DB_DATABASE=pomodb_test`), donc **la base de dev n'est jamais écrasée**.
 > Première mise en place d'une nouvelle machine :
+>
 > ```bash
 > # créer la base une fois (psql / adminer) : CREATE DATABASE pomodb_test;
 > NODE_ENV=test node ace migration:run
@@ -41,7 +42,7 @@ au clic sur le badge ([`cypress/e2e/status_badge.cy.ts`](cypress/e2e/status_badg
 
 Deux contraintes à connaître :
 
-1. **L'e2e a besoin d'une app *servie*** (navigateur réel) + d'une base seedée.
+1. **L'e2e a besoin d'une app _servie_** (navigateur réel) + d'une base seedée.
 2. **Cypress ne tourne pas sur Alpine/musl** (binaire compilé pour glibc/Debian, et
    il lui faut Xvfb + des libs système). Erreur typique : `missing the dependency: Xvfb`.
    → Ne jamais lancer `cypress run` dans le conteneur applicatif Alpine.

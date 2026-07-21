@@ -7,22 +7,22 @@ sans dupliquer les composants, et concentre les décisions de contraste en un se
 
 ## Où vit quoi
 
-| Fichier | Rôle |
-|---|---|
-| `vite.config.ts` | Associe chaque rôle à une palette Tailwind (`primary: 'green'`…) |
-| `inertia/css/app.css` | Choisit **la nuance** de chaque token, calibrée pour WCAG AA |
-| `inertia/composables/use_theme.ts` | Bascule clair / sombre |
+| Fichier                            | Rôle                                                             |
+| ---------------------------------- | ---------------------------------------------------------------- |
+| `vite.config.ts`                   | Associe chaque rôle à une palette Tailwind (`primary: 'green'`…) |
+| `inertia/css/app.css`              | Choisit **la nuance** de chaque token, calibrée pour WCAG AA     |
+| `inertia/composables/use_theme.ts` | Bascule clair / sombre                                           |
 
 ## Les couleurs
 
-| Rôle | Palette | Usage |
-|---|---|---|
-| `primary` | green | Couleur de marque : actions principales, échéances, sélection, focus |
-| `secondary` | blue | Actions secondaires, liens, informations de contexte (ex. `ListBadge`) |
-| `success` | green | Task terminée |
-| `warning` | amber | Task en cours |
-| `error` | red | Suppression, erreurs de formulaire |
-| `neutral` | slate | Textes, fonds, bordures |
+| Rôle        | Palette | Usage                                                                  |
+| ----------- | ------- | ---------------------------------------------------------------------- |
+| `primary`   | green   | Couleur de marque : actions principales, échéances, sélection, focus   |
+| `secondary` | blue    | Actions secondaires, liens, informations de contexte (ex. `ListBadge`) |
+| `success`   | green   | Task terminée                                                          |
+| `warning`   | amber   | Task en cours                                                          |
+| `error`     | red     | Suppression, erreurs de formulaire                                     |
+| `neutral`   | slate   | Textes, fonds, bordures                                                |
 
 ## Règle de contraste
 
@@ -44,13 +44,13 @@ Seuils visés (WCAG 2.1 niveau AA) :
 
 **Textes**, du plus discret au plus marqué :
 
-| Token | Usage | Contrainte |
-|---|---|---|
-| `text-dimmed` | Texte décoratif, états vides | ⚠️ Uniquement sur `bg-default` / `bg-muted` |
-| `text-muted` | Intitulés de section, texte secondaire | Partout |
-| `text-toned` | Libellés de champs | Partout |
-| `text-default` | Texte courant | Partout |
-| `text-highlighted` | Titres | Partout |
+| Token              | Usage                                  | Contrainte                                  |
+| ------------------ | -------------------------------------- | ------------------------------------------- |
+| `text-dimmed`      | Texte décoratif, états vides           | ⚠️ Uniquement sur `bg-default` / `bg-muted` |
+| `text-muted`       | Intitulés de section, texte secondaire | Partout                                     |
+| `text-toned`       | Libellés de champs                     | Partout                                     |
+| `text-default`     | Texte courant                          | Partout                                     |
+| `text-highlighted` | Titres                                 | Partout                                     |
 
 **Bordures** — `border-default` (séparateurs décoratifs) · `border-accented`
 (**champs de formulaire** : contraste 3:1 garanti) · `border-primary` (élément actif).
@@ -58,22 +58,28 @@ Seuils visés (WCAG 2.1 niveau AA) :
 ## Recettes
 
 **Bouton principal**
+
 ```html
 class="bg-primary text-inverted hover:bg-primary/90 focus-visible:ring-2 focus-visible:ring-primary"
 ```
 
 **Badge / chip** — la variante `soft` par défaut (`bg-primary/10 text-primary`) plafonne
 à 4.3:1 en clair, sous le seuil. On force donc la nuance du texte :
+
 ```html
 class="bg-primary/10 text-primary-800 dark:text-primary-300"
 ```
+
 C'est la seule situation où l'on écrit une nuance chiffrée, et elle reste exprimée dans
 le vocabulaire de la charte (`primary-800`), jamais en `green-800`.
 
 **Champ de formulaire** — utiliser la classe `.input`, ou reprendre :
+
 ```html
-class="border border-accented bg-default text-default placeholder:text-dimmed focus:border-primary focus-visible:ring-2 focus-visible:ring-primary"
+class="border border-accented bg-default text-default placeholder:text-dimmed focus:border-primary
+focus-visible:ring-2 focus-visible:ring-primary"
 ```
+
 Tout champ doit avoir un `<label for>` associé — un `placeholder` n'est pas un libellé.
 
 ## Ce qui est interdit

@@ -15,6 +15,7 @@ const UsersController = () => import('#controllers/users_controller')
 const TasksController = () => import('#controllers/tasks_controller')
 const HomeController = () => import('#controllers/home_controller')
 const ToDoListsController = () => import('#controllers/to_do_lists_controller')
+const EventsController = () => import('#controllers/events_controller')
 const TwoFactorController = () => import('#controllers/two_factor_controller')
 
 // Healthcheck Docker
@@ -183,6 +184,22 @@ router
     // Tasks d'une todolist (accès réservé au propriétaire de la liste)
     router.get('todolists/:todoListId/tasks', [TasksController, 'indexForToDoList'])
     router.post('todolists/:todoListId/tasks', [TasksController, 'storeForToDoList'])
+  })
+  .prefix('api')
+  .use(middleware.auth())
+
+/*
+|--------------------------------------------------------------------------
+| API Events (scopés au propriétaire)
+|--------------------------------------------------------------------------
+*/
+router
+  .group(() => {
+    router.get('events', [EventsController, 'index'])
+    router.post('events', [EventsController, 'store'])
+    router.get('events/:id', [EventsController, 'show'])
+    router.put('events/:id', [EventsController, 'update'])
+    router.delete('events/:id', [EventsController, 'destroy'])
   })
   .prefix('api')
   .use(middleware.auth())

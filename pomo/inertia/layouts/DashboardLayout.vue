@@ -30,8 +30,8 @@ const logout = () => {
 const links = [
   { label: 'Dashboard', icon: 'i-heroicons-home', href: '/', exact: true },
   { label: 'To do lists', icon: 'i-heroicons-view-columns', href: '/todolists' },
+  { label: 'Groupes', icon: 'i-heroicons-user-group', href: '/groups' },
   // À rebrancher quand les pages existeront (phase front) :
-  // { label: 'Calendrier', icon: 'i-heroicons-calendar', href: '/calendar' },
   // { label: 'Évènements', icon: 'i-heroicons-sparkles', href: '/events' },
   // { label: 'Tchats', icon: 'i-heroicons-chat-bubble-left-right', href: '/chats' },
 ]

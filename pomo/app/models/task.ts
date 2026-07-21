@@ -3,6 +3,7 @@ import { BaseModel, belongsTo, column } from '@adonisjs/lucid/orm'
 import type { BelongsTo } from '@adonisjs/lucid/types/relations'
 import ToDoList from '#models/to_do_list'
 import User from '#models/user'
+import Group from '#models/group'
 
 export default class Task extends BaseModel {
   @column({ isPrimary: true })
@@ -32,11 +33,17 @@ export default class Task extends BaseModel {
   @column()
   declare toDoListId: number | null
 
+  @column()
+  declare groupId: number | null
+
   @belongsTo(() => ToDoList)
   declare toDoList: BelongsTo<typeof ToDoList>
 
   @belongsTo(() => User)
   declare user: BelongsTo<typeof User>
+
+  @belongsTo(() => Group)
+  declare group: BelongsTo<typeof Group>
 
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime

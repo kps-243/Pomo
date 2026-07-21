@@ -2,6 +2,7 @@ import type { HttpContext } from '@adonisjs/core/http'
 import { DateTime } from 'luxon'
 import Task from '#models/task'
 import ToDoList from '#models/to_do_list'
+import Group from '#models/group'
 import { createTaskValidator, reorderTasksValidator, updateTaskValidator } from '#validators/task'
 import db from '@adonisjs/lucid/services/db'
 
@@ -60,6 +61,78 @@ export default class TasksController {
       due_date: payload.due_date ? DateTime.fromISO(payload.due_date) : null,
       userId: user.id,
     })
+    return response.redirect().back()
+  }
+
+  /**
+   * Crée un évènement sur le calendrier partagé d'un groupe. Tout membre du
+   * groupe peut ajouter un évènement.
+   */
+  async storeForGroup({ params, request, auth, response }: HttpContext) {
+    const user = auth.getUserOrFail()
+    const isMember = await db
+      .from('group_members')
+      .where('group_id', params.groupId)
+      .where('user_id', user.id)
+      .first()
+    if (!isMember) {
+      return response.notFound({ message: 'Group not found' })
+    }
+
+    const payload = await request.validateUsing(createTaskValidator)
+    await Task.create({
+      ...payload,
+      due_date: payload.due_date ? DateTime.fromISO(payload.due_date) : null,
+      userId: user.id,
+      groupId: Number(params.groupId),
+    })
+    return response.redirect().back()
+  }
+
+  /**
+   * Modifie un évènement du calendrier partagé. Réservé à son créateur ou
+   * au propriétaire du groupe.
+   */
+  async updateGroupTask({ params, request, auth, response }: HttpContext) {
+    const user = auth.getUserOrFail()
+    const task = await Task.query().where('id', params.id).where('group_id', params.groupId).first()
+    if (!task) {
+      return response.notFound({ message: 'Task not found' })
+    }
+
+    const group = await Group.find(params.groupId)
+    const canEdit = task.userId === user.id || group?.ownerId === user.id
+    if (!canEdit) {
+      return response.forbidden({ message: 'Not allowed' })
+    }
+
+    const { due_date: dueDate, ...payload } = await request.validateUsing(updateTaskValidator)
+    task.merge(payload)
+    if (dueDate !== undefined) {
+      task.due_date = dueDate ? DateTime.fromISO(dueDate) : null
+    }
+    await task.save()
+    return response.redirect().back()
+  }
+
+  /**
+   * Supprime un évènement du calendrier partagé. Réservé à son créateur ou
+   * au propriétaire du groupe.
+   */
+  async destroyGroupTask({ params, auth, response }: HttpContext) {
+    const user = auth.getUserOrFail()
+    const task = await Task.query().where('id', params.id).where('group_id', params.groupId).first()
+    if (!task) {
+      return response.notFound({ message: 'Task not found' })
+    }
+
+    const group = await Group.find(params.groupId)
+    const canDelete = task.userId === user.id || group?.ownerId === user.id
+    if (!canDelete) {
+      return response.forbidden({ message: 'Not allowed' })
+    }
+
+    await task.delete()
     return response.redirect().back()
   }
 

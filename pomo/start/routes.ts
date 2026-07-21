@@ -17,6 +17,7 @@ const HomeController = () => import('#controllers/home_controller')
 const ToDoListsController = () => import('#controllers/to_do_lists_controller')
 const EventsController = () => import('#controllers/events_controller')
 const TwoFactorController = () => import('#controllers/two_factor_controller')
+const GroupsController = () => import('#controllers/groups_controller')
 
 // Healthcheck Docker
 router.get('/health', async ({ response }) => {
@@ -105,6 +106,8 @@ router.get('/google/callback', async ({ ally, auth, response }) => {
 */
 router.get('/', [HomeController, 'index']).use(middleware.auth())
 router.get('/todolists', [ToDoListsController, 'page']).use(middleware.auth())
+router.get('/groups', [GroupsController, 'page']).use(middleware.auth())
+router.get('/groups/:id', [GroupsController, 'show']).use(middleware.auth())
 
 /*
 |--------------------------------------------------------------------------
@@ -121,6 +124,17 @@ router
     router.put('/todolists/:todoListId/tasks/reorder', [TasksController, 'reorderFromBoard'])
     router.put('/tasks/:id', [TasksController, 'updateFromBoard'])
     router.delete('/tasks/:id', [TasksController, 'destroyFromBoard'])
+
+    // Groupes & calendrier partagé
+    router.post('/groups', [GroupsController, 'store'])
+    router.put('/groups/:id', [GroupsController, 'update'])
+    router.delete('/groups/:id', [GroupsController, 'destroy'])
+    router.post('/groups/:id/invite', [GroupsController, 'inviteMember'])
+    router.delete('/groups/:id/members/:userId', [GroupsController, 'removeMember'])
+    router.post('/groups/:id/leave', [GroupsController, 'leave'])
+    router.post('/groups/:groupId/tasks', [TasksController, 'storeForGroup'])
+    router.put('/groups/:groupId/tasks/:id', [TasksController, 'updateGroupTask'])
+    router.delete('/groups/:groupId/tasks/:id', [TasksController, 'destroyGroupTask'])
   })
   .use(middleware.auth())
 

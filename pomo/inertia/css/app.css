@@ -112,3 +112,8 @@ html.dark {
 .vuecal .vuecal__event.todo {
   background-color: var(--ui-bg-inverted);
 }
+
+.vuecal .vuecal__event.group-event {
+  background-color: var(--ui-primary);
+  border: none;
+}

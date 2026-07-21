@@ -117,7 +117,7 @@ router.get('/groups/:id', [GroupsController, 'show']).use(middleware.auth())
 */
 router
   .group(() => {
-    /*router.post('/tasks', [TasksController, 'storeFromHome'])*/
+    router.post('/tasks', [TasksController, 'storeFromHome'])
     router.post('/todolists', [ToDoListsController, 'storeFromBoard'])
     router.delete('/todolists/:id', [ToDoListsController, 'destroyFromBoard'])
     router.post('/todolists/:todoListId/tasks', [TasksController, 'storeFromBoard'])

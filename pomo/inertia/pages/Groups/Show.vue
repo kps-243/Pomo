@@ -27,6 +27,7 @@ const eventsParsed = computed(() => {
         end: new Date(start.getTime() + event.duration * 60000),
         title: event.title,
         content: event.createdBy ? `${event.createdBy.firstName} ${event.createdBy.lastName}` : '',
+        class: 'group-event',
       }
     })
 })

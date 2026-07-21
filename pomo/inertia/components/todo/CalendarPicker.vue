@@ -30,6 +30,16 @@ const calendarValue = ref<DateValue>(buildInitialDate())
 const time = ref(buildInitialTime())
 const processing = ref(false)
 
+// UCalendar (Reka UI) dé-sélectionne la date quand on reclique la cellule déjà
+// active, mettant le v-model à null/undefined. On l'ignore pour toujours
+// conserver une date valide (sinon `summary` lit `.year` sur undefined -> crash).
+const calendarModel = computed<DateValue>({
+  get: () => calendarValue.value,
+  set: (value: DateValue | null | undefined) => {
+    if (value) calendarValue.value = value
+  },
+})
+
 watch(
   () => props.dueDate,
   () => {
@@ -79,7 +89,7 @@ const calendarUi = {
 <template>
   <div data-cy="calendar-picker" class="rounded-xl border border-default bg-muted p-3">
     <div class="flex justify-center">
-      <UCalendar v-model="calendarValue" color="neutral" :ui="calendarUi" class="w-full max-w-76" />
+      <UCalendar v-model="calendarModel" color="neutral" :ui="calendarUi" class="w-full max-w-76" />
     </div>
 
     <div class="mt-3">

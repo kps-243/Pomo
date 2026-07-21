@@ -22,18 +22,24 @@ export default class UsersController {
     return inertia.render('Auth/Login')
   }
 
-  async login({ request, response, auth }: HttpContext) {
-    const data = request.only(['email', 'password'])
+  async login({ request, response, session, auth }: HttpContext) {
+    const { email, password } = await request.validateUsing(loginValidator)
+
     try {
-      const validatedData = await request.validateUsing(loginValidator, { data })
-      const user = await User.verifyCredentials(validatedData.email, validatedData.password)
+      const user = await User.verifyCredentials(email, password)
+
+      if (user.twoFactorEnabled) {
+        session.put('two_factor_pending_user_id', user.id)
+        return response.redirect('/two-factor/verify')
+      }
 
       await auth.use('web').login(user)
-
-      return response.redirect('/')
-    } catch (error) {
-      return response.status(400).json({ message: 'Login failed', error: error.message })
+    } catch {
+      session.flashErrors({ email: 'Email ou mot de passe incorrect' })
+      return response.redirect().back()
     }
+
+    return response.redirect('/')
   }
 
   async logout({ auth, response }: HttpContext) {

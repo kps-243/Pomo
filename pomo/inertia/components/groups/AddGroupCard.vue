@@ -32,6 +32,7 @@ const submit = () => {
   <button
     v-if="!isComposing"
     type="button"
+    data-cy="create-group"
     class="flex items-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm font-medium text-inverted shadow-sm transition hover:bg-primary/90 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
     @click="open"
   >
@@ -39,14 +40,12 @@ const submit = () => {
     Créer un groupe
   </button>
 
-  <div
-    v-else
-    class="w-full max-w-sm rounded-xl border border-primary bg-default p-3 shadow-md"
-  >
+  <div v-else class="w-full max-w-sm rounded-xl border border-primary bg-default p-3 shadow-md">
     <input
       ref="inputRef"
       v-model="form.name"
       type="text"
+      data-cy="group-name-input"
       placeholder="Nom du groupe..."
       class="w-full rounded-lg border border-accented bg-default px-3 py-2 text-sm text-highlighted placeholder:text-dimmed focus:border-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
       @keydown.esc="close"
@@ -64,6 +63,7 @@ const submit = () => {
     <div class="mt-2 flex items-center gap-2">
       <button
         type="button"
+        data-cy="submit-group"
         class="rounded-lg bg-primary px-3 py-1.5 text-sm font-medium text-inverted transition hover:bg-primary/90 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:opacity-60"
         :disabled="form.processing"
         @click="submit"

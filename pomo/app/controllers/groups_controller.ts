@@ -2,6 +2,7 @@ import type { HttpContext } from '@adonisjs/core/http'
 import db from '@adonisjs/lucid/services/db'
 import env from '#start/env'
 import Group from '#models/group'
+import ToDoList from '#models/to_do_list'
 import User from '#models/user'
 import {
   createGroupValidator,
@@ -50,6 +51,8 @@ export default class GroupsController {
     const payload = await request.validateUsing(createGroupValidator)
     const group = await Group.create({ ...payload, ownerId: user.id })
     await group.related('members').attach({ [user.id]: { role: 'owner' } })
+    // Chaque groupe possède une todolist partagée, qui porte le nom du groupe.
+    await ToDoList.create({ name: group.name, userId: user.id, groupId: group.id })
     return response.redirect().back()
   }
 
@@ -106,6 +109,9 @@ export default class GroupsController {
     const payload = await request.validateUsing(updateGroupValidator)
     group.merge(payload)
     await group.save()
+    if (payload.name) {
+      await ToDoList.query().where('group_id', group.id).update({ name: group.name })
+    }
     return response.redirect().back()
   }
 

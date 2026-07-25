@@ -69,7 +69,7 @@ en dernier). Il partage la pile réseau de l'app pour que `127.0.0.1:3333` soit 
 Depuis la **racine du dépôt** :
 
 ```bash
-docker compose -f docker-compose.yml -f docker-compose.test.yml up --build \
+docker compose -f docker-compose.yml -f docker-compose.test.yml up --build -V \
   --abort-on-container-exit --exit-code-from tests
 docker compose -f docker-compose.yml -f docker-compose.test.yml down -v
 ```

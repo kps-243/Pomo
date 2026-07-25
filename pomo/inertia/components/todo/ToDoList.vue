@@ -47,7 +47,16 @@ const deleteList = () => {
     class="flex max-h-full w-full flex-col rounded-2xl border border-default bg-muted shadow-md"
   >
     <header class="flex items-center justify-between gap-2 border-b border-default px-4 py-3">
-      <h3 class="truncate text-base font-semibold text-primary">{{ list.name }}</h3>
+      <div class="flex min-w-0 items-center gap-1.5">
+        <UIcon
+          v-if="list.groupId"
+          name="i-heroicons-user-group"
+          class="h-4 w-4 shrink-0 text-dimmed"
+          title="Todolist partagée"
+          aria-label="Todolist de groupe"
+        />
+        <h3 class="truncate text-base font-semibold text-primary">{{ list.name }}</h3>
+      </div>
 
       <div class="relative flex shrink-0 items-center gap-2">
         <span
@@ -56,7 +65,6 @@ const deleteList = () => {
           {{ taskCount }}
         </span>
 
-        <!-- Poubelle : active uniquement si la liste est vide -->
         <button
           type="button"
           class="flex h-7 w-7 items-center justify-center rounded-md text-dimmed transition hover:bg-error/10 hover:text-error focus:outline-none focus-visible:ring-2 focus-visible:ring-error disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-dimmed"
@@ -68,7 +76,6 @@ const deleteList = () => {
           <UIcon name="i-heroicons-trash" class="h-4 w-4" />
         </button>
 
-        <!-- Popover de confirmation -->
         <div
           v-if="confirmingDelete"
           class="absolute right-0 top-9 z-10 w-56 rounded-lg border border-default bg-default p-3 text-left shadow-lg"
@@ -107,7 +114,13 @@ const deleteList = () => {
         drag-class="rotate-2"
         @end="enregistrerOrdre"
       >
-        <TaskCard v-for="task in tasks" :key="task.id" :task="task" :list-name="list.name" />
+        <TaskCard
+          v-for="task in tasks"
+          :key="task.id"
+          :task="task"
+          :list-name="list.name"
+          :is-group-list="list.groupId !== null"
+        />
       </VueDraggable>
       <p v-if="!taskCount" class="px-1 py-6 text-center text-xs text-dimmed">
         Aucune task pour le moment.

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import DashboardLayout from '~/layouts/DashboardLayout.vue'
 import AddGroupCard from '~/components/groups/AddGroupCard.vue'
+import { formatMembersCount } from '~/utils/groups'
 import type { GroupSummary } from '~/types/group'
 
 defineProps<{
@@ -14,9 +15,7 @@ defineProps<{
       <div class="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h1 class="text-xl font-bold text-primary sm:text-2xl">Mes groupes</h1>
-          <p class="mt-1 text-sm text-muted">
-            Partagez un calendrier avec d'autres utilisateurs.
-          </p>
+          <p class="mt-1 text-sm text-muted">Partagez un calendrier avec d'autres utilisateurs.</p>
         </div>
         <AddGroupCard />
       </div>
@@ -26,6 +25,7 @@ defineProps<{
           v-for="group in groups"
           :key="group.id"
           :href="`/groups/${group.id}`"
+          data-cy="group-card"
           class="group flex flex-col gap-2 rounded-xl border border-default bg-default p-4 shadow-sm transition hover:border-primary hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
         >
           <div class="flex items-start justify-between gap-2">
@@ -44,14 +44,12 @@ defineProps<{
           </p>
           <div class="mt-1 flex items-center gap-1.5 text-xs text-dimmed">
             <UIcon name="i-heroicons-user-group" class="h-3.5 w-3.5" />
-            {{ group.membersCount }} membre{{ group.membersCount > 1 ? 's' : '' }}
+            {{ formatMembersCount(group.membersCount) }}
           </div>
         </a>
       </div>
 
-      <p v-else class="text-sm text-muted">
-        Vous n'appartenez à aucun groupe pour le moment.
-      </p>
+      <p v-else class="text-sm text-muted">Vous n'appartenez à aucun groupe pour le moment.</p>
     </div>
   </DashboardLayout>
 </template>

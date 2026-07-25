@@ -18,12 +18,16 @@ const ToDoListsController = () => import('#controllers/to_do_lists_controller')
 const EventsController = () => import('#controllers/events_controller')
 const TwoFactorController = () => import('#controllers/two_factor_controller')
 const GroupsController = () => import('#controllers/groups_controller')
+const CalendarFeedController = () => import('#controllers/calendar_feed_controller')
 
 // Healthcheck Docker
 router.get('/health', async ({ response }) => {
   const report = await healthChecks.run()
   return report.isHealthy ? response.ok(report) : response.serviceUnavailable(report)
 })
+
+// Flux calendrier iCal — public (les applications de calendrier s'y abonnent sans session)
+router.get('/calendar/:token/feed.ics', [CalendarFeedController, 'feed'])
 
 /*
 |--------------------------------------------------------------------------
@@ -135,6 +139,9 @@ router
     router.post('/groups/:groupId/tasks', [TasksController, 'storeForGroup'])
     router.put('/groups/:groupId/tasks/:id', [TasksController, 'updateGroupTask'])
     router.delete('/groups/:groupId/tasks/:id', [TasksController, 'destroyGroupTask'])
+
+    // Synchronisation calendrier
+    router.post('/calendar/token/regenerate', [CalendarFeedController, 'regenerate'])
   })
   .use(middleware.auth())
 

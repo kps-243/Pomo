@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import DashboardLayout from '../layouts/DashboardLayout.vue'
 import CardTitle from '../components/CardTitle.vue'
+import SyncCalendarModal from '../components/calendar/SyncCalendarModal.vue'
 import VueCal from 'vue-cal'
 import 'vue-cal/dist/vuecal.css'
 import { computed, ref } from 'vue'
@@ -15,7 +16,10 @@ const props = defineProps<{
     dueDate: string
     duration: number
   }[]
+  calendarFeedUrl: string
 }>()
+
+const isSyncModalOpen = ref(false)
 
 const tasksParsed = computed(() => {
   return props.tasks
@@ -74,7 +78,18 @@ const submit = () => {
         class="flex w-full flex-col rounded-2xl border border-default shadow-md ring-0 lg:w-1/2"
       >
         <template #header>
-          <CardTitle title="Calendar" />
+          <div class="flex items-center justify-between gap-2">
+            <CardTitle title="Calendar" />
+            <UButton
+              icon="i-heroicons-arrow-path"
+              color="neutral"
+              variant="ghost"
+              size="xs"
+              @click="isSyncModalOpen = true"
+            >
+              Synchroniser
+            </UButton>
+          </div>
         </template>
         <vue-cal
           style="height: 400px"
@@ -194,5 +209,7 @@ const submit = () => {
         </div>
       </template>
     </UModal>
+
+    <SyncCalendarModal v-model:open="isSyncModalOpen" :feed-url="calendarFeedUrl" />
   </DashboardLayout>
 </template>

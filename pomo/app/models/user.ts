@@ -1,3 +1,4 @@
+import { randomBytes } from 'node:crypto'
 import { DateTime } from 'luxon'
 import hash from '@adonisjs/core/services/hash'
 import { compose } from '@adonisjs/core/helpers'
@@ -37,6 +38,9 @@ export default class User extends compose(BaseModel, AuthFinder) {
   @column()
   declare twoFactorEnabled: boolean
 
+  @column({ serializeAs: null })
+  declare calendarToken: string | null
+
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
 
@@ -51,4 +55,16 @@ export default class User extends compose(BaseModel, AuthFinder) {
   declare groups: ManyToMany<typeof Group>
 
   static accessTokens = DbAccessTokensProvider.forModel(User)
+
+  /**
+   * Renvoie le token du flux calendrier de l'utilisateur, en le générant
+   * au premier appel (utilisé pour l'URL d'abonnement iCal publique).
+   */
+  async ensureCalendarToken(): Promise<string> {
+    if (!this.calendarToken) {
+      this.calendarToken = randomBytes(32).toString('hex')
+      await this.save()
+    }
+    return this.calendarToken
+  }
 }

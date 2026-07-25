@@ -6,6 +6,7 @@ import 'vue-cal/dist/vuecal.css'
 import DashboardLayout from '~/layouts/DashboardLayout.vue'
 import CardTitle from '~/components/CardTitle.vue'
 import MemberAvatar from '~/components/todo/MemberAvatar.vue'
+import SyncCalendarModal from '~/components/calendar/SyncCalendarModal.vue'
 import type { GroupDetail, GroupEvent, GroupMember } from '~/types/group'
 
 const props = defineProps<{
@@ -13,9 +14,11 @@ const props = defineProps<{
   currentUserId: number
   members: GroupMember[]
   events: GroupEvent[]
+  calendarFeedUrl: string
 }>()
 
 const isOwner = computed(() => props.group.ownerId === props.currentUserId)
+const isSyncModalOpen = ref(false)
 
 const eventsParsed = computed(() => {
   return props.events
@@ -151,7 +154,18 @@ const deleteGroup = () => {
         <!-- Calendrier partagé -->
         <UCard class="flex w-full flex-col rounded-2xl border border-default shadow-md ring-0 lg:w-2/3">
           <template #header>
-            <CardTitle title="Calendrier partagé" />
+            <div class="flex items-center justify-between gap-2">
+              <CardTitle title="Calendrier partagé" />
+              <UButton
+                icon="i-heroicons-arrow-path"
+                color="neutral"
+                variant="ghost"
+                size="xs"
+                @click="isSyncModalOpen = true"
+              >
+                Synchroniser
+              </UButton>
+            </div>
           </template>
           <vue-cal
             style="height: 450px"
@@ -365,5 +379,7 @@ const deleteGroup = () => {
         </div>
       </template>
     </UModal>
+
+    <SyncCalendarModal v-model:open="isSyncModalOpen" :feed-url="calendarFeedUrl" />
   </DashboardLayout>
 </template>

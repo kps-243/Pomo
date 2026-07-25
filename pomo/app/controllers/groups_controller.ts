@@ -1,5 +1,6 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import db from '@adonisjs/lucid/services/db'
+import env from '#start/env'
 import Group from '#models/group'
 import User from '#models/user'
 import {
@@ -65,6 +66,8 @@ export default class GroupsController {
       .preload('tasks', (tasksQuery) => tasksQuery.preload('user').orderBy('due_date', 'asc'))
       .firstOrFail()
 
+    const calendarToken = await user.ensureCalendarToken()
+
     return inertia.render('Groups/Show', {
       group: {
         id: group.id,
@@ -73,6 +76,7 @@ export default class GroupsController {
         ownerId: group.ownerId,
       },
       currentUserId: user.id,
+      calendarFeedUrl: `${env.get('APP_URL')}/calendar/${calendarToken}/feed.ics`,
       members: group.members.map((member) => ({
         id: member.id,
         firstName: member.first_name,

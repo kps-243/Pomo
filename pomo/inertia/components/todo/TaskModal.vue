@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
-import { router, useForm } from '@inertiajs/vue3'
+import { computed, ref, watch } from 'vue'
+import { router, useForm, usePage } from '@inertiajs/vue3'
 import StatusBadge from './StatusBadge.vue'
 import DateBadge from './DateBadge.vue'
 import ListBadge from './ListBadge.vue'
@@ -11,6 +11,7 @@ import type { TaskItem } from '~/types/todo'
 const props = defineProps<{
   task: TaskItem
   listName: string
+  isGroupList: boolean
 }>()
 
 const open = defineModel<boolean>('open', { default: false })
@@ -22,6 +23,22 @@ const form = useForm({
 
 const save = () => {
   form.put(`/tasks/${props.task.id}`, { preserveScroll: true })
+}
+
+// Membres de la tâche : l'utilisateur connecté peut se rejoindre / se retirer.
+const page = usePage()
+const currentUserId = computed(() => (page.props.user as { id: number } | null)?.id ?? null)
+const isMember = computed(() =>
+  props.task.members.some((member) => member.id === currentUserId.value)
+)
+
+const toggleMembership = () => {
+  const url = `/tasks/${props.task.id}/members`
+  if (isMember.value) {
+    router.delete(url, { preserveScroll: true })
+  } else {
+    router.post(url, {}, { preserveScroll: true })
+  }
 }
 
 const saveTitle = () => {
@@ -151,17 +168,35 @@ const close = () => {
             />
           </section>
 
-          <section>
-            <h3
-              class="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-muted"
-            >
-              <UIcon name="i-heroicons-user-group" class="h-4 w-4" />
-              Membres
-            </h3>
-            <div v-if="task.assignees.length" class="flex flex-wrap gap-2">
+          <section v-if="isGroupList">
+            <div class="mb-2 flex items-center justify-between gap-2">
+              <h3
+                class="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-muted"
+              >
+                <UIcon name="i-heroicons-user-group" class="h-4 w-4" />
+                Membres
+              </h3>
+              <button
+                type="button"
+                class="flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium transition focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                :class="
+                  isMember
+                    ? 'text-muted hover:bg-error/10 hover:text-error'
+                    : 'text-primary hover:bg-primary/10'
+                "
+                @click="toggleMembership"
+              >
+                <UIcon
+                  :name="isMember ? 'i-heroicons-user-minus' : 'i-heroicons-user-plus'"
+                  class="h-3.5 w-3.5"
+                />
+                {{ isMember ? 'Quitter' : 'Rejoindre' }}
+              </button>
+            </div>
+            <div v-if="task.members.length" class="flex flex-wrap gap-2">
               <div
-                v-for="(member, index) in task.assignees"
-                :key="index"
+                v-for="member in task.members"
+                :key="member.id"
                 class="flex items-center gap-2 rounded-full bg-elevated py-1 pl-1 pr-3"
               >
                 <MemberAvatar :member="member" size="md" />
@@ -170,7 +205,7 @@ const close = () => {
                 </span>
               </div>
             </div>
-            <p v-else class="text-sm text-muted">Aucun membre assigné.</p>
+            <p v-else class="text-sm text-muted">Aucun membre pour le moment.</p>
           </section>
 
           <section>

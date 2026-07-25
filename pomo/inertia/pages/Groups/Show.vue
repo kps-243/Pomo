@@ -6,6 +6,7 @@ import 'vue-cal/dist/vuecal.css'
 import DashboardLayout from '~/layouts/DashboardLayout.vue'
 import CardTitle from '~/components/CardTitle.vue'
 import MemberAvatar from '~/components/todo/MemberAvatar.vue'
+import { canManageEvent } from '~/utils/groups'
 import type { GroupDetail, GroupEvent, GroupMember } from '~/types/group'
 
 const props = defineProps<{
@@ -17,28 +18,30 @@ const props = defineProps<{
 
 const isOwner = computed(() => props.group.ownerId === props.currentUserId)
 
-const eventsParsed = computed(() => {
-  return props.events
-    .filter((e) => e.dueDate && e.duration)
+const eventsParsed = computed(() =>
+  props.events
+    .filter((e) => e.dueDate)
     .map((event) => {
       const start = new Date(event.dueDate as string)
       return {
         start,
-        end: new Date(start.getTime() + event.duration * 60000),
+        end: new Date(start.getTime() + 60000),
         title: event.title,
         content: event.createdBy ? `${event.createdBy.firstName} ${event.createdBy.lastName}` : '',
-        class: 'group-event',
+        class: 'task-marker',
       }
     })
-})
+)
 
 const upcomingEvents = computed(() =>
   [...props.events]
     .filter((e) => e.dueDate)
-    .sort((a, b) => new Date(a.dueDate as string).getTime() - new Date(b.dueDate as string).getTime())
+    .sort(
+      (a, b) => new Date(a.dueDate as string).getTime() - new Date(b.dueDate as string).getTime()
+    )
 )
 
-const canManage = (event: GroupEvent) => isOwner.value || event.createdBy?.id === props.currentUserId
+const canManage = (event: GroupEvent) => canManageEvent(event, props.currentUserId, isOwner.value)
 
 // --- Create event modal ---
 const isEventModalOpen = ref(false)
@@ -114,17 +117,23 @@ const deleteGroup = () => {
       <!-- Header -->
       <div class="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <a href="/groups" class="mb-1 inline-flex items-center gap-1 text-xs text-muted hover:text-primary">
+          <a
+            href="/groups"
+            class="mb-1 inline-flex items-center gap-1 text-xs text-muted hover:text-primary"
+          >
             <UIcon name="i-heroicons-arrow-left" class="h-3.5 w-3.5" />
             Mes groupes
           </a>
-          <h1 class="text-xl font-bold text-primary sm:text-2xl">{{ group.name }}</h1>
+          <h1 data-cy="group-name" class="text-xl font-bold text-primary sm:text-2xl">
+            {{ group.name }}
+          </h1>
           <p v-if="group.description" class="mt-1 text-sm text-muted">{{ group.description }}</p>
         </div>
 
         <div class="flex items-center gap-2">
           <UButton
             v-if="isOwner"
+            data-cy="invite-button"
             icon="i-heroicons-user-plus"
             color="primary"
             variant="soft"
@@ -141,7 +150,13 @@ const deleteGroup = () => {
           >
             Supprimer
           </UButton>
-          <UButton v-else icon="i-heroicons-arrow-right-on-rectangle" color="error" variant="ghost" @click="leaveGroup">
+          <UButton
+            v-else
+            icon="i-heroicons-arrow-right-on-rectangle"
+            color="error"
+            variant="ghost"
+            @click="leaveGroup"
+          >
             Quitter
           </UButton>
         </div>
@@ -149,7 +164,9 @@ const deleteGroup = () => {
 
       <div class="flex flex-col gap-6 lg:flex-row">
         <!-- Calendrier partagé -->
-        <UCard class="flex w-full flex-col rounded-2xl border border-default shadow-md ring-0 lg:w-2/3">
+        <UCard
+          class="flex w-full flex-col rounded-2xl border border-default shadow-md ring-0 lg:w-2/3"
+        >
           <template #header>
             <CardTitle title="Calendrier partagé" />
           </template>
@@ -174,6 +191,7 @@ const deleteGroup = () => {
               <li
                 v-for="member in members"
                 :key="member.id"
+                data-cy="member-row"
                 class="flex items-center justify-between gap-2 py-2.5"
               >
                 <div class="flex items-center gap-2.5">
@@ -221,7 +239,8 @@ const deleteGroup = () => {
                 <div class="flex flex-col">
                   <span class="text-sm font-medium text-highlighted">{{ event.title }}</span>
                   <span class="text-xs text-muted">
-                    {{ new Date(event.dueDate as string).toLocaleString() }} · ⏱ {{ event.duration }} min
+                    {{ new Date(event.dueDate as string).toLocaleString() }} · ⏱
+                    {{ event.duration }} min
                   </span>
                   <span v-if="event.createdBy" class="text-xs text-dimmed">
                     par {{ event.createdBy.firstName }} {{ event.createdBy.lastName }}
@@ -248,14 +267,20 @@ const deleteGroup = () => {
     </div>
 
     <!-- Modal création d'évènement -->
-    <UModal v-model:open="isEventModalOpen" title="Nouvel évènement" :ui="{ content: 'sm:max-w-md' }">
+    <UModal
+      v-model:open="isEventModalOpen"
+      title="Nouvel évènement"
+      :ui="{ content: 'sm:max-w-md' }"
+    >
       <template #content>
         <div class="px-5 py-4">
           <h2 class="mb-4 text-base font-semibold text-highlighted">Nouvel évènement</h2>
 
           <form class="space-y-4" @submit.prevent="submitEvent">
             <div>
-              <label for="event-title" class="mb-1 block text-sm font-medium text-toned">Titre *</label>
+              <label for="event-title" class="mb-1 block text-sm font-medium text-toned"
+                >Titre *</label
+              >
               <input
                 id="event-title"
                 v-model="eventForm.title"
@@ -270,7 +295,9 @@ const deleteGroup = () => {
             </div>
 
             <div>
-              <label for="event-date" class="mb-1 block text-sm font-medium text-toned">Date et heure</label>
+              <label for="event-date" class="mb-1 block text-sm font-medium text-toned"
+                >Date et heure</label
+              >
               <input
                 id="event-date"
                 v-model="eventForm.due_date"
@@ -307,7 +334,12 @@ const deleteGroup = () => {
             </div>
 
             <div class="flex justify-end gap-2 pt-1">
-              <UButton type="button" color="neutral" variant="ghost" @click="isEventModalOpen = false">
+              <UButton
+                type="button"
+                color="neutral"
+                variant="ghost"
+                @click="isEventModalOpen = false"
+              >
                 Annuler
               </UButton>
               <UButton
@@ -325,7 +357,11 @@ const deleteGroup = () => {
     </UModal>
 
     <!-- Modal invitation -->
-    <UModal v-model:open="isInviteModalOpen" title="Inviter un membre" :ui="{ content: 'sm:max-w-sm' }">
+    <UModal
+      v-model:open="isInviteModalOpen"
+      title="Inviter un membre"
+      :ui="{ content: 'sm:max-w-sm' }"
+    >
       <template #content>
         <div class="px-5 py-4">
           <h2 class="mb-4 text-base font-semibold text-highlighted">Inviter un membre</h2>
@@ -349,7 +385,12 @@ const deleteGroup = () => {
             </div>
 
             <div class="flex justify-end gap-2 pt-1">
-              <UButton type="button" color="neutral" variant="ghost" @click="isInviteModalOpen = false">
+              <UButton
+                type="button"
+                color="neutral"
+                variant="ghost"
+                @click="isInviteModalOpen = false"
+              >
                 Annuler
               </UButton>
               <UButton

@@ -1,4 +1,5 @@
 import type { HttpContext } from '@adonisjs/core/http'
+import db from '@adonisjs/lucid/services/db'
 import ToDoList from '#models/to_do_list'
 import { createToDoListValidator, updateToDoListValidator } from '#validators/to_do_list'
 
@@ -11,10 +12,19 @@ export default class ToDoListsController {
 
   async page({ inertia, auth }: HttpContext) {
     const user = auth.getUserOrFail()
+    const memberships = await db.from('group_members').where('user_id', user.id).select('group_id')
+    const groupIds = memberships.map((m) => m.group_id)
+
     const toDoLists = await ToDoList.query()
-      .where('user_id', user.id)
+      .where((query) => {
+        query.where('user_id', user.id)
+        if (groupIds.length) {
+          query.orWhereIn('group_id', groupIds)
+        }
+      })
+      .preload('group')
       .preload('tasks', (taskQuery) =>
-        taskQuery.preload('user').orderBy('position', 'asc').orderBy('id', 'asc')
+        taskQuery.preload('members').orderBy('position', 'asc').orderBy('id', 'asc')
       )
       .orderBy('created_at', 'asc')
 
@@ -22,15 +32,18 @@ export default class ToDoListsController {
       toDoLists: toDoLists.map((list) => ({
         id: list.id,
         name: list.name,
+        groupId: list.groupId,
         tasks: list.tasks.map((task) => ({
           id: task.id,
           title: task.title,
           description: task.description,
           status: task.status,
           dueDate: task.due_date?.toISO() ?? null,
-          assignees: task.user
-            ? [{ firstName: task.user.first_name, lastName: task.user.last_name }]
-            : [],
+          members: task.members.map((member) => ({
+            id: member.id,
+            firstName: member.first_name,
+            lastName: member.last_name,
+          })),
         })),
       })),
     })

@@ -1,6 +1,7 @@
 import { test } from '@japa/runner'
 import { DateTime } from 'luxon'
 import Task from '#models/task'
+import ToDoList from '#models/to_do_list'
 import User from '#models/user'
 
 /**
@@ -10,10 +11,12 @@ import User from '#models/user'
 test.group('Task due_date (API)', (group) => {
   let owner: User
   let other: User
+  let list: ToDoList
   let task: Task
 
   group.setup(async () => {
     await Task.query().delete()
+    await ToDoList.query().delete()
     await User.query().delete()
     owner = await User.create({
       first_name: 'Owner',
@@ -29,15 +32,23 @@ test.group('Task due_date (API)', (group) => {
       password: 'password123',
       username: null,
     })
+    // Une task appartient toujours à une todolist.
+    list = await ToDoList.create({ name: 'Liste due_date', userId: owner.id })
   })
 
   group.each.setup(async () => {
     await Task.query().delete()
-    task = await Task.create({ title: 'Tâche', status: 'todo', userId: owner.id })
+    task = await Task.create({
+      title: 'Tâche',
+      status: 'todo',
+      userId: owner.id,
+      toDoListId: list.id,
+    })
   })
 
   group.teardown(async () => {
     await Task.query().delete()
+    await ToDoList.query().delete()
     await User.query().delete()
   })
 

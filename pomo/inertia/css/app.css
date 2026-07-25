@@ -95,25 +95,52 @@ html.dark {
   border-color: var(--ui-border);
 }
 
-.vuecal .vuecal__event {
-  color: var(--ui-text-inverted);
-}
-
-.vuecal .vuecal__event.done {
-  background-color: var(--ui-success);
+/* Marqueur de tâche */
+.vuecal .vuecal__event.task-marker {
+  height: 20px !important;
+  min-height: 20px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 8px;
   border: none;
+  border-left: 3px solid var(--task-marker-color, var(--ui-primary));
+  border-radius: 999px;
+  background-color: color-mix(
+    in oklab,
+    var(--task-marker-color, var(--ui-primary)) 20%,
+    var(--ui-bg)
+  );
+  color: var(--ui-text);
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1;
+  overflow: hidden;
+  white-space: nowrap;
+  z-index: 2;
 }
 
-.vuecal .vuecal__event.in_progress {
-  background-color: var(--ui-warning);
+.vuecal .vuecal__event.task-marker::before {
+  content: '';
+  flex-shrink: 0;
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background-color: var(--task-marker-color, var(--ui-primary));
 }
 
-.vuecal .vuecal__event.pending,
-.vuecal .vuecal__event.todo {
-  background-color: var(--ui-bg-inverted);
+.vuecal .vuecal__event.task-marker.todo {
+  --task-marker-color: var(--ui-warning);
 }
 
-.vuecal .vuecal__event.group-event {
-  background-color: var(--ui-primary);
-  border: none;
+.vuecal .vuecal__event.task-marker.in_progress {
+  --task-marker-color: var(--ui-info);
+}
+
+.vuecal .vuecal__event.task-marker.done {
+  --task-marker-color: var(--ui-success);
+}
+
+.vuecal .vuecal__event.task-marker .vuecal__event-time {
+  display: none;
 }

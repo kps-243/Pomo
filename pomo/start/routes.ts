@@ -117,13 +117,14 @@ router.get('/groups/:id', [GroupsController, 'show']).use(middleware.auth())
 */
 router
   .group(() => {
-    router.post('/tasks', [TasksController, 'storeFromHome'])
     router.post('/todolists', [ToDoListsController, 'storeFromBoard'])
     router.delete('/todolists/:id', [ToDoListsController, 'destroyFromBoard'])
     router.post('/todolists/:todoListId/tasks', [TasksController, 'storeFromBoard'])
     router.put('/todolists/:todoListId/tasks/reorder', [TasksController, 'reorderFromBoard'])
     router.put('/tasks/:id', [TasksController, 'updateFromBoard'])
     router.delete('/tasks/:id', [TasksController, 'destroyFromBoard'])
+    router.post('/tasks/:id/members', [TasksController, 'joinTask'])
+    router.delete('/tasks/:id/members', [TasksController, 'leaveTask'])
 
     // Groupes & calendrier partagé
     router.post('/groups', [GroupsController, 'store'])

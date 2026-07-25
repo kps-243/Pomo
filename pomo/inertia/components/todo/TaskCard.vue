@@ -9,6 +9,7 @@ import type { TaskItem } from '~/types/todo'
 const props = defineProps<{
   task: TaskItem
   listName: string
+  isGroupList: boolean
 }>()
 
 const isModalOpen = ref(false)
@@ -17,7 +18,7 @@ const openModal = () => {
   isModalOpen.value = true
 }
 
-const assignees = computed(() => props.task.assignees ?? [])
+const members = computed(() => props.task.members ?? [])
 </script>
 
 <template>
@@ -42,12 +43,17 @@ const assignees = computed(() => props.task.assignees ?? [])
         <div>
           <DateBadge v-if="task.dueDate" :due-date="task.dueDate" class="shrink-0" />
         </div>
-        <div v-if="assignees.length" class="flex shrink-0 items-center -space-x-2">
-          <MemberAvatar v-for="(person, index) in assignees" :key="index" :member="person" />
+        <div v-if="members.length" class="flex shrink-0 items-center -space-x-2">
+          <MemberAvatar v-for="member in members" :key="member.id" :member="member" />
         </div>
       </div>
     </div>
 
-    <TaskModal v-model:open="isModalOpen" :task="task" :list-name="listName" />
+    <TaskModal
+      v-model:open="isModalOpen"
+      :task="task"
+      :list-name="listName"
+      :is-group-list="isGroupList"
+    />
   </div>
 </template>

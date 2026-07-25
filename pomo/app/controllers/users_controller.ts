@@ -27,6 +27,12 @@ export default class UsersController {
 
     try {
       const user = await User.verifyCredentials(email, password)
+
+      if (user.twoFactorEnabled) {
+        session.put('two_factor_pending_user_id', user.id)
+        return response.redirect('/two-factor/verify')
+      }
+
       await auth.use('web').login(user)
     } catch {
       session.flashErrors({ email: 'Email ou mot de passe incorrect' })

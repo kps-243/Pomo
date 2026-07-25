@@ -1,13 +1,16 @@
 import { test } from '@japa/runner'
 import { DateTime } from 'luxon'
 import Task from '#models/task'
+import ToDoList from '#models/to_do_list'
 import User from '#models/user'
 
 test.group('Tasks CRUD', (group) => {
   let user: User
+  let list: ToDoList
 
   group.setup(async () => {
     await Task.query().delete()
+    await ToDoList.query().delete()
     await User.query().delete()
     user = await User.create({
       first_name: 'Test',
@@ -16,18 +19,22 @@ test.group('Tasks CRUD', (group) => {
       password: 'password123',
       username: null,
     })
+    // Une task appartient toujours à une todolist.
+    list = await ToDoList.create({ name: 'Liste test', userId: user.id })
     await Task.create({
       title: 'Seed Task',
       description: 'Task created for tests',
       status: 'todo',
       userId: user.id,
+      toDoListId: list.id,
       duration: 25,
-      start_date: DateTime.now(),
+      due_date: DateTime.now(),
     })
   })
 
   group.teardown(async () => {
     await Task.query().delete()
+    await ToDoList.query().delete()
     await User.query().delete()
   })
 
@@ -42,7 +49,8 @@ test.group('Tasks CRUD', (group) => {
       description: 'This is a test task',
       status: 'todo',
       duration: 25,
-      start_date: new Date().toISOString(),
+      due_date: new Date().toISOString(),
+      to_do_list_id: list.id,
     })
 
     response.assertStatus(201)
@@ -60,7 +68,7 @@ test.group('Tasks CRUD', (group) => {
       description: 'This is an updated test task',
       status: 'done',
       duration: 30,
-      start_date: new Date().toISOString(),
+      due_date: new Date().toISOString(),
     })
 
     response.assertStatus(200)

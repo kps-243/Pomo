@@ -3,6 +3,7 @@ import type { BelongsTo, HasMany } from '@adonisjs/lucid/types/relations'
 import { DateTime } from 'luxon'
 import User from '#models/user'
 import Task from '#models/task'
+import Group from '#models/group'
 
 export default class ToDoList extends BaseModel {
   @column({ isPrimary: true })
@@ -14,13 +15,17 @@ export default class ToDoList extends BaseModel {
   @column()
   declare userId: number
 
+  @column()
+  declare groupId: number | null
+
   @belongsTo(() => User)
   declare user: BelongsTo<typeof User>
 
   @hasMany(() => Task)
   declare tasks: HasMany<typeof Task>
 
-  // TODO: Ajouter la relation à group_chat quand on aura créé le model
+  @belongsTo(() => Group)
+  declare group: BelongsTo<typeof Group>
 
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime

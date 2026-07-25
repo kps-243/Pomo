@@ -31,3 +31,7 @@ components.d.ts
 
 # Fichiers uploadés à l'exécution
 public/uploads/
+
+# Artefacts Cypress
+cypress/screenshots/
+cypress/videos/

@@ -46,4 +46,12 @@ export default await Env.create(new URL('../', import.meta.url), {
   GITHUB_CLIENT_SECRET: Env.schema.string(),
   GOOGLE_CLIENT_ID: Env.schema.string(),
   GOOGLE_CLIENT_SECRET: Env.schema.string(),
+
+  /*
+  |----------------------------------------------------------
+  | Variables for configuring Umami analytics (dev only)
+  |----------------------------------------------------------
+  */
+  UMAMI_DOMAIN: Env.schema.string.optional(),
+  UMAMI_WEBSITE_ID: Env.schema.string.optional(),
 })

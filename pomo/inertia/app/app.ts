@@ -4,7 +4,7 @@
 import '../css/app.css'
 import { createApp, h } from 'vue'
 import type { DefineComponent } from 'vue'
-import { createInertiaApp } from '@inertiajs/vue3'
+import { createInertiaApp, router } from '@inertiajs/vue3'
 import { resolvePageComponent } from '@adonisjs/inertia/helpers'
 import ui from '@nuxt/ui/vue-plugin'
 import UApp from '@nuxt/ui/components/App.vue'
@@ -29,4 +29,8 @@ createInertiaApp({
       .use(ui)
       .mount(el)
   },
+})
+
+router.on('navigate', () => {
+  window.umami?.track()
 })

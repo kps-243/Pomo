@@ -1,4 +1,5 @@
 import Task from '#models/task'
+import env from '#start/env'
 import type { HttpContext } from '@adonisjs/core/http'
 
 export default class HomeController {
@@ -9,6 +10,8 @@ export default class HomeController {
       .orderBy('created_at', 'desc')
       .limit(10)
 
+    const calendarToken = await user.ensureCalendarToken()
+
     return inertia.render('home', {
       tasks: tasks.map((task) => ({
         id: task.id,
@@ -18,6 +21,7 @@ export default class HomeController {
         dueDate: task.due_date?.toISO() ?? null,
         duration: task.duration ?? 0,
       })),
+      calendarFeedUrl: `${env.get('APP_URL')}/calendar/${calendarToken}/feed.ics`,
     })
   }
 }

@@ -9,9 +9,15 @@ const loading = ref(false)
 
 const submit = () => {
   loading.value = true
-  router.post('/two-factor/verify', { code: code.value }, {
-    onFinish: () => { loading.value = false },
-  })
+  router.post(
+    '/two-factor/verify',
+    { code: code.value },
+    {
+      onFinish: () => {
+        loading.value = false
+      },
+    }
+  )
 }
 </script>
 
@@ -32,7 +38,11 @@ const submit = () => {
         </p>
       </div>
 
-      <div v-if="error" role="alert" class="mb-4 rounded-lg bg-error/10 px-4 py-3 text-sm text-error">
+      <div
+        v-if="error"
+        role="alert"
+        class="mb-4 rounded-lg bg-error/10 px-4 py-3 text-sm text-error"
+      >
         {{ error }}
       </div>
 

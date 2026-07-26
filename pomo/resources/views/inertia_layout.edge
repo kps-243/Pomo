@@ -37,7 +37,9 @@
     @stack('dumper')
 
     @if(app.inProduction && config('umami.enabled'))
-      <script defer src="https://{{ config('umami.domain') }}/script.js" data-website-id="{{ config('umami.websiteId') }}"></script>
+      <script defer src="https://{{ config('umami.domain') }}/script.js" data-website-id="{{ config('umami.websiteId') }}">
+
+      </script>
     @end
   </head>
 

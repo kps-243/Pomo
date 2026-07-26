@@ -28,7 +28,7 @@ const authCta = computed(() => {
 const statusMessage = computed(() => {
   switch (props.status) {
     case 'expired':
-      return "Cette invitation a expiré. Demandez à la personne qui vous a invité(e) de vous en envoyer une nouvelle."
+      return 'Cette invitation a expiré. Demandez à la personne qui vous a invité(e) de vous en envoyer une nouvelle.'
     case 'accepted':
       return 'Cette invitation a déjà été acceptée.'
     case 'cancelled':
@@ -83,8 +83,9 @@ const statusMessage = computed(() => {
         <!-- Connecté avec un autre compte -->
         <div v-else-if="isAuthenticated && emailMismatch" class="mt-6 space-y-4 text-center">
           <p class="text-sm text-error">
-            Cette invitation a été envoyée à <strong>{{ inviteeEmail }}</strong>, mais vous êtes
-            connecté(e) en tant que <strong>{{ currentUserEmail }}</strong>.
+            Cette invitation a été envoyée à <strong>{{ inviteeEmail }}</strong
+            >, mais vous êtes connecté(e) en tant que <strong>{{ currentUserEmail }}</strong
+            >.
           </p>
           <form method="POST" action="/logout">
             <button
@@ -98,9 +99,7 @@ const statusMessage = computed(() => {
 
         <!-- Non connecté -->
         <div v-else class="mt-6 space-y-3">
-          <p class="text-center text-xs text-muted">
-            Invitation envoyée à {{ inviteeEmail }}.
-          </p>
+          <p class="text-center text-xs text-muted">Invitation envoyée à {{ inviteeEmail }}.</p>
           <a
             :href="authCta.href"
             class="block w-full rounded-lg bg-primary py-2 text-center font-medium text-inverted transition hover:bg-primary/90"

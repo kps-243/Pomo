@@ -25,7 +25,9 @@ const disableTwoFactor = () => {
               :class="twoFactorEnabled ? 'bg-success/10' : 'bg-muted'"
             >
               <UIcon
-                :name="twoFactorEnabled ? 'i-heroicons-shield-check' : 'i-heroicons-shield-exclamation'"
+                :name="
+                  twoFactorEnabled ? 'i-heroicons-shield-check' : 'i-heroicons-shield-exclamation'
+                "
                 class="h-5 w-5"
                 :class="twoFactorEnabled ? 'text-success' : 'text-muted'"
               />
@@ -44,11 +46,7 @@ const disableTwoFactor = () => {
 
           <span
             class="shrink-0 rounded-full px-2.5 py-0.5 text-xs font-semibold"
-            :class="
-              twoFactorEnabled
-                ? 'bg-success/10 text-success'
-                : 'bg-muted text-muted'
-            "
+            :class="twoFactorEnabled ? 'bg-success/10 text-success' : 'bg-muted text-muted'"
           >
             {{ twoFactorEnabled ? 'Activée' : 'Désactivée' }}
           </span>
@@ -57,7 +55,8 @@ const disableTwoFactor = () => {
         <div class="mt-5 border-t border-default pt-4">
           <template v-if="twoFactorEnabled">
             <p class="mb-3 text-sm text-muted">
-              Pour désactiver la 2FA, vous devrez vous reconnecter sans le code OTP la prochaine fois.
+              Pour désactiver la 2FA, vous devrez vous reconnecter sans le code OTP la prochaine
+              fois.
             </p>
             <button
               type="button"
@@ -69,7 +68,8 @@ const disableTwoFactor = () => {
           </template>
           <template v-else>
             <p class="mb-3 text-sm text-muted">
-              Utilisez une application comme Google Authenticator ou Authy pour générer des codes à usage unique.
+              Utilisez une application comme Google Authenticator ou Authy pour générer des codes à
+              usage unique.
             </p>
             <a
               href="/two-factor/setup"

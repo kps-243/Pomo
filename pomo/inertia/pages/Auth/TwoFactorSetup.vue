@@ -14,9 +14,15 @@ const showSecret = ref(false)
 
 const submit = () => {
   loading.value = true
-  router.post('/two-factor/enable', { code: code.value }, {
-    onFinish: () => { loading.value = false },
-  })
+  router.post(
+    '/two-factor/enable',
+    { code: code.value },
+    {
+      onFinish: () => {
+        loading.value = false
+      },
+    }
+  )
 }
 </script>
 
@@ -60,7 +66,11 @@ const submit = () => {
       </div>
 
       <!-- Error -->
-      <div v-if="error" role="alert" class="mb-4 rounded-lg bg-error/10 px-4 py-3 text-sm text-error">
+      <div
+        v-if="error"
+        role="alert"
+        class="mb-4 rounded-lg bg-error/10 px-4 py-3 text-sm text-error"
+      >
         {{ error }}
       </div>
 
@@ -95,7 +105,10 @@ const submit = () => {
       </form>
 
       <p class="mt-4 text-center text-sm text-muted">
-        <a href="/settings/security" class="font-medium text-primary underline-offset-2 hover:underline">
+        <a
+          href="/settings/security"
+          class="font-medium text-primary underline-offset-2 hover:underline"
+        >
           Annuler
         </a>
       </p>

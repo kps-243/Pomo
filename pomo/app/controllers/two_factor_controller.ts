@@ -2,6 +2,7 @@ import * as OTPAuth from 'otpauth'
 import QRCode from 'qrcode'
 import type { HttpContext } from '@adonisjs/core/http'
 import User from '#models/user'
+import { consumePendingInvitationRedirect } from '#services/group_invitation_service'
 
 const ISSUER = 'Pomo'
 
@@ -43,7 +44,8 @@ export default class TwoFactorController {
 
     session.forget('two_factor_pending_user_id')
     await auth.use('web').login(user)
-    return response.redirect('/')
+    const redirectTo = await consumePendingInvitationRedirect({ user, session })
+    return response.redirect(redirectTo ?? '/')
   }
 
   // ─── Setup flow ───────────────────────────────────────────────────────────

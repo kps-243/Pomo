@@ -1,6 +1,7 @@
 import User from '#models/user'
 import type { HttpContext } from '@adonisjs/core/http'
 import { registerValidator, loginValidator, updateUserValidator } from '#validators/auth'
+import { consumePendingInvitationRedirect } from '#services/group_invitation_service'
 
 export default class UsersController {
   index() {
@@ -11,11 +12,12 @@ export default class UsersController {
     return inertia.render('Auth/Register')
   }
 
-  async store({ request, response, auth }: HttpContext) {
+  async store({ request, response, auth, session }: HttpContext) {
     const payload = await request.validateUsing(registerValidator)
     const user = await User.create(payload)
     await auth.use('web').login(user)
-    return response.redirect('/')
+    const redirectTo = await consumePendingInvitationRedirect({ user, session })
+    return response.redirect(redirectTo ?? '/')
   }
 
   connection({ inertia }: HttpContext) {
@@ -25,8 +27,9 @@ export default class UsersController {
   async login({ request, response, session, auth }: HttpContext) {
     const { email, password } = await request.validateUsing(loginValidator)
 
+    let user: User
     try {
-      const user = await User.verifyCredentials(email, password)
+      user = await User.verifyCredentials(email, password)
 
       if (user.twoFactorEnabled) {
         session.put('two_factor_pending_user_id', user.id)
@@ -39,7 +42,8 @@ export default class UsersController {
       return response.redirect().back()
     }
 
-    return response.redirect('/')
+    const redirectTo = await consumePendingInvitationRedirect({ user, session })
+    return response.redirect(redirectTo ?? '/')
   }
 
   async logout({ auth, response }: HttpContext) {

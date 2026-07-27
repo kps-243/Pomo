@@ -237,12 +237,13 @@ UMAMI_DB_PASSWORD=      # openssl rand -hex 24
 UMAMI_DB_DATABASE=umamidb
 UMAMI_APP_SECRET=       # openssl rand -hex 32
 UMAMI_WEBSITE_ID=
+SMTP_HOST=smtp.resend.com
+SMTP_PORT=465
+SMTP_USERNAME=resend
+SMTP_PASSWORD=          # clef API Resend commenceant par "re_"
+MAIL_FROM_ADDRESS=no-reply@willix.fr
+MAIL_FROM_NAME=Pomo
 ```
-
-> `UMAMI_DB_PASSWORD` doit être généré en **hexadécimal**, pas en base64
-> comme `DB_PASSWORD` : il est inséré tel quel dans l'URI `postgresql://...`
-> du service `umami`, et un caractère base64 (`/`, `+`, `=`) y casserait le
-> parsing.
 
 ### Créer le rôle et la base dédiés
 

@@ -5,6 +5,7 @@ import { pluginAdonisJS } from '@japa/plugin-adonisjs'
 import { apiClient } from '@japa/api-client'
 import { authApiClient } from '@adonisjs/auth/plugins/api_client'
 import { sessionApiClient } from '@adonisjs/session/plugins/api_client'
+import { inertiaApiClient } from '@adonisjs/inertia/plugins/api_client'
 import testUtils from '@adonisjs/core/services/test_utils'
 
 /**
@@ -21,6 +22,7 @@ export const plugins: Config['plugins'] = [
   apiClient(),
   sessionApiClient(app),
   authApiClient(app),
+  inertiaApiClient(app),
 ]
 
 /**

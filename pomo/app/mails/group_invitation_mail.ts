@@ -27,7 +27,7 @@ export default class GroupInvitationMail extends BaseMail {
     const { html } = await mjml2html(mjmlSource, { validationLevel: 'soft' })
 
     this.message
-      .from(env.get('MAIL_FROM_ADDRESS', 'no-reply@pomo.app'), env.get('MAIL_FROM_NAME', 'Pomo'))
+      .from(env.get('MAIL_FROM_ADDRESS', 'no-reply@willix.fr'), env.get('MAIL_FROM_NAME', 'Pomo'))
       .to(this.invitation.email)
       .subject(`${this.inviterName} vous invite à rejoindre « ${this.groupName} » sur Pomo`)
       .html(html)

@@ -22,6 +22,7 @@ const CalendarFeedController = () => import('#controllers/calendar_feed_controll
 const GroupInvitationsController = () => import('#controllers/group_invitations_controller')
 const ProfileController = () => import('#controllers/profile_controller')
 const PasswordResetsController = () => import('#controllers/password_resets_controller')
+const GroupMessagesController = () => import('#controllers/group_messages_controller')
 
 // Healthcheck Docker
 router.get('/health', async ({ response }) => {
@@ -145,6 +146,10 @@ router
     router.delete('/groups/:id/members/:userId', [GroupsController, 'removeMember'])
     router.post('/groups/:id/leave', [GroupsController, 'leave'])
     router.post('/invitations/:token/accept', [GroupInvitationsController, 'accept'])
+    router.get('/groups/:id/messages', [GroupMessagesController, 'index'])
+    router.get('/groups/:id/reports', [GroupMessagesController, 'reports'])
+    router.put('/groups/:id/reports/:reportId', [GroupMessagesController, 'resolveReport'])
+
     router.post('/groups/:groupId/tasks', [TasksController, 'storeForGroup'])
     router.put('/groups/:groupId/tasks/:id', [TasksController, 'updateGroupTask'])
     router.delete('/groups/:groupId/tasks/:id', [TasksController, 'destroyGroupTask'])

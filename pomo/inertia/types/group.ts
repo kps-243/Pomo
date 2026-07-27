@@ -37,3 +37,40 @@ export interface GroupEvent {
   duration: number
   createdBy: GroupEventCreator | null
 }
+
+export interface GroupMessageAuthor {
+  id: number
+  firstName: string
+  lastName: string
+}
+
+export interface GroupMessage {
+  id: number
+  content: string
+  createdAt: string
+  author: GroupMessageAuthor
+}
+
+export interface GroupChatBootstrap {
+  token: string
+  path: string
+  messages: GroupMessage[]
+}
+
+export type ReportReason = 'spam' | 'harassment' | 'inappropriate' | 'other'
+export type ReportStatus = 'pending' | 'reviewed' | 'dismissed'
+
+export interface GroupMessageReport {
+  id: number
+  reason: ReportReason
+  comment: string | null
+  status: ReportStatus
+  createdAt: string
+  reporter: GroupMessageAuthor
+  message: {
+    id: number
+    content: string
+    deleted: boolean
+    author: GroupMessageAuthor
+  }
+}

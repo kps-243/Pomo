@@ -40,6 +40,7 @@ const items = [
   {
     label: 'Mon profil',
     icon: 'i-heroicons-user',
+    onClick: () => router.visit('/settings/profile'),
   },
   {
     label: 'Sécurité',

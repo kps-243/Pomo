@@ -56,9 +56,17 @@ const submit = () => {
 
         <!-- Password -->
         <div>
-          <label for="password" class="mb-1 block text-sm font-medium text-toned">
-            Mot de passe
-          </label>
+          <div class="mb-1 flex items-center justify-between">
+            <label for="password" class="block text-sm font-medium text-toned">
+              Mot de passe
+            </label>
+            <a
+              href="/password/forgot"
+              class="text-xs font-medium text-primary underline-offset-2 hover:underline"
+            >
+              Mot de passe oublié ?
+            </a>
+          </div>
           <input
             id="password"
             v-model="form.password"

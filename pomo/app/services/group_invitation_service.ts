@@ -1,20 +1,12 @@
-import crypto from 'node:crypto'
 import { DateTime } from 'luxon'
 import type { HttpContext } from '@adonisjs/core/http'
 import db from '@adonisjs/lucid/services/db'
 import Group from '#models/group'
 import GroupInvitation from '#models/group_invitation'
 import User from '#models/user'
+import { generateToken, hashToken } from '#services/secure_token'
 
 const INVITATION_EXPIRY_DAYS = 7
-
-function generateToken(): string {
-  return crypto.randomBytes(32).toString('hex')
-}
-
-function hashToken(token: string): string {
-  return crypto.createHash('sha256').update(token).digest('hex')
-}
 
 /**
  * Crée une invitation pour (groupe, email), ou fait pivoter le token d'une

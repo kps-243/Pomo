@@ -53,7 +53,7 @@ const refuse = () => {
     >
       <p class="text-sm leading-relaxed text-toned">
         Pomo utilise des cookies essentiels au fonctionnement, et une mesure d'audience respectueuse
-        de la vie privée (sans cookie) que vous pouvez refuser. 
+        de la vie privée (sans cookie) que vous pouvez refuser.
         <Link href="/legal" class="text-primary underline underline-offset-2">En savoir plus</Link>.
       </p>
 

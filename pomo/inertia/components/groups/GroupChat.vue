@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, nextTick, ref, watch } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import CardTitle from '~/components/CardTitle.vue'
 import MemberAvatar from '~/components/todo/MemberAvatar.vue'
 import GroupChatReportsModal from '~/components/groups/GroupChatReportsModal.vue'
@@ -36,27 +36,46 @@ const draft = ref('')
 const sending = ref(false)
 const actionError = ref<string | null>(null)
 const scrollContainer = ref<HTMLElement | null>(null)
+const scrollContent = ref<HTMLElement | null>(null)
+const FOLLOW_THRESHOLD_PX = 80
+const follow = ref(true)
 
 const canSend = computed(() => draft.value.trim().length > 0 && !sending.value)
 
-// évite le scroll auto
-function isNearBottom(): boolean {
+function pinToBottom() {
   const element = scrollContainer.value
-  if (!element) return true
-  return element.scrollHeight - element.scrollTop - element.clientHeight < 80
+  if (element) element.scrollTop = element.scrollHeight
 }
 
-function scrollToBottom() {
-  nextTick(() => {
-    const element = scrollContainer.value
-    if (element) element.scrollTop = element.scrollHeight
-  })
+function onScroll() {
+  const element = scrollContainer.value
+  if (!element) return
+  follow.value =
+    element.scrollHeight - element.scrollTop - element.clientHeight < FOLLOW_THRESHOLD_PX
 }
+
+let resizeObserver: ResizeObserver | null = null
+
+onMounted(() => {
+  pinToBottom()
+
+  if (scrollContent.value) {
+    resizeObserver = new ResizeObserver(() => {
+      if (follow.value) pinToBottom()
+    })
+    resizeObserver.observe(scrollContent.value)
+  }
+})
+
+onBeforeUnmount(() => {
+  resizeObserver?.disconnect()
+  resizeObserver = null
+})
 
 watch(
   () => messages.value.length,
   (length, previousLength) => {
-    if (length > previousLength && isNearBottom()) scrollToBottom()
+    if (length > previousLength && follow.value) nextTick(pinToBottom)
   }
 )
 
@@ -64,7 +83,8 @@ watch(
   () => props.chat.messages,
   (value) => {
     messages.value = [...value]
-    scrollToBottom()
+    follow.value = true
+    nextTick(pinToBottom)
   }
 )
 
@@ -82,7 +102,9 @@ async function onSubmit() {
     draft.value = content
     actionError.value = result.error ?? "Impossible d'envoyer le message"
   } else {
-    scrollToBottom()
+    // Envoyer un message ramène toujours en bas, même si on lisait plus haut.
+    follow.value = true
+    nextTick(pinToBottom)
   }
   sending.value = false
 }
@@ -140,10 +162,7 @@ const isReportsModalOpen = ref(false)
 </script>
 
 <template>
-  <UCard
-    class="flex w-full flex-col rounded-2xl border border-default shadow-md ring-0"
-    :ui="{ body: 'flex-1 flex flex-col min-h-0' }"
-  >
+  <UCard class="w-full rounded-2xl border border-default shadow-md ring-0">
     <template #header>
       <div class="flex items-center justify-between gap-2">
         <CardTitle title="Discussion" />
@@ -167,15 +186,15 @@ const isReportsModalOpen = ref(false)
       </div>
     </template>
 
-    <div class="flex min-h-0 flex-1 flex-col gap-2">
+    <div class="flex flex-col gap-2">
       <p v-if="connectionError" class="text-xs text-warning">{{ connectionError }}</p>
-
       <div
         ref="scrollContainer"
         data-cy="chat-messages"
-        class="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto pr-1"
-        style="max-height: 450px"
+        class="h-95 overflow-y-auto pr-1"
+        @scroll.passive="onScroll"
       >
+        <div ref="scrollContent" class="flex flex-col gap-3">
         <div v-if="hasMore" class="flex justify-center">
           <UButton
             color="neutral"
@@ -234,6 +253,7 @@ const isReportsModalOpen = ref(false)
               <UIcon name="i-heroicons-trash" class="h-3.5 w-3.5" />
             </button>
           </div>
+        </div>
         </div>
       </div>
 

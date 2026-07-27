@@ -8,6 +8,7 @@ import { createInertiaApp, router } from '@inertiajs/vue3'
 import { resolvePageComponent } from '@adonisjs/inertia/helpers'
 import ui from '@nuxt/ui/vue-plugin'
 import UApp from '@nuxt/ui/components/App.vue'
+import CookieConsent from '../components/CookieConsent.vue'
 
 const appName = import.meta.env.VITE_APP_NAME || 'Pomo'
 
@@ -24,7 +25,7 @@ createInertiaApp({
   },
 
   setup({ el, App, props, plugin }) {
-    createApp({ render: () => h(UApp, () => h(App, props)) })
+    createApp({ render: () => h(UApp, () => [h(App, props), h(CookieConsent)]) })
       .use(plugin)
       .use(ui)
       .mount(el)

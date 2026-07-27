@@ -20,6 +20,8 @@ const TwoFactorController = () => import('#controllers/two_factor_controller')
 const GroupsController = () => import('#controllers/groups_controller')
 const CalendarFeedController = () => import('#controllers/calendar_feed_controller')
 const GroupInvitationsController = () => import('#controllers/group_invitations_controller')
+const ProfileController = () => import('#controllers/profile_controller')
+const PasswordResetsController = () => import('#controllers/password_resets_controller')
 
 // Healthcheck Docker
 router.get('/health', async ({ response }) => {
@@ -173,6 +175,22 @@ router.post('/two-factor/disable', [TwoFactorController, 'disable']).use(middlew
 
 // Paramètres sécurité
 router.get('/settings/security', [TwoFactorController, 'securityPage']).use(middleware.auth())
+
+// Paramètres profil (authentifié)
+router
+  .group(() => {
+    router.get('/settings/profile', [ProfileController, 'show'])
+    router.put('/settings/profile', [ProfileController, 'update'])
+    router.post('/settings/profile/password-reset', [ProfileController, 'requestPasswordReset'])
+    router.delete('/settings/profile', [ProfileController, 'destroy'])
+  })
+  .use(middleware.auth())
+
+// Réinitialisation de mot de passe (publique)
+router.get('/password/forgot', [PasswordResetsController, 'showForgotForm'])
+router.post('/password/forgot', [PasswordResetsController, 'sendForgotEmail'])
+router.get('/password/reset/:token', [PasswordResetsController, 'showResetForm'])
+router.post('/password/reset/:token', [PasswordResetsController, 'resetPassword'])
 
 // ⚠️ À sécuriser plus tard : ce CRUD users est encore public
 router.get('api/users', [UsersController, 'index'])

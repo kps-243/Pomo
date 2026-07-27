@@ -29,6 +29,7 @@ router.get('/health', async ({ response }) => {
 
 // Flux calendrier iCal — public (les applications de calendrier s'y abonnent sans session)
 router.get('/calendar/:token/feed.ics', [CalendarFeedController, 'feed'])
+router.get('/legal', ({ inertia }) => inertia.render('Legal'))
 
 /*
 |--------------------------------------------------------------------------

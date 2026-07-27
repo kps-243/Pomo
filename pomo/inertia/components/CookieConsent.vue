@@ -16,14 +16,16 @@ const applyChoice = (accepted: boolean) => {
 }
 
 onMounted(() => {
+  // En environnement de test E2E (Cypress), on n'affiche jamais le bandeau : il est en position fixed en bas d'écran et intercepterait les clics.
+  if (typeof window !== 'undefined' && 'Cypress' in window) {
+    return
+  }
+
   const stored = localStorage.getItem(CONSENT_KEY)
   if (stored === null) {
-    // Pas encore de choix : on bloque la mesure d'audience par défaut (RGPD)
-    // et on affiche le bandeau.
     localStorage.setItem('umami.disabled', '1')
     visible.value = true
   } else {
-    // Un choix existe déjà : on le ré-applique à chaque chargement.
     applyChoice(stored === 'accepted')
   }
 })

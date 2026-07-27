@@ -7,7 +7,7 @@ const form = ref({
   username: '',
   first_name: '',
   last_name: '',
-  email: '',
+  email: new URLSearchParams(window.location.search).get('email') ?? '',
   password: '',
 })
 

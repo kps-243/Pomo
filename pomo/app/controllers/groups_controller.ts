@@ -1,9 +1,12 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import db from '@adonisjs/lucid/services/db'
+import mail from '@adonisjs/mail/services/main'
 import env from '#start/env'
 import Group from '#models/group'
 import ToDoList from '#models/to_do_list'
 import User from '#models/user'
+import GroupInvitationMail from '#mails/group_invitation_mail'
+import { createOrRefreshInvitation } from '#services/group_invitation_service'
 import {
   createGroupValidator,
   updateGroupValidator,
@@ -133,19 +136,32 @@ export default class GroupsController {
     }
 
     const { email } = await request.validateUsing(inviteMemberValidator)
-    const invitee = await User.findBy('email', email)
-    if (!invitee) {
-      session.flashErrors({ email: "Aucun utilisateur n'est inscrit avec cet email" })
-      return response.redirect().back()
+
+    const existingUser = await User.findBy('email', email)
+    if (existingUser) {
+      const alreadyMember = await this.isMember(group.id, existingUser.id)
+      if (alreadyMember) {
+        session.flashErrors({ email: 'Cet utilisateur est déjà membre du groupe' })
+        return response.redirect().back()
+      }
     }
 
-    const alreadyMember = await this.isMember(group.id, invitee.id)
-    if (alreadyMember) {
-      session.flashErrors({ email: 'Cet utilisateur est déjà membre du groupe' })
-      return response.redirect().back()
-    }
+    const { invitation, token } = await createOrRefreshInvitation({
+      group,
+      email,
+      invitedBy: user,
+    })
 
-    await group.related('members').attach({ [invitee.id]: { role: 'member' } })
+    await mail.send(
+      new GroupInvitationMail(
+        invitation,
+        token,
+        group.name,
+        `${user.first_name} ${user.last_name}`.trim()
+      )
+    )
+
+    session.flash('success', 'Invitation envoyée.')
     return response.redirect().back()
   }
 

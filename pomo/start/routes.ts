@@ -19,6 +19,7 @@ const EventsController = () => import('#controllers/events_controller')
 const TwoFactorController = () => import('#controllers/two_factor_controller')
 const GroupsController = () => import('#controllers/groups_controller')
 const CalendarFeedController = () => import('#controllers/calendar_feed_controller')
+const GroupInvitationsController = () => import('#controllers/group_invitations_controller')
 
 // Healthcheck Docker
 router.get('/health', async ({ response }) => {
@@ -113,6 +114,9 @@ router.get('/todolists', [ToDoListsController, 'page']).use(middleware.auth())
 router.get('/groups', [GroupsController, 'page']).use(middleware.auth())
 router.get('/groups/:id', [GroupsController, 'show']).use(middleware.auth())
 
+// Page d'acceptation d'une invitation — publique, accessible sans être connecté
+router.get('/invitations/:token', [GroupInvitationsController, 'show'])
+
 /*
 |--------------------------------------------------------------------------
 | Actions "home/board" (formulaires Inertia -> redirect back)
@@ -137,6 +141,7 @@ router
     router.post('/groups/:id/invite', [GroupsController, 'inviteMember'])
     router.delete('/groups/:id/members/:userId', [GroupsController, 'removeMember'])
     router.post('/groups/:id/leave', [GroupsController, 'leave'])
+    router.post('/invitations/:token/accept', [GroupInvitationsController, 'accept'])
     router.post('/groups/:groupId/tasks', [TasksController, 'storeForGroup'])
     router.put('/groups/:groupId/tasks/:id', [TasksController, 'updateGroupTask'])
     router.delete('/groups/:groupId/tasks/:id', [TasksController, 'destroyGroupTask'])

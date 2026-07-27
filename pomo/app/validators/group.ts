@@ -25,6 +25,6 @@ export const updateGroupValidator = vine.compile(
  */
 export const inviteMemberValidator = vine.compile(
   vine.object({
-    email: vine.string().trim().email(),
+    email: vine.string().trim().normalizeEmail().email(),
   })
 )

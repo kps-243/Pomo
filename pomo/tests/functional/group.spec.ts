@@ -1,5 +1,9 @@
 import { test } from '@japa/runner'
+import mail from '@adonisjs/mail/services/main'
+import { FakeMailer } from '@adonisjs/mail'
 import Group from '#models/group'
+import GroupInvitation from '#models/group_invitation'
+import GroupInvitationMail from '#mails/group_invitation_mail'
 import ToDoList from '#models/to_do_list'
 import User from '#models/user'
 import db from '@adonisjs/lucid/services/db'
@@ -35,6 +39,7 @@ test.group('Groups', (group) => {
   let owner: User
   let member: User
   let outsider: User
+  let fakeMailer: FakeMailer
 
   group.setup(async () => {
     await db.from('group_members').delete()
@@ -67,8 +72,11 @@ test.group('Groups', (group) => {
 
   group.each.setup(async () => {
     await db.from('group_members').delete()
+    await GroupInvitation.query().delete()
     await ToDoList.query().delete()
     await Group.query().delete()
+    fakeMailer = mail.fake()
+    return () => mail.restore()
   })
 
   group.teardown(async () => {
@@ -110,7 +118,10 @@ test.group('Groups', (group) => {
     assert.lengthOf(await Group.all(), 0)
   })
 
-  test('le propriétaire invite un membre existant', async ({ client, assert }) => {
+  test("le propriétaire invite un membre existant : une invitation par e-mail est créée (pas d'ajout instantané)", async ({
+    client,
+    assert,
+  }) => {
     const g = await makeGroup(owner)
     const response = await client
       .post(`/groups/${g.id}/invite`)
@@ -119,10 +130,25 @@ test.group('Groups', (group) => {
       .json({ email: member.email })
 
     response.assertStatus(302)
-    assert.isTrue(await isMember(g.id, member.id))
+    assert.isFalse(await isMember(g.id, member.id))
+
+    const invitation = await GroupInvitation.query()
+      .where('group_id', g.id)
+      .where('email', member.email)
+      .first()
+    assert.isNotNull(invitation)
+    assert.equal(invitation!.status, 'pending')
+
+    fakeMailer.mails.assertSent(
+      GroupInvitationMail,
+      (m: GroupInvitationMail) => m.invitation.email === member.email
+    )
   })
 
-  test("l'invitation d'un email inconnu n'ajoute personne", async ({ client, assert }) => {
+  test("l'invitation d'un email inconnu n'ajoute personne mais crée quand même l'invitation", async ({
+    client,
+    assert,
+  }) => {
     const g = await makeGroup(owner)
     const before = await memberCount(g.id)
 
@@ -134,6 +160,12 @@ test.group('Groups', (group) => {
 
     response.assertStatus(302)
     assert.deepEqual(await memberCount(g.id), before)
+
+    const invitation = await GroupInvitation.query()
+      .where('group_id', g.id)
+      .where('email', 'inconnu@nowhere.com')
+      .first()
+    assert.isNotNull(invitation)
   })
 
   test('inviter un membre déjà présent ne crée pas de doublon', async ({ client, assert }) => {

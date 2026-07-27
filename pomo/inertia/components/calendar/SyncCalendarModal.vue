@@ -19,7 +19,12 @@ const copyLink = async () => {
 
 const regenerating = ref(false)
 const regenerateLink = () => {
-  if (!confirm("Régénérer le lien ? L'ancien lien cessera de fonctionner dans vos calendriers déjà synchronisés.")) return
+  if (
+    !confirm(
+      "Régénérer le lien ? L'ancien lien cessera de fonctionner dans vos calendriers déjà synchronisés."
+    )
+  )
+    return
   regenerating.value = true
   router.post(
     '/calendar/token/regenerate',

@@ -1,0 +1,67 @@
+<mjml>
+  <mj-head>
+    <mj-title>
+      Invitation à rejoindre {{ groupName }}
+    </mj-title>
+    <mj-preview>
+      {{ inviterName }} vous invite à rejoindre « {{ groupName }} » sur Pomo
+    </mj-preview>
+    <mj-attributes>
+      <mj-all font-family="Helvetica, Arial, sans-serif" />
+      <mj-text font-size="15px" line-height="1.6" color="#334155" />
+    </mj-attributes>
+  </mj-head>
+
+  <mj-body background-color="#f1f5f9">
+    <mj-section padding="32px 0 8px 0">
+      <mj-column>
+        <mj-text align="center" font-size="22px" font-weight="700" color="#0f172a">
+          Pomo
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <mj-section background-color="#ffffff" border-radius="12px" padding="32px 24px">
+      <mj-column>
+        <mj-text font-size="18px" font-weight="700" color="#0f172a" padding-bottom="8px">
+          Vous êtes invité(e) à rejoindre « {{ groupName }} »
+        </mj-text>
+
+        <mj-text>
+          <strong>{{ inviterName }}</strong>vous invite à rejoindre le groupe
+          <strong>{{ groupName }}</strong>sur Pomo, pour partager tâches, todolists et
+          calendrier avec les autres membres.
+        </mj-text>
+
+        <mj-button
+          background-color="#16a34a"
+          color="#ffffff"
+          border-radius="8px"
+          font-size="16px"
+          font-weight="600"
+          inner-padding="14px 28px"
+          padding="24px 0 8px 0"
+          href="{{ acceptUrl }}"
+        >
+          Accepter l'invitation
+        </mj-button>
+
+        <mj-text font-size="13px" color="#64748b" padding-top="16px">
+          Si le bouton ne fonctionne pas, copiez-collez ce lien dans votre navigateur :
+          <br />
+          <a href="{{ acceptUrl }}" style="color:#16a34a; word-break: break-all;">{{ acceptUrl }}</a>
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <mj-section padding="16px 0 32px 0">
+      <mj-column>
+        <mj-text align="center" font-size="12px" color="#94a3b8">
+          Cette invitation a été envoyée à {{ inviteeEmail }} et expire dans 7 jours.
+          <br />
+          Si vous ne vous attendiez pas à ce message, vous pouvez l'ignorer sans risque.
+        </mj-text>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>

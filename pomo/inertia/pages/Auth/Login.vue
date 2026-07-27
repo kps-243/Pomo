@@ -4,7 +4,7 @@ import { Head, useForm } from '@inertiajs/vue3'
 import SocialAuthButtons from '~/components/auth/SocialAuthButtons.vue'
 
 const form = useForm({
-  email: '',
+  email: new URLSearchParams(window.location.search).get('email') ?? '',
   password: '',
 })
 

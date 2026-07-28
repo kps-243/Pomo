@@ -218,7 +218,12 @@ const submitEvent = () => {
             </div>
 
             <div class="flex justify-end gap-2 pt-1">
-              <UButton type="button" color="neutral" variant="ghost" @click="isEventModalOpen = false">
+              <UButton
+                type="button"
+                color="neutral"
+                variant="ghost"
+                @click="isEventModalOpen = false"
+              >
                 Annuler
               </UButton>
               <UButton

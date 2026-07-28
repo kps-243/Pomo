@@ -36,7 +36,9 @@ const submit = () => {
       <template v-if="valid">
         <div class="mb-6 text-center">
           <h1 class="text-2xl font-bold text-highlighted">Nouveau mot de passe</h1>
-          <p class="mt-1 text-sm text-muted">Choisissez un nouveau mot de passe pour votre compte.</p>
+          <p class="mt-1 text-sm text-muted">
+            Choisissez un nouveau mot de passe pour votre compte.
+          </p>
         </div>
 
         <form class="space-y-4" data-cy="reset-password-form" @submit.prevent="submit">

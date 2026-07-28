@@ -118,10 +118,20 @@ const statusClasses: Record<ReportStatus, string> = {
             <p v-if="report.comment" class="text-xs text-muted">« {{ report.comment }} »</p>
 
             <div v-if="report.status === 'pending'" class="mt-2 flex justify-end gap-2">
-              <UButton color="neutral" variant="ghost" size="xs" @click="resolve(report, 'dismissed')">
+              <UButton
+                color="neutral"
+                variant="ghost"
+                size="xs"
+                @click="resolve(report, 'dismissed')"
+              >
                 Écarter
               </UButton>
-              <UButton color="primary" variant="soft" size="xs" @click="resolve(report, 'reviewed')">
+              <UButton
+                color="primary"
+                variant="soft"
+                size="xs"
+                @click="resolve(report, 'reviewed')"
+              >
                 Marquer traité
               </UButton>
             </div>

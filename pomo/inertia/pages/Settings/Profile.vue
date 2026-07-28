@@ -129,9 +129,7 @@ const deleteAccount = () => {
             </div>
 
             <div>
-              <label for="last_name" class="mb-1 block text-sm font-medium text-toned">
-                Nom
-              </label>
+              <label for="last_name" class="mb-1 block text-sm font-medium text-toned"> Nom </label>
               <input
                 id="last_name"
                 v-model="form.last_name"
@@ -198,8 +196,8 @@ const deleteAccount = () => {
       <div class="rounded-2xl border border-error/30 bg-default p-6 shadow-sm">
         <h2 class="mb-1 font-semibold text-highlighted">Zone dangereuse</h2>
         <p class="mb-4 text-sm text-muted">
-          La suppression de votre compte est définitive : toutes vos tâches, todolists et
-          groupes dont vous êtes propriétaire seront supprimés.
+          La suppression de votre compte est définitive : toutes vos tâches, todolists et groupes
+          dont vous êtes propriétaire seront supprimés.
         </p>
         <button
           type="button"
@@ -224,10 +222,9 @@ const deleteAccount = () => {
             Supprimer définitivement votre compte ?
           </h2>
           <p class="mb-4 text-sm text-muted">
-            Cette action est <strong>irréversible</strong>. Votre compte, vos tâches, vos
-            todolists et les groupes dont vous êtes propriétaire seront supprimés
-            définitivement. Les groupes auxquels vous appartenez sans en être propriétaire ne
-            seront pas affectés.
+            Cette action est <strong>irréversible</strong>. Votre compte, vos tâches, vos todolists
+            et les groupes dont vous êtes propriétaire seront supprimés définitivement. Les groupes
+            auxquels vous appartenez sans en être propriétaire ne seront pas affectés.
           </p>
           <div class="flex items-center justify-end gap-2">
             <UButton

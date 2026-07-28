@@ -3,6 +3,7 @@ export type TaskStatus = 'todo' | 'in_progress' | 'done'
 export interface Assignee {
   firstName: string
   lastName: string
+  avatarUrl: string | null
 }
 
 // Un membre de la tâche : un utilisateur qui la réalise.

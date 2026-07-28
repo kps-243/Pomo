@@ -20,7 +20,16 @@ const sizeClasses = computed(() =>
 </script>
 
 <template>
+  <img
+    v-if="member.avatarUrl"
+    :src="member.avatarUrl"
+    :alt="`${member.firstName} ${member.lastName}`"
+    :title="`${member.firstName} ${member.lastName}`"
+    class="shrink-0 rounded-full object-cover ring-2 ring-bg"
+    :class="sizeClasses"
+  />
   <span
+    v-else
     :title="`${member.firstName} ${member.lastName}`"
     class="flex shrink-0 items-center justify-center rounded-full bg-primary font-semibold text-inverted ring-2 ring-bg"
     :class="sizeClasses"

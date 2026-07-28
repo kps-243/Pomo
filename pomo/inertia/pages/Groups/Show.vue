@@ -7,82 +7,83 @@ import DashboardLayout from '~/layouts/DashboardLayout.vue'
 import CardTitle from '~/components/CardTitle.vue'
 import MemberAvatar from '~/components/todo/MemberAvatar.vue'
 import SyncCalendarModal from '~/components/calendar/SyncCalendarModal.vue'
-import { canManageEvent } from '~/utils/groups'
-import type { GroupDetail, GroupEvent, GroupMember } from '~/types/group'
+import AddToCalendarModal from '~/components/calendar/AddToCalendarModal.vue'
+import AgendaList from '~/components/calendar/AgendaList.vue'
+import EventModal from '~/components/calendar/EventModal.vue'
+import TaskModal from '~/components/todo/TaskModal.vue'
+import GroupChat from '~/components/groups/GroupChat.vue'
+import { buildAgenda, canManageItem, toCalendarEntries, visibleTimeRange } from '~/utils/calendar'
+import type { AgendaItem, CalendarEvent, CalendarTask } from '~/types/calendar'
+import type { GroupChatBootstrap, GroupDetail, GroupMember } from '~/types/group'
 
 const props = defineProps<{
   group: GroupDetail
   currentUserId: number
   members: GroupMember[]
-  events: GroupEvent[]
+  tasks: CalendarTask[]
+  events: CalendarEvent[]
   calendarFeedUrl: string
+  chat: GroupChatBootstrap
 }>()
 
 const isOwner = computed(() => props.group.ownerId === props.currentUserId)
 const isSyncModalOpen = ref(false)
 
-const eventsParsed = computed(() =>
-  props.events
-    .filter((e) => e.dueDate)
-    .map((event) => {
-      const start = new Date(event.dueDate as string)
-      return {
-        start,
-        end: new Date(start.getTime() + 60000),
-        title: event.title,
-        content: event.createdBy ? `${event.createdBy.firstName} ${event.createdBy.lastName}` : '',
-        class: 'task-marker',
-      }
-    })
-)
+const entries = computed(() => toCalendarEntries(props.tasks, props.events))
+const agenda = computed(() => buildAgenda(props.tasks, props.events))
+const timeRange = computed(() => visibleTimeRange(props.tasks, props.events))
 
-const upcomingEvents = computed(() =>
-  [...props.events]
-    .filter((e) => e.dueDate)
-    .sort(
-      (a, b) => new Date(a.dueDate as string).getTime() - new Date(b.dueDate as string).getTime()
-    )
-)
+const isAddModalOpen = ref(false)
+const addDefaultDate = ref<string | null>(null)
 
-const canManage = (event: GroupEvent) => canManageEvent(event, props.currentUserId, isOwner.value)
+const openAddModal = (date?: Date) => {
+  addDefaultDate.value = date ? date.toISOString() : null
+  isAddModalOpen.value = true
+}
 
-// --- Create event modal ---
+const selectedTaskId = ref<number | null>(null)
+const selectedEventId = ref<number | null>(null)
+const isTaskModalOpen = ref(false)
 const isEventModalOpen = ref(false)
 
-const eventForm = useForm({
-  title: '',
-  due_date: '',
-  duration: 60,
-  description: '',
-})
+const selectedTask = computed(
+  () => props.tasks.find((task) => task.id === selectedTaskId.value) ?? null
+)
+const selectedEvent = computed(
+  () => props.events.find((event) => event.id === selectedEventId.value) ?? null
+)
 
-const pad = (n: number) => String(n).padStart(2, '0')
+const canManageSelectedEvent = computed(() =>
+  selectedEvent.value
+    ? canManageItem(selectedEvent.value.createdBy, props.currentUserId, isOwner.value)
+    : false
+)
 
-const toDatetimeLocal = (date: Date): string =>
-  `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`
-
-const onCellClick = (date: Date) => {
-  eventForm.reset()
-  eventForm.due_date = toDatetimeLocal(date)
-  eventForm.duration = 60
+const openItem = (item: AgendaItem) => {
+  if (item.kind === 'task') {
+    selectedTaskId.value = item.task.id
+    isTaskModalOpen.value = true
+    return
+  }
+  selectedEventId.value = item.event.id
   isEventModalOpen.value = true
 }
 
-const submitEvent = () => {
-  eventForm.post(`/groups/${props.group.id}/tasks`, {
-    preserveScroll: true,
-    onSuccess: () => {
-      isEventModalOpen.value = false
-      eventForm.reset()
-    },
-  })
+let entryJustClicked = false
+
+const onEntryClick = (entry: { itemKey?: string }) => {
+  entryJustClicked = true
+  setTimeout(() => (entryJustClicked = false), 0)
+  const item = agenda.value.find((candidate) => candidate.key === entry.itemKey)
+  if (item) openItem(item)
 }
 
-const deleteEvent = (eventId: number) => {
-  router.delete(`/groups/${props.group.id}/tasks/${eventId}`, { preserveScroll: true })
+const onCellClick = (date: Date) => {
+  if (entryJustClicked) return
+  openAddModal(date)
 }
 
-// --- Invite modal ---
+// --- Modal d'invitation ---
 const isInviteModalOpen = ref(false)
 const inviteForm = useForm({ email: '' })
 
@@ -166,36 +167,61 @@ const deleteGroup = () => {
       </div>
 
       <div class="flex flex-col gap-6 lg:flex-row">
+        <div class="order-last w-full lg:order-first lg:w-1/4">
+          <GroupChat
+            :group-id="group.id"
+            :current-user-id="currentUserId"
+            :is-owner="isOwner"
+            :chat="chat"
+          />
+        </div>
+
         <!-- Calendrier partagé -->
         <UCard
-          class="flex w-full flex-col rounded-2xl border border-default shadow-md ring-0 lg:w-2/3"
+          class="flex w-full flex-col rounded-2xl border border-default shadow-md ring-0 lg:w-1/2"
         >
           <template #header>
             <div class="flex items-center justify-between gap-2">
               <CardTitle title="Calendrier partagé" />
-              <UButton
-                icon="i-heroicons-arrow-path"
-                color="neutral"
-                variant="ghost"
-                size="xs"
-                @click="isSyncModalOpen = true"
-              >
-                Synchroniser
-              </UButton>
+              <div class="flex items-center gap-1">
+                <UButton
+                  icon="i-heroicons-plus"
+                  color="primary"
+                  variant="soft"
+                  size="xs"
+                  data-cy="add-to-calendar"
+                  @click="openAddModal()"
+                >
+                  Ajouter
+                </UButton>
+                <UButton
+                  icon="i-heroicons-arrow-path"
+                  color="neutral"
+                  variant="ghost"
+                  size="xs"
+                  @click="isSyncModalOpen = true"
+                >
+                  Synchroniser
+                </UButton>
+              </div>
             </div>
           </template>
           <vue-cal
             style="height: 450px"
+            locale="fr"
             default-view="week"
             hide-view-selector
-            :events="eventsParsed"
+            :events="entries"
+            :time-from="timeRange.from"
+            :time-to="timeRange.to"
             time-at-cursor
             xsmall
             @cell-click="onCellClick"
+            @event-click="onEntryClick"
           />
         </UCard>
 
-        <div class="flex w-full flex-col gap-6 lg:w-1/3">
+        <div class="flex w-full flex-col gap-6 lg:w-1/4">
           <!-- Membres -->
           <UCard class="rounded-2xl border border-default shadow-md ring-0">
             <template #header>
@@ -239,136 +265,45 @@ const deleteGroup = () => {
             </ul>
           </UCard>
 
-          <!-- Prochains évènements -->
+          <!-- Tâches et évènements partagés -->
           <UCard class="rounded-2xl border border-default shadow-md ring-0">
             <template #header>
-              <CardTitle title="Prochains évènements" />
+              <CardTitle title="Tâches et évènements" />
             </template>
-            <div class="divide-y divide-default">
-              <div
-                v-for="event in upcomingEvents"
-                :key="event.id"
-                class="flex items-center justify-between gap-2 py-3"
-              >
-                <div class="flex flex-col">
-                  <span class="text-sm font-medium text-highlighted">{{ event.title }}</span>
-                  <span class="text-xs text-muted">
-                    {{ new Date(event.dueDate as string).toLocaleString() }} · ⏱
-                    {{ event.duration }} min
-                  </span>
-                  <span v-if="event.createdBy" class="text-xs text-dimmed">
-                    par {{ event.createdBy.firstName }} {{ event.createdBy.lastName }}
-                  </span>
-                </div>
-                <button
-                  v-if="canManage(event)"
-                  type="button"
-                  class="flex h-7 w-7 shrink-0 items-center justify-center rounded text-dimmed transition hover:bg-error/10 hover:text-error"
-                  aria-label="Supprimer l'évènement"
-                  @click="deleteEvent(event.id)"
-                >
-                  <UIcon name="i-heroicons-trash" class="h-4 w-4" />
-                </button>
-              </div>
-
-              <p v-if="!upcomingEvents.length" class="py-3 text-sm text-muted">
-                Aucun évènement pour le moment. Cliquez sur le calendrier pour en ajouter un.
-              </p>
+            <div class="max-h-100 overflow-y-auto">
+              <AgendaList
+                :items="agenda"
+                :show-calendar-badge="false"
+                empty-title="Rien de prévu"
+                empty-description="Cliquez sur le calendrier pour ajouter une tâche ou un évènement au groupe."
+                @select="openItem"
+              />
             </div>
           </UCard>
         </div>
       </div>
     </div>
 
-    <!-- Modal création d'évènement -->
-    <UModal
+    <AddToCalendarModal
+      v-model:open="isAddModalOpen"
+      :locked-group-id="group.id"
+      :default-date="addDefaultDate"
+    />
+
+    <TaskModal
+      v-if="selectedTask"
+      v-model:open="isTaskModalOpen"
+      :task="selectedTask"
+      :list-name="group.name"
+      is-group-list
+    />
+
+    <EventModal
+      v-if="selectedEvent"
       v-model:open="isEventModalOpen"
-      title="Nouvel évènement"
-      :ui="{ content: 'sm:max-w-md' }"
-    >
-      <template #content>
-        <div class="px-5 py-4">
-          <h2 class="mb-4 text-base font-semibold text-highlighted">Nouvel évènement</h2>
-
-          <form class="space-y-4" @submit.prevent="submitEvent">
-            <div>
-              <label for="event-title" class="mb-1 block text-sm font-medium text-toned"
-                >Titre *</label
-              >
-              <input
-                id="event-title"
-                v-model="eventForm.title"
-                type="text"
-                placeholder="Nom de l'évènement"
-                autofocus
-                class="w-full rounded-lg border border-accented bg-default px-3 py-2 text-sm text-default transition placeholder:text-dimmed focus:border-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-              />
-              <p v-if="eventForm.errors.title" class="mt-1 text-xs text-error">
-                {{ eventForm.errors.title }}
-              </p>
-            </div>
-
-            <div>
-              <label for="event-date" class="mb-1 block text-sm font-medium text-toned"
-                >Date et heure</label
-              >
-              <input
-                id="event-date"
-                v-model="eventForm.due_date"
-                type="datetime-local"
-                class="w-full rounded-lg border border-accented bg-default px-3 py-2 text-sm text-default transition placeholder:text-dimmed focus:border-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-              />
-            </div>
-
-            <div>
-              <label for="event-duration" class="mb-1 block text-sm font-medium text-toned">
-                Durée (minutes)
-              </label>
-              <input
-                id="event-duration"
-                v-model.number="eventForm.duration"
-                type="number"
-                min="5"
-                step="5"
-                class="w-full rounded-lg border border-accented bg-default px-3 py-2 text-sm text-default transition placeholder:text-dimmed focus:border-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-              />
-            </div>
-
-            <div>
-              <label for="event-description" class="mb-1 block text-sm font-medium text-toned">
-                Description
-              </label>
-              <textarea
-                id="event-description"
-                v-model="eventForm.description"
-                rows="2"
-                placeholder="Optionnel..."
-                class="w-full resize-none rounded-lg border border-accented bg-default px-3 py-2 text-sm text-default transition placeholder:text-dimmed focus:border-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-              />
-            </div>
-
-            <div class="flex justify-end gap-2 pt-1">
-              <UButton
-                type="button"
-                color="neutral"
-                variant="ghost"
-                @click="isEventModalOpen = false"
-              >
-                Annuler
-              </UButton>
-              <UButton
-                type="submit"
-                color="primary"
-                :loading="eventForm.processing"
-                :disabled="!eventForm.title.trim()"
-              >
-                Créer
-              </UButton>
-            </div>
-          </form>
-        </div>
-      </template>
-    </UModal>
+      :event="selectedEvent"
+      :can-manage="canManageSelectedEvent"
+    />
 
     <!-- Modal invitation -->
     <UModal

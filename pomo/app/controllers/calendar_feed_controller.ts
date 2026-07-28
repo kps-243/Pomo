@@ -3,6 +3,7 @@ import type { HttpContext } from '@adonisjs/core/http'
 import db from '@adonisjs/lucid/services/db'
 import User from '#models/user'
 import Task from '#models/task'
+import Event from '#models/event'
 import { buildIcsCalendar } from '#services/ics_builder'
 
 export default class CalendarFeedController {
@@ -28,15 +29,31 @@ export default class CalendarFeedController {
       })
       .whereNotNull('due_date')
 
-    const events = tasks.map((task) => ({
-      uid: `task-${task.id}`,
-      title: task.title,
-      description: task.description,
-      start: task.due_date!,
-      end: task.due_date!.plus({ minutes: task.duration ?? 30 }),
-    }))
+    const events = await Event.query().where((query) => {
+      query.where((personal) => personal.where('user_id', user.id).whereNull('group_id'))
+      if (groupIds.length) {
+        query.orWhereIn('group_id', groupIds)
+      }
+    })
 
-    const ics = buildIcsCalendar('Pomo', events)
+    const icsEvents = [
+      ...tasks.map((task) => ({
+        uid: `task-${task.id}`,
+        title: task.title,
+        description: task.description,
+        start: task.due_date!,
+        end: task.due_date!.plus({ minutes: 30 }),
+      })),
+      ...events.map((event) => ({
+        uid: `event-${event.id}`,
+        title: event.title,
+        description: event.description,
+        start: event.start_date,
+        end: event.end_date ?? event.start_date.plus({ hours: 1 }),
+      })),
+    ]
+
+    const ics = buildIcsCalendar('Pomo', icsEvents)
 
     response.header('Content-Type', 'text/calendar; charset=utf-8')
     response.header('Content-Disposition', 'inline; filename="pomo.ics"')

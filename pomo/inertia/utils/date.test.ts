@@ -1,6 +1,12 @@
 import { describe, it, expect } from 'vitest'
 import {
+  addMinutesToIso,
   buildTimeOptions,
+  durationInMinutes,
+  formatDateRangeShort,
+  formatDurationShort,
+  formatTimeShort,
+  isSameDay,
   snapToHalfHour,
   toIsoInstant,
   formatDueDateShort,
@@ -89,5 +95,86 @@ describe('formatDueDateLong', () => {
     const formatted = formatDueDateLong(new Date(2026, 6, 15, 12, 30))
     expect(formatted).toContain('15 juillet 2026')
     expect(formatted).toContain('12:30')
+  })
+})
+
+describe('formatTimeShort', () => {
+  it('n’affiche que l’heure locale', () => {
+    expect(formatTimeShort('2026-07-15T10:30:00.000Z')).toBe('12:30')
+  })
+})
+
+describe('isSameDay', () => {
+  it('reconnaît deux instants du même jour', () => {
+    expect(isSameDay('2026-07-15T08:00:00.000Z', '2026-07-15T20:00:00.000Z')).toBe(true)
+  })
+
+  it('distingue deux jours différents', () => {
+    expect(isSameDay('2026-07-15T08:00:00.000Z', '2026-07-16T08:00:00.000Z')).toBe(false)
+  })
+
+  it('se base sur le jour local, pas sur UTC', () => {
+    // 23:30 UTC = 01:30 le lendemain à Paris (été)
+    expect(isSameDay('2026-07-15T21:00:00.000Z', '2026-07-15T23:30:00.000Z')).toBe(false)
+  })
+})
+
+describe('formatDateRangeShort', () => {
+  it('n’affiche la date qu’une fois sur une même journée', () => {
+    expect(formatDateRangeShort('2026-07-15T10:30:00.000Z', '2026-07-15T12:00:00.000Z')).toBe(
+      '15 juillet, 12:30 → 14:00'
+    )
+  })
+
+  it('affiche les deux dates quand l’évènement change de jour', () => {
+    expect(formatDateRangeShort('2026-07-15T10:30:00.000Z', '2026-07-16T08:00:00.000Z')).toBe(
+      '15 juillet, 12:30 → 16 juillet, 10:00'
+    )
+  })
+})
+
+describe('durationInMinutes', () => {
+  it('compte les minutes entre deux instants', () => {
+    expect(durationInMinutes('2026-07-15T10:00:00.000Z', '2026-07-15T11:30:00.000Z')).toBe(90)
+  })
+
+  it('retourne 0 pour un intervalle nul ou inversé', () => {
+    expect(durationInMinutes('2026-07-15T10:00:00.000Z', '2026-07-15T10:00:00.000Z')).toBe(0)
+    expect(durationInMinutes('2026-07-15T11:00:00.000Z', '2026-07-15T10:00:00.000Z')).toBe(0)
+  })
+})
+
+describe('formatDurationShort', () => {
+  it('affiche les minutes en dessous d’une heure', () => {
+    expect(formatDurationShort(45)).toBe('45 min')
+  })
+
+  it('affiche les heures pleines sans minutes', () => {
+    expect(formatDurationShort(120)).toBe('2 h')
+  })
+
+  it('complète les heures avec les minutes restantes', () => {
+    expect(formatDurationShort(90)).toBe('1 h 30')
+    expect(formatDurationShort(65)).toBe('1 h 05')
+  })
+
+  it('bascule en jours au-delà de 24 h', () => {
+    expect(formatDurationShort(1440)).toBe('1 j')
+    expect(formatDurationShort(1620)).toBe('1 j 3 h')
+  })
+
+  it('protège des durées nulles ou négatives', () => {
+    expect(formatDurationShort(0)).toBe('0 min')
+    expect(formatDurationShort(-30)).toBe('0 min')
+  })
+})
+
+describe('addMinutesToIso', () => {
+  it('décale un instant du nombre de minutes demandé', () => {
+    expect(addMinutesToIso('2026-07-15T10:00:00.000Z', 90)).toBe('2026-07-15T11:30:00.000Z')
+  })
+
+  it('accepte un décalage négatif', () => {
+    expect(addMinutesToIso('2026-07-15T10:00:00.000Z', -60)).toBe('2026-07-15T09:00:00.000Z')
   })
 })

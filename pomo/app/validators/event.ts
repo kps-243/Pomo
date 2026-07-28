@@ -21,3 +21,23 @@ export const updateEventValidator = vine.compile(
     location: vine.string().trim().nullable().optional(),
   })
 )
+
+export const createBoardEventValidator = vine.compile(
+  vine.object({
+    title: vine.string().trim().minLength(1),
+    description: vine.string().trim().nullable().optional(),
+    start_date: vine.string(),
+    end_date: vine.string(),
+    location: vine.string().trim().nullable().optional(),
+  })
+)
+
+export const updateBoardEventValidator = vine.compile(
+  vine.object({
+    title: vine.string().trim().minLength(1).optional(),
+    description: vine.string().trim().nullable().optional(),
+    start_date: vine.string().optional(),
+    end_date: vine.string().optional(),
+    location: vine.string().trim().nullable().optional(),
+  })
+)

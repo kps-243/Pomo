@@ -1,38 +1,40 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { router } from '@inertiajs/vue3'
 import { CalendarDate, getLocalTimeZone, today } from '@internationalized/date'
 import type { DateValue } from '@internationalized/date'
 import { buildTimeOptions, snapToHalfHour, formatDueDateLong, toIsoInstant } from '~/utils/date'
 
-const props = defineProps<{
-  taskId: number
-  dueDate: string | null
-}>()
+const props = withDefaults(
+  defineProps<{
+    clearable?: boolean
+    processing?: boolean
+    hideActions?: boolean
+    saveLabel?: string
+  }>(),
+  { clearable: false, processing: false, hideActions: false, saveLabel: 'Enregistrer' }
+)
 
-const emit = defineEmits<{ saved: []; cancel: [] }>()
+const emit = defineEmits<{ save: [iso: string]; cancel: []; clear: [] }>()
+
+const modelValue = defineModel<string | null>({ default: null })
 
 const timeOptions = buildTimeOptions()
 
 const buildInitialDate = (): DateValue => {
-  if (!props.dueDate) return today(getLocalTimeZone())
-  const date = new Date(props.dueDate)
+  if (!modelValue.value) return today(getLocalTimeZone())
+  const date = new Date(modelValue.value)
   return new CalendarDate(date.getFullYear(), date.getMonth() + 1, date.getDate())
 }
 
 const buildInitialTime = () => {
-  if (!props.dueDate) return '12:00'
-  const date = new Date(props.dueDate)
+  if (!modelValue.value) return '12:00'
+  const date = new Date(modelValue.value)
   return snapToHalfHour(date.getHours(), date.getMinutes())
 }
 
 const calendarValue = ref<DateValue>(buildInitialDate())
 const time = ref(buildInitialTime())
-const processing = ref(false)
 
-// UCalendar (Reka UI) dé-sélectionne la date quand on reclique la cellule déjà
-// active, mettant le v-model à null/undefined. On l'ignore pour toujours
-// conserver une date valide (sinon `summary` lit `.year` sur undefined -> crash).
 const calendarModel = computed<DateValue>({
   get: () => calendarValue.value,
   set: (value: DateValue | null | undefined) => {
@@ -40,40 +42,23 @@ const calendarModel = computed<DateValue>({
   },
 })
 
-watch(
-  () => props.dueDate,
-  () => {
-    calendarValue.value = buildInitialDate()
-    time.value = buildInitialTime()
-  }
-)
-
-const summary = computed(() => {
+const selectedIso = computed(() => {
   const date = calendarValue.value
   const [hours, minutes] = time.value.split(':').map(Number)
-  return formatDueDateLong(new Date(date.year, date.month - 1, date.day, hours, minutes))
+  return toIsoInstant(date.year, date.month, date.day, hours, minutes)
 })
 
-const submit = (dueDate: string | null) => {
-  router.put(
-    `/tasks/${props.taskId}`,
-    { due_date: dueDate },
-    {
-      preserveScroll: true,
-      onStart: () => (processing.value = true),
-      onFinish: () => (processing.value = false),
-      onSuccess: () => emit('saved'),
-    }
-  )
-}
+watch([calendarValue, time], () => {
+  if (selectedIso.value !== modelValue.value) modelValue.value = selectedIso.value
+})
 
-const save = () => {
-  const date = calendarValue.value
-  const [hours, minutes] = time.value.split(':').map(Number)
-  submit(toIsoInstant(date.year, date.month, date.day, hours, minutes))
-}
+watch(modelValue, (value) => {
+  if (value === selectedIso.value) return
+  calendarValue.value = buildInitialDate()
+  time.value = buildInitialTime()
+})
 
-const clear = () => submit(null)
+const summary = computed(() => formatDueDateLong(new Date(selectedIso.value)))
 
 const calendarUi = {
   cellTrigger: [
@@ -111,14 +96,14 @@ const calendarUi = {
       <span class="first-letter:uppercase">{{ summary }}</span>
     </p>
 
-    <div class="mt-3 flex items-center justify-between gap-2">
+    <div v-if="!props.hideActions" class="mt-3 flex items-center justify-between gap-2">
       <UButton
-        v-if="dueDate"
+        v-if="props.clearable"
         type="button"
         color="neutral"
         variant="ghost"
-        :disabled="processing"
-        @click="clear"
+        :disabled="props.processing"
+        @click="emit('clear')"
       >
         Effacer
       </UButton>
@@ -127,7 +112,7 @@ const calendarUi = {
           type="button"
           color="neutral"
           variant="ghost"
-          :disabled="processing"
+          :disabled="props.processing"
           @click="emit('cancel')"
         >
           Annuler
@@ -136,11 +121,11 @@ const calendarUi = {
           type="button"
           color="primary"
           variant="solid"
-          :loading="processing"
+          :loading="props.processing"
           data-cy="save-due-date"
-          @click="save"
+          @click="emit('save', selectedIso)"
         >
-          Enregistrer
+          {{ props.saveLabel }}
         </UButton>
       </div>
     </div>

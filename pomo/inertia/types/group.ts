@@ -23,17 +23,39 @@ export interface GroupMember {
   role: GroupRole
 }
 
-export interface GroupEventCreator {
+export interface GroupMessageAuthor {
   id: number
   firstName: string
   lastName: string
 }
 
-export interface GroupEvent {
+export interface GroupMessage {
   id: number
-  title: string
-  description: string | null
-  dueDate: string | null
-  duration: number
-  createdBy: GroupEventCreator | null
+  content: string
+  createdAt: string
+  author: GroupMessageAuthor
+}
+
+export interface GroupChatBootstrap {
+  token: string
+  path: string
+  messages: GroupMessage[]
+}
+
+export type ReportReason = 'spam' | 'harassment' | 'inappropriate' | 'other'
+export type ReportStatus = 'pending' | 'reviewed' | 'dismissed'
+
+export interface GroupMessageReport {
+  id: number
+  reason: ReportReason
+  comment: string | null
+  status: ReportStatus
+  createdAt: string
+  reporter: GroupMessageAuthor
+  message: {
+    id: number
+    content: string
+    deleted: boolean
+    author: GroupMessageAuthor
+  }
 }

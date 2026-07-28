@@ -5,8 +5,12 @@ import env from '#start/env'
 import Group from '#models/group'
 import ToDoList from '#models/to_do_list'
 import User from '#models/user'
+import Event from '#models/event'
 import GroupInvitationMail from '#mails/group_invitation_mail'
 import { createOrRefreshInvitation } from '#services/group_invitation_service'
+import { issueChatTicket } from '#services/chat_ticket'
+import { listMessages } from '#services/group_chat_service'
+import { WS_PATH } from '#services/ws'
 import {
   createGroupValidator,
   updateGroupValidator,
@@ -69,10 +73,18 @@ export default class GroupsController {
     const group = await Group.query()
       .where('id', params.id)
       .preload('members', (membersQuery) => membersQuery.pivotColumns(['role']))
-      .preload('tasks', (tasksQuery) => tasksQuery.preload('user').orderBy('due_date', 'asc'))
+      .preload('tasks', (tasksQuery) =>
+        tasksQuery.preload('user').preload('members').orderBy('due_date', 'asc')
+      )
       .firstOrFail()
 
+    const events = await Event.query()
+      .where('group_id', group.id)
+      .preload('user')
+      .orderBy('start_date', 'asc')
+
     const calendarToken = await user.ensureCalendarToken()
+    const messages = await listMessages(group.id)
 
     return inertia.render('Groups/Show', {
       group: {
@@ -83,6 +95,11 @@ export default class GroupsController {
       },
       currentUserId: user.id,
       calendarFeedUrl: `${env.get('APP_URL')}/calendar/${calendarToken}/feed.ics`,
+      chat: {
+        token: issueChatTicket({ userId: user.id, groupId: group.id }),
+        path: WS_PATH,
+        messages,
+      },
       members: group.members.map((member) => ({
         id: member.id,
         firstName: member.first_name,
@@ -90,14 +107,36 @@ export default class GroupsController {
         email: member.email,
         role: member.$extras.pivot_role,
       })),
-      events: group.tasks.map((task) => ({
+      tasks: group.tasks.map((task) => ({
         id: task.id,
         title: task.title,
         description: task.description,
+        status: task.status,
         dueDate: task.due_date?.toISO() ?? null,
-        duration: task.duration ?? 0,
+        listId: task.toDoListId,
+        listName: group.name,
+        groupId: group.id,
+        groupName: group.name,
         createdBy: task.user
           ? { id: task.user.id, firstName: task.user.first_name, lastName: task.user.last_name }
+          : null,
+        members: task.members.map((member) => ({
+          id: member.id,
+          firstName: member.first_name,
+          lastName: member.last_name,
+        })),
+      })),
+      events: events.map((event) => ({
+        id: event.id,
+        title: event.title,
+        description: event.description,
+        startDate: event.start_date.toISO(),
+        endDate: event.end_date?.toISO() ?? null,
+        location: event.location,
+        groupId: event.groupId,
+        groupName: group.name,
+        createdBy: event.user
+          ? { id: event.user.id, firstName: event.user.first_name, lastName: event.user.last_name }
           : null,
       })),
     })

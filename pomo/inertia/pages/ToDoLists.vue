@@ -4,6 +4,7 @@ import DashboardLayout from '~/layouts/DashboardLayout.vue'
 import ToDoList from '~/components/todo/ToDoList.vue'
 import AddTodoListCard from '~/components/todo/AddTodoListCard.vue'
 import type { ToDoListItem } from '~/types/todo'
+import EmptyState from '~/components/EmptyState.vue'
 
 const props = defineProps<{
   toDoLists: ToDoListItem[]
@@ -65,13 +66,17 @@ const filteredLists = computed(() => {
           class="w-[85vw] max-w-xs shrink-0 snap-start sm:w-72 md:w-80"
         />
 
-        <p v-if="!filteredLists.length" class="text-sm text-muted">
-          {{
+        <EmptyState
+          v-if="!filteredLists.length"
+          icon="i-heroicons-rectangle-stack"
+          :title="toDoLists.length ? 'Aucune liste ici' : 'Aucune liste pour le moment'"
+          :description="
             toDoLists.length
-              ? 'Aucune todolist dans cette catégorie.'
-              : 'Aucune todolist pour le moment.'
-          }}
-        </p>
+              ? 'Aucune todolist ne correspond à ce filtre.'
+              : 'Créez votre première liste avec le bouton « Ajouter une liste » ci-dessus.'
+          "
+          class="w-full"
+        />
       </div>
     </div>
   </DashboardLayout>

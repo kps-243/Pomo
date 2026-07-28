@@ -1,6 +1,7 @@
 import User from '#models/user'
 import ToDoList from '#models/to_do_list'
 import Task from '#models/task'
+import Event from '#models/event'
 import { BaseSeeder } from '@adonisjs/lucid/seeders'
 import { DateTime } from 'luxon'
 
@@ -29,7 +30,6 @@ export default class extends BaseSeeder {
         description: 'Relations, permissions et affichage',
         status: 'in_progress',
         due_date: jour.plus({ hours: 10 }),
-        duration: 120,
         userId: william.id,
         position: 0,
         toDoListId: projet.id,
@@ -39,7 +39,6 @@ export default class extends BaseSeeder {
         description: 'Couvrir les groupes et les tâches partagées',
         status: 'todo',
         due_date: jour.plus({ days: 1, hours: 14 }),
-        duration: 90,
         userId: william.id,
         position: 1,
         toDoListId: projet.id,
@@ -49,7 +48,6 @@ export default class extends BaseSeeder {
         description: 'Membre non-propriétaire bloqué',
         status: 'done',
         due_date: jour.minus({ days: 1 }).plus({ hours: 16 }),
-        duration: 45,
         userId: william.id,
         position: 2,
         toDoListId: projet.id,
@@ -59,7 +57,6 @@ export default class extends BaseSeeder {
         description: 'Slides + démo live',
         status: 'todo',
         due_date: jour.plus({ days: 3, hours: 9 }),
-        duration: 120,
         userId: william.id,
         position: 3,
         toDoListId: projet.id,
@@ -70,7 +67,6 @@ export default class extends BaseSeeder {
         description: 'Séance technique + physique',
         status: 'todo',
         due_date: jour.plus({ hours: 19 }),
-        duration: 90,
         userId: william.id,
         position: 0,
         toDoListId: sport.id,
@@ -80,7 +76,6 @@ export default class extends BaseSeeder {
         description: 'Tractions, développé, gainage',
         status: 'done',
         due_date: jour.minus({ days: 1 }).plus({ hours: 18 }),
-        duration: 60,
         userId: william.id,
         position: 1,
         toDoListId: sport.id,
@@ -90,7 +85,6 @@ export default class extends BaseSeeder {
         description: 'Endurance crawl',
         status: 'todo',
         due_date: jour.plus({ days: 2, hours: 7 }),
-        duration: 60,
         userId: william.id,
         position: 2,
         toDoListId: sport.id,
@@ -101,7 +95,6 @@ export default class extends BaseSeeder {
         description: 'Certificat médical à joindre',
         status: 'todo',
         due_date: jour.plus({ days: 1, hours: 11 }),
-        duration: 30,
         userId: william.id,
         position: 0,
         toDoListId: admin.id,
@@ -111,7 +104,6 @@ export default class extends BaseSeeder {
         description: 'Vérifier les cases étudiant',
         status: 'todo',
         due_date: jour.plus({ days: 5, hours: 10 }),
-        duration: 60,
         userId: william.id,
         position: 1,
         toDoListId: admin.id,
@@ -121,7 +113,6 @@ export default class extends BaseSeeder {
         description: 'Bilan annuel',
         status: 'done',
         due_date: jour.minus({ days: 1 }).plus({ hours: 9 }),
-        duration: 15,
         userId: william.id,
         position: 2,
         toDoListId: admin.id,
@@ -132,7 +123,6 @@ export default class extends BaseSeeder {
         description: 'Marché puis supermarché',
         status: 'todo',
         due_date: jour.plus({ hours: 18 }),
-        duration: 45,
         userId: william.id,
         position: 0,
         toDoListId: maison.id,
@@ -142,7 +132,6 @@ export default class extends BaseSeeder {
         description: 'Changer la chambre à air',
         status: 'todo',
         due_date: jour.plus({ days: 2, hours: 15 }),
-        duration: 60,
         userId: william.id,
         position: 1,
         toDoListId: maison.id,
@@ -152,10 +141,30 @@ export default class extends BaseSeeder {
         description: 'Grand nettoyage de printemps',
         status: 'done',
         due_date: jour.minus({ days: 1 }).plus({ hours: 11 }),
-        duration: 90,
         userId: william.id,
         position: 2,
         toDoListId: maison.id,
+      },
+    ])
+
+    await Event.createMany([
+      {
+        title: 'Soutenance blanche',
+        description: 'Répétition devant les encadrants',
+        start_date: jour.plus({ days: 1, hours: 9 }),
+        end_date: jour.plus({ days: 1, hours: 11 }),
+        location: 'Salle 204',
+        userId: william.id,
+        groupId: null,
+      },
+      {
+        title: 'Entraînement water-polo',
+        description: null,
+        start_date: jour.plus({ days: 2, hours: 19 }),
+        end_date: jour.plus({ days: 2, hours: 21 }),
+        location: 'Piscine municipale',
+        userId: william.id,
+        groupId: null,
       },
     ])
   }

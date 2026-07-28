@@ -22,6 +22,7 @@ const CalendarFeedController = () => import('#controllers/calendar_feed_controll
 const GroupInvitationsController = () => import('#controllers/group_invitations_controller')
 const ProfileController = () => import('#controllers/profile_controller')
 const PasswordResetsController = () => import('#controllers/password_resets_controller')
+const GroupMessagesController = () => import('#controllers/group_messages_controller')
 
 // Healthcheck Docker
 router.get('/health', async ({ response }) => {
@@ -31,6 +32,7 @@ router.get('/health', async ({ response }) => {
 
 // Flux calendrier iCal — public (les applications de calendrier s'y abonnent sans session)
 router.get('/calendar/:token/feed.ics', [CalendarFeedController, 'feed'])
+router.get('/legal', ({ inertia }) => inertia.render('Legal'))
 
 /*
 |--------------------------------------------------------------------------
@@ -111,7 +113,8 @@ router.get('/google/callback', async ({ ally, auth, response }) => {
 | Pages Inertia (réservées à l'utilisateur connecté)
 |--------------------------------------------------------------------------
 */
-router.get('/', [HomeController, 'index']).use(middleware.auth())
+router.get('/', ({ inertia }) => inertia.render('Landing')).use(middleware.silentAuth())
+router.get('/dashboard', [HomeController, 'index']).use(middleware.auth())
 router.get('/todolists', [ToDoListsController, 'page']).use(middleware.auth())
 router.get('/groups', [GroupsController, 'page']).use(middleware.auth())
 router.get('/groups/:id', [GroupsController, 'show']).use(middleware.auth())
@@ -144,9 +147,19 @@ router
     router.delete('/groups/:id/members/:userId', [GroupsController, 'removeMember'])
     router.post('/groups/:id/leave', [GroupsController, 'leave'])
     router.post('/invitations/:token/accept', [GroupInvitationsController, 'accept'])
+    router.get('/groups/:id/messages', [GroupMessagesController, 'index'])
+    router.get('/groups/:id/reports', [GroupMessagesController, 'reports'])
+    router.put('/groups/:id/reports/:reportId', [GroupMessagesController, 'resolveReport'])
+
     router.post('/groups/:groupId/tasks', [TasksController, 'storeForGroup'])
     router.put('/groups/:groupId/tasks/:id', [TasksController, 'updateGroupTask'])
     router.delete('/groups/:groupId/tasks/:id', [TasksController, 'destroyGroupTask'])
+
+    // Évènements du calendrier : personnels ou partagés avec un groupe
+    router.post('/events', [EventsController, 'storeFromBoard'])
+    router.put('/events/:id', [EventsController, 'updateFromBoard'])
+    router.delete('/events/:id', [EventsController, 'destroyFromBoard'])
+    router.post('/groups/:groupId/events', [EventsController, 'storeForGroup'])
 
     // Synchronisation calendrier
     router.post('/calendar/token/regenerate', [CalendarFeedController, 'regenerate'])

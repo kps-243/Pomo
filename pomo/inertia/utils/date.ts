@@ -61,3 +61,66 @@ export function formatDueDateLong(date: Date): string {
     minute: '2-digit',
   }).format(date)
 }
+
+/**
+ * Heure seule d'un instant ISO : "12:30" (heure locale).
+ */
+export function formatTimeShort(iso: string): string {
+  return new Intl.DateTimeFormat('fr-FR', { hour: '2-digit', minute: '2-digit' }).format(
+    new Date(iso)
+  )
+}
+
+/**
+ * Vrai si les deux instants tombent le même jour (heure locale).
+ */
+export function isSameDay(startIso: string, endIso: string): boolean {
+  const start = new Date(startIso)
+  const end = new Date(endIso)
+  return (
+    start.getFullYear() === end.getFullYear() &&
+    start.getMonth() === end.getMonth() &&
+    start.getDate() === end.getDate()
+  )
+}
+
+/**
+ * Créneau d'un évènement : "15 juillet, 12:30 → 14:00" sur une même journée,
+ * "15 juillet, 12:30 → 16 juillet, 09:00" sinon.
+ */
+export function formatDateRangeShort(startIso: string, endIso: string): string {
+  const start = formatDueDateShort(startIso)
+  return isSameDay(startIso, endIso)
+    ? `${start} → ${formatTimeShort(endIso)}`
+    : `${start} → ${formatDueDateShort(endIso)}`
+}
+
+/**
+ * Nombre de minutes entre deux instants ISO (0 si l'intervalle est inversé).
+ */
+export function durationInMinutes(startIso: string, endIso: string): number {
+  const diff = new Date(endIso).getTime() - new Date(startIso).getTime()
+  return diff > 0 ? Math.round(diff / 60000) : 0
+}
+
+/**
+ * Durée lisible : "45 min", "2 h", "1 h 30", "2 j 3 h".
+ */
+export function formatDurationShort(minutes: number): string {
+  if (minutes <= 0) return '0 min'
+
+  const days = Math.floor(minutes / 1440)
+  const hours = Math.floor((minutes % 1440) / 60)
+  const rest = minutes % 60
+
+  if (days > 0) return hours > 0 ? `${days} j ${hours} h` : `${days} j`
+  if (hours > 0) return rest > 0 ? `${hours} h ${pad(rest)}` : `${hours} h`
+  return `${rest} min`
+}
+
+/**
+ * Décale un instant ISO de N minutes.
+ */
+export function addMinutesToIso(iso: string, minutes: number): string {
+  return new Date(new Date(iso).getTime() + minutes * 60000).toISOString()
+}

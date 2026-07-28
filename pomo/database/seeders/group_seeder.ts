@@ -2,6 +2,7 @@ import User from '#models/user'
 import Group from '#models/group'
 import ToDoList from '#models/to_do_list'
 import Task from '#models/task'
+import Event from '#models/event'
 import { BaseSeeder } from '@adonisjs/lucid/seeders'
 import { DateTime } from 'luxon'
 import type { DurationLikeObject } from 'luxon'
@@ -13,9 +14,17 @@ interface SeedTask {
   description: string
   status: Status
   due: DurationLikeObject
-  duration: number
   creator: User
   members: User[]
+}
+
+interface SeedEvent {
+  title: string
+  description: string | null
+  start: DurationLikeObject
+  end: DurationLikeObject
+  location: string | null
+  creator: User
 }
 
 export default class extends BaseSeeder {
@@ -41,7 +50,6 @@ export default class extends BaseSeeder {
         description: "Bilan du sprint avec l'équipe",
         status: 'todo',
         due: { days: 1, hours: 10 },
-        duration: 60,
         creator: test,
         members: [test, william],
       },
@@ -50,7 +58,6 @@ export default class extends BaseSeeder {
         description: 'Version finale pour le jury',
         status: 'in_progress',
         due: { hours: 14 },
-        duration: 120,
         creator: william,
         members: [william],
       },
@@ -59,7 +66,6 @@ export default class extends BaseSeeder {
         description: 'GitHub Actions + suite de tests',
         status: 'todo',
         due: { days: 2, hours: 9 },
-        duration: 90,
         creator: morgan,
         members: [morgan, test],
       },
@@ -68,9 +74,26 @@ export default class extends BaseSeeder {
         description: 'Scénario de démonstration',
         status: 'done',
         due: { days: -1, hours: 16 },
-        duration: 45,
         creator: jane,
         members: [jane, william],
+      },
+    ])
+    await this.addEvents(equipe, [
+      {
+        title: 'Daily meeting',
+        description: 'Point quotidien de 15 minutes',
+        start: { hours: 9 },
+        end: { hours: 9, minutes: 15 },
+        location: 'Visio',
+        creator: test,
+      },
+      {
+        title: 'Atelier maquettes',
+        description: 'Revue des écrans du calendrier',
+        start: { days: 1, hours: 14 },
+        end: { days: 1, hours: 16, minutes: 30 },
+        location: 'Salle projet',
+        creator: william,
       },
     ])
 
@@ -86,7 +109,6 @@ export default class extends BaseSeeder {
         description: 'Créneau du samedi matin',
         status: 'done',
         due: { days: -1, hours: 9 },
-        duration: 30,
         creator: william,
         members: [william, test],
       },
@@ -95,7 +117,6 @@ export default class extends BaseSeeder {
         description: 'Poules et calendrier des matchs',
         status: 'in_progress',
         due: { days: 3, hours: 18 },
-        duration: 90,
         creator: william,
         members: [william, john],
       },
@@ -104,7 +125,6 @@ export default class extends BaseSeeder {
         description: 'Ballons et bonnets',
         status: 'todo',
         due: { days: 2, hours: 11 },
-        duration: 60,
         creator: alex,
         members: [alex],
       },
@@ -113,9 +133,26 @@ export default class extends BaseSeeder {
         description: 'Organiser des matchs amicaux',
         status: 'todo',
         due: { days: 4, hours: 15 },
-        duration: 45,
         creator: john,
         members: [john, william],
+      },
+    ])
+    await this.addEvents(waterpolo, [
+      {
+        title: 'Entraînement collectif',
+        description: 'Travail tactique et gardiens',
+        start: { days: 1, hours: 19 },
+        end: { days: 1, hours: 21 },
+        location: 'Piscine municipale',
+        creator: william,
+      },
+      {
+        title: 'Match amical',
+        description: 'Contre les M2',
+        start: { days: 5, hours: 15 },
+        end: { days: 5, hours: 17 },
+        location: 'Piscine olympique',
+        creator: john,
       },
     ])
   }
@@ -143,6 +180,21 @@ export default class extends BaseSeeder {
     return { group, list }
   }
 
+  private async addEvents(ctx: { group: Group }, events: SeedEvent[]) {
+    const jour = DateTime.now().startOf('day')
+    for (const seed of events) {
+      await Event.create({
+        title: seed.title,
+        description: seed.description,
+        start_date: jour.plus(seed.start),
+        end_date: jour.plus(seed.end),
+        location: seed.location,
+        userId: seed.creator.id,
+        groupId: ctx.group.id,
+      })
+    }
+  }
+
   private async addTasks(ctx: { group: Group; list: ToDoList }, tasks: SeedTask[]) {
     const jour = DateTime.now().startOf('day')
     let position = 0
@@ -152,7 +204,6 @@ export default class extends BaseSeeder {
         description: t.description,
         status: t.status,
         due_date: jour.plus(t.due),
-        duration: t.duration,
         userId: t.creator.id,
         groupId: ctx.group.id,
         toDoListId: ctx.list.id,

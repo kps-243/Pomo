@@ -11,7 +11,6 @@ export const createTaskValidator = vine.compile(
     description: vine.string().trim().nullable().optional(),
     status: vine.enum(STATUSES).optional(),
     due_date: vine.string().nullable().optional(),
-    duration: vine.number().positive().nullable().optional(),
   })
 )
 
@@ -33,6 +32,5 @@ export const updateTaskValidator = vine.compile(
     description: vine.string().trim().nullable().optional(),
     status: vine.enum(STATUSES).optional(),
     due_date: vine.string().nullable().optional(),
-    duration: vine.number().positive().nullable().optional(),
   })
 )

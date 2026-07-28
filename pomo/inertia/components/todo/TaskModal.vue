@@ -60,6 +60,31 @@ const blurOnEnter = (event: KeyboardEvent) => (event.target as HTMLInputElement)
 const confirmingDelete = ref(false)
 const isCalendarOpen = ref(false)
 
+const dueDateDraft = ref<string | null>(props.task.dueDate)
+const savingDueDate = ref(false)
+
+watch(
+  () => props.task.dueDate,
+  (dueDate) => (dueDateDraft.value = dueDate)
+)
+
+watch(isCalendarOpen, (isOpen) => {
+  if (isOpen) dueDateDraft.value = props.task.dueDate
+})
+
+const submitDueDate = (dueDate: string | null) => {
+  router.put(
+    `/tasks/${props.task.id}`,
+    { due_date: dueDate },
+    {
+      preserveScroll: true,
+      onStart: () => (savingDueDate.value = true),
+      onFinish: () => (savingDueDate.value = false),
+      onSuccess: () => (isCalendarOpen.value = false),
+    }
+  )
+}
+
 watch(open, (isOpen) => {
   if (!isOpen) {
     confirmingDelete.value = false
@@ -105,13 +130,16 @@ const close = () => {
               <DateBadge :due-date="task.dueDate" @click="isCalendarOpen = !isCalendarOpen" />
               <ListBadge :name="listName" />
             </div>
+            <p v-if="task.createdBy" class="ml-1 mt-1.5 text-xs text-dimmed">
+              Créée par {{ task.createdBy.firstName }} {{ task.createdBy.lastName }}
+            </p>
           </div>
 
           <div class="relative flex shrink-0 items-center gap-1">
             <button
               type="button"
               class="flex h-8 w-8 items-center justify-center rounded-md text-dimmed transition hover:bg-error/10 hover:text-error focus:outline-none focus-visible:ring-2 focus-visible:ring-error"
-              aria-label="Supprimer la task"
+              aria-label="Supprimer la tâche"
               @click="confirmingDelete = true"
             >
               <UIcon name="i-heroicons-trash" class="h-5 w-5" />
@@ -130,7 +158,7 @@ const close = () => {
               v-if="confirmingDelete"
               class="absolute right-0 top-10 z-10 w-56 rounded-lg border border-default bg-default p-3 text-left shadow-lg"
             >
-              <p class="text-sm font-medium text-toned">Supprimer cette task ?</p>
+              <p class="text-sm font-medium text-toned">Supprimer cette tâche ?</p>
               <p class="mt-1 text-xs text-muted">Cette action est définitive.</p>
               <div class="mt-3 flex justify-end gap-2">
                 <button
@@ -161,10 +189,12 @@ const close = () => {
               Échéance
             </h3>
             <CalendarPicker
-              :task-id="task.id"
-              :due-date="task.dueDate"
-              @saved="isCalendarOpen = false"
+              v-model="dueDateDraft"
+              :clearable="!!task.dueDate"
+              :processing="savingDueDate"
+              @save="submitDueDate"
               @cancel="isCalendarOpen = false"
+              @clear="submitDueDate(null)"
             />
           </section>
 

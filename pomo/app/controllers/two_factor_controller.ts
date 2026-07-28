@@ -45,7 +45,7 @@ export default class TwoFactorController {
     session.forget('two_factor_pending_user_id')
     await auth.use('web').login(user)
     const redirectTo = await consumePendingInvitationRedirect({ user, session })
-    return response.redirect(redirectTo ?? '/')
+    return response.redirect(redirectTo ?? '/dashboard')
   }
 
   // ─── Setup flow ───────────────────────────────────────────────────────────

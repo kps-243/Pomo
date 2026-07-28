@@ -2,6 +2,7 @@ import { DateTime } from 'luxon'
 import { BaseModel, belongsTo, column } from '@adonisjs/lucid/orm'
 import type { BelongsTo } from '@adonisjs/lucid/types/relations'
 import User from '#models/user'
+import Group from '#models/group'
 
 export default class Event extends BaseModel {
   @column({ isPrimary: true })
@@ -25,8 +26,14 @@ export default class Event extends BaseModel {
   @column()
   declare userId: number
 
+  @column()
+  declare groupId: number | null
+
   @belongsTo(() => User)
   declare user: BelongsTo<typeof User>
+
+  @belongsTo(() => Group)
+  declare group: BelongsTo<typeof Group>
 
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime

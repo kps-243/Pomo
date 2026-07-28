@@ -14,7 +14,8 @@ const submit = () => {
     onSuccess: () => {
       toast.add({
         title: 'Email envoyé',
-        description: 'Si un compte existe pour cet email, un lien de réinitialisation vient de lui être envoyé.',
+        description:
+          'Si un compte existe pour cet email, un lien de réinitialisation vient de lui être envoyé.',
         color: 'success',
       })
     },

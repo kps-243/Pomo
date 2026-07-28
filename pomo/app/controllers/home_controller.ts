@@ -51,6 +51,7 @@ export default class HomeController {
         description: task.description,
         status: task.status,
         dueDate: task.due_date?.toISO() ?? null,
+        timeSpent: task.timeSpent,
         listId: task.toDoListId,
         listName: task.toDoList.name,
         groupId: task.groupId,

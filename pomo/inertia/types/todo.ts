@@ -16,6 +16,7 @@ export interface TaskItem {
   description: string | null
   status: TaskStatus
   dueDate: string | null
+  timeSpent: number
   createdBy: TaskMember | null
   members: TaskMember[]
 }

@@ -113,6 +113,7 @@ export default class GroupsController {
         description: task.description,
         status: task.status,
         dueDate: task.due_date?.toISO() ?? null,
+        timeSpent: task.timeSpent,
         listId: task.toDoListId,
         listName: group.name,
         groupId: group.id,

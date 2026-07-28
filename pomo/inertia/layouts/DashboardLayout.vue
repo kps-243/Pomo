@@ -4,6 +4,7 @@ import { ref, watch } from 'vue'
 import { router } from '@inertiajs/vue3'
 import { usePage } from '@inertiajs/vue3'
 import { useTheme } from '~/composables/use_theme'
+import PomodoroWidget from '~/components/PomodoroWidget.vue'
 
 const { isDark, toggleTheme } = useTheme()
 
@@ -144,5 +145,6 @@ const items = [
         <slot />
       </main>
     </div>
+    <PomodoroWidget />
   </div>
 </template>

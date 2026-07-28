@@ -25,6 +25,9 @@ export default class Task extends BaseModel {
   declare position: number
 
   @column()
+  declare timeSpent: number
+
+  @column()
   declare userId: number
 
   @column()

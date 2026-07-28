@@ -278,7 +278,12 @@ const close = () => {
             </p>
 
             <div class="mt-3 flex justify-end gap-2">
-              <UButton type="button" color="neutral" variant="ghost" @click="isCalendarOpen = false">
+              <UButton
+                type="button"
+                color="neutral"
+                variant="ghost"
+                @click="isCalendarOpen = false"
+              >
                 Annuler
               </UButton>
               <UButton

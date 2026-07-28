@@ -27,6 +27,35 @@ const props = defineProps<{
 }>()
 
 const isOwner = computed(() => props.group.ownerId === props.currentUserId)
+
+// --- Renommer le groupe (propriétaire) ---
+const isEditingName = ref(false)
+const renameForm = useForm({ name: props.group.name })
+const blurTarget = (event: KeyboardEvent) => (event.target as HTMLInputElement).blur()
+
+const startRename = () => {
+  renameForm.name = props.group.name
+  renameForm.clearErrors()
+  isEditingName.value = true
+}
+
+const cancelRename = () => {
+  renameForm.name = props.group.name
+  isEditingName.value = false
+}
+
+const saveGroupName = () => {
+  const name = renameForm.name.trim()
+  if (name === '' || name === props.group.name) {
+    cancelRename()
+    return
+  }
+  renameForm.put(`/groups/${props.group.id}`, {
+    preserveScroll: true,
+    onSuccess: () => (isEditingName.value = false),
+  })
+}
+
 const isSyncModalOpen = ref(false)
 
 const entries = computed(() => toCalendarEntries(props.tasks, props.events))
@@ -128,9 +157,35 @@ const deleteGroup = () => {
             <UIcon name="i-heroicons-arrow-left" class="h-3.5 w-3.5" />
             Mes groupes
           </a>
-          <h1 data-cy="group-name" class="text-xl font-bold text-primary sm:text-2xl">
-            {{ group.name }}
-          </h1>
+          <div class="flex items-center gap-2">
+            <input
+              v-if="isOwner && isEditingName"
+              v-model="renameForm.name"
+              class="max-w-xs rounded-md border border-primary bg-default px-1.5 py-0.5 text-xl font-bold text-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-primary sm:text-2xl"
+              aria-label="Nom du groupe"
+              autofocus
+              @blur="saveGroupName"
+              @keyup.enter="blurTarget"
+              @keyup.esc="cancelRename"
+            />
+            <template v-else>
+              <h1 data-cy="group-name" class="text-xl font-bold text-primary sm:text-2xl">
+                {{ group.name }}
+              </h1>
+              <button
+                v-if="isOwner"
+                type="button"
+                class="flex h-7 w-7 items-center justify-center rounded-md text-dimmed transition hover:bg-elevated hover:text-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                aria-label="Renommer le groupe"
+                @click="startRename"
+              >
+                <UIcon name="i-heroicons-pencil-square" class="h-4 w-4" />
+              </button>
+            </template>
+          </div>
+          <p v-if="renameForm.errors.name" class="mt-1 text-xs text-error">
+            {{ renameForm.errors.name }}
+          </p>
           <p v-if="group.description" class="mt-1 text-sm text-muted">{{ group.description }}</p>
         </div>
 

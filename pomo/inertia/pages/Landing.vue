@@ -59,7 +59,7 @@ onBeforeUnmount(() => observer?.disconnect())
     >
       <div class="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
         <Link href="/" aria-label="Accueil Pomo">
-          <PomoLogo size="md" />
+          <PomoLogo size="sm" />
         </Link>
 
         <div class="flex items-center gap-2">

@@ -7,6 +7,7 @@ import ListBadge from './ListBadge.vue'
 import CalendarPicker from './CalendarPicker.vue'
 import MemberAvatar from './MemberAvatar.vue'
 import type { TaskItem } from '~/types/todo'
+import { usePomodoro } from '~/composables/use_pomodoro'
 
 const props = defineProps<{
   task: TaskItem
@@ -15,6 +16,14 @@ const props = defineProps<{
 }>()
 
 const open = defineModel<boolean>('open', { default: false })
+
+const { setTask, start } = usePomodoro()
+
+const startPomodoro = () => {
+  setTask({ id: props.task.id, title: props.task.title })
+  start()
+  open.value = false
+}
 
 const form = useForm({
   title: props.task.title,
@@ -129,10 +138,23 @@ const close = () => {
               <StatusBadge :status="task.status" :task-id="task.id" />
               <DateBadge :due-date="task.dueDate" @click="isCalendarOpen = !isCalendarOpen" />
               <ListBadge :name="listName" />
+              <span
+                class="inline-flex items-center gap-1 rounded-full bg-elevated px-2 py-0.5 text-xs font-medium text-toned"
+              >
+                <UIcon name="i-heroicons-clock" class="h-3.5 w-3.5" />
+                {{ task.timeSpent }} min
+              </span>
             </div>
             <p v-if="task.createdBy" class="ml-1 mt-1.5 text-xs text-dimmed">
               Créée par {{ task.createdBy.firstName }} {{ task.createdBy.lastName }}
             </p>
+            <button
+              type="button"
+              class="ml-1 mt-2 inline-flex items-center gap-1.5 rounded-lg bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary transition hover:bg-primary/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+              @click="startPomodoro"
+            >
+              🍅 Lancer pomodoro
+            </button>
           </div>
 
           <div class="relative flex shrink-0 items-center gap-1">

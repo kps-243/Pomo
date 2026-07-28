@@ -138,6 +138,7 @@ router
     router.delete('/tasks/:id', [TasksController, 'destroyFromBoard'])
     router.post('/tasks/:id/members', [TasksController, 'joinTask'])
     router.delete('/tasks/:id/members', [TasksController, 'leaveTask'])
+    router.post('/tasks/:id/pomodoro', [TasksController, 'logPomodoro'])
 
     // Groupes & calendrier partagé
     router.post('/groups', [GroupsController, 'store'])

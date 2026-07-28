@@ -8,8 +8,8 @@ import { createInertiaApp, router } from '@inertiajs/vue3'
 import { resolvePageComponent } from '@adonisjs/inertia/helpers'
 import ui from '@nuxt/ui/vue-plugin'
 import UApp from '@nuxt/ui/components/App.vue'
+import { fr } from '@nuxt/ui/locale'
 import CookieConsent from '../components/CookieConsent.vue'
-import { router } from '@inertiajs/vue3'
 
 const appName = import.meta.env.VITE_APP_NAME || 'Pomo'
 
@@ -26,7 +26,9 @@ createInertiaApp({
   },
 
   setup({ el, App, props, plugin }) {
-    createApp({ render: () => h(UApp, () => [h(App, props), h(CookieConsent)]) })
+    // `locale` passe les composants Nuxt UI en français (libellés internes et
+    // noms de mois / jours du UCalendar, sinon rendus en anglais).
+    createApp({ render: () => h(UApp, { locale: fr }, () => [h(App, props), h(CookieConsent)]) })
       .use(plugin)
       .use(ui)
       .mount(el)

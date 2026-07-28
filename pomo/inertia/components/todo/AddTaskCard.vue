@@ -43,7 +43,7 @@ const submit = () => {
     @click="open"
   >
     <UIcon name="i-heroicons-plus" class="h-4 w-4" />
-    Ajouter une task
+    Ajouter une tâche
   </button>
 
   <div v-else class="space-y-2">
@@ -52,7 +52,7 @@ const submit = () => {
         ref="inputRef"
         v-model="form.title"
         rows="2"
-        placeholder="Saisir un titre pour cette task..."
+        placeholder="Saisir un titre pour cette tâche..."
         class="w-full resize-none border-0 bg-transparent text-sm text-highlighted placeholder:text-dimmed focus:outline-none focus:ring-0"
         @keydown.enter.prevent="submit"
         @keydown.esc="close"

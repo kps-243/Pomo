@@ -195,65 +195,69 @@ const isReportsModalOpen = ref(false)
         @scroll.passive="onScroll"
       >
         <div ref="scrollContent" class="flex flex-col gap-3">
-        <div v-if="hasMore" class="flex justify-center">
-          <UButton
-            color="neutral"
-            variant="ghost"
-            size="xs"
-            :loading="loadingMore"
-            @click="loadMore"
+          <div v-if="hasMore" class="flex justify-center">
+            <UButton
+              color="neutral"
+              variant="ghost"
+              size="xs"
+              :loading="loadingMore"
+              @click="loadMore"
+            >
+              Messages précédents
+            </UButton>
+          </div>
+
+          <p v-if="!messages.length" class="py-4 text-center text-sm text-muted">
+            Aucun message. Lancez la discussion !
+          </p>
+
+          <div
+            v-for="message in messages"
+            :key="message.id"
+            data-cy="chat-message"
+            class="group flex items-start gap-2"
           >
-            Messages précédents
-          </UButton>
-        </div>
+            <MemberAvatar :member="message.author" />
 
-        <p v-if="!messages.length" class="py-4 text-center text-sm text-muted">
-          Aucun message. Lancez la discussion !
-        </p>
-
-        <div
-          v-for="message in messages"
-          :key="message.id"
-          data-cy="chat-message"
-          class="group flex items-start gap-2"
-        >
-          <MemberAvatar :member="message.author" />
-
-          <div class="min-w-0 flex-1">
-            <div class="flex items-baseline gap-1.5">
-              <span class="truncate text-xs font-medium text-highlighted">
-                {{ message.author.firstName }} {{ message.author.lastName }}
-              </span>
-              <span class="shrink-0 text-[11px] text-dimmed">
-                {{ formatMessageTime(message.createdAt) }}
-              </span>
+            <div class="min-w-0 flex-1">
+              <div class="flex items-baseline gap-1.5">
+                <span class="truncate text-xs font-medium text-highlighted">
+                  {{ message.author.firstName }} {{ message.author.lastName }}
+                </span>
+                <span class="shrink-0 text-[11px] text-dimmed">
+                  {{ formatMessageTime(message.createdAt) }}
+                </span>
+              </div>
+              <p class="whitespace-pre-wrap break-words text-sm text-default">
+                {{ message.content }}
+              </p>
             </div>
-            <p class="whitespace-pre-wrap break-words text-sm text-default">{{ message.content }}</p>
-          </div>
 
-          <div class="flex shrink-0 items-center gap-0.5 opacity-0 transition group-hover:opacity-100">
-            <button
-              v-if="canReportMessage(message, currentUserId)"
-              type="button"
-              data-cy="report-message"
-              class="flex h-6 w-6 items-center justify-center rounded text-dimmed transition hover:bg-warning/10 hover:text-warning"
-              aria-label="Signaler ce message"
-              @click="openReport(message)"
+            <div
+              class="flex shrink-0 items-center gap-0.5 opacity-0 transition group-hover:opacity-100"
             >
-              <UIcon name="i-heroicons-flag" class="h-3.5 w-3.5" />
-            </button>
-            <button
-              v-if="canDeleteMessage(message, currentUserId, isOwner)"
-              type="button"
-              data-cy="delete-message"
-              class="flex h-6 w-6 items-center justify-center rounded text-dimmed transition hover:bg-error/10 hover:text-error"
-              aria-label="Supprimer ce message"
-              @click="onDelete(message)"
-            >
-              <UIcon name="i-heroicons-trash" class="h-3.5 w-3.5" />
-            </button>
+              <button
+                v-if="canReportMessage(message, currentUserId)"
+                type="button"
+                data-cy="report-message"
+                class="flex h-6 w-6 items-center justify-center rounded text-dimmed transition hover:bg-warning/10 hover:text-warning"
+                aria-label="Signaler ce message"
+                @click="openReport(message)"
+              >
+                <UIcon name="i-heroicons-flag" class="h-3.5 w-3.5" />
+              </button>
+              <button
+                v-if="canDeleteMessage(message, currentUserId, isOwner)"
+                type="button"
+                data-cy="delete-message"
+                class="flex h-6 w-6 items-center justify-center rounded text-dimmed transition hover:bg-error/10 hover:text-error"
+                aria-label="Supprimer ce message"
+                @click="onDelete(message)"
+              >
+                <UIcon name="i-heroicons-trash" class="h-3.5 w-3.5" />
+              </button>
+            </div>
           </div>
-        </div>
         </div>
       </div>
 
@@ -284,7 +288,11 @@ const isReportsModalOpen = ref(false)
   </UCard>
 
   <!-- Modal de signalement -->
-  <UModal v-model:open="isReportModalOpen" title="Signaler un message" :ui="{ content: 'sm:max-w-md' }">
+  <UModal
+    v-model:open="isReportModalOpen"
+    title="Signaler un message"
+    :ui="{ content: 'sm:max-w-md' }"
+  >
     <template #content>
       <div class="px-5 py-4">
         <h2 class="mb-4 text-base font-semibold text-highlighted">Signaler un message</h2>
@@ -298,7 +306,9 @@ const isReportsModalOpen = ref(false)
 
         <form class="space-y-4" @submit.prevent="submitReport">
           <div>
-            <label for="report-reason" class="mb-1 block text-sm font-medium text-toned">Motif</label>
+            <label for="report-reason" class="mb-1 block text-sm font-medium text-toned"
+              >Motif</label
+            >
             <select
               id="report-reason"
               v-model="reportReason"

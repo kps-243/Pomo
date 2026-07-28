@@ -17,7 +17,7 @@ export default class UsersController {
     const user = await User.create(payload)
     await auth.use('web').login(user)
     const redirectTo = await consumePendingInvitationRedirect({ user, session })
-    return response.redirect(redirectTo ?? '/')
+    return response.redirect(redirectTo ?? '/dashboard')
   }
 
   connection({ inertia }: HttpContext) {
@@ -43,7 +43,7 @@ export default class UsersController {
     }
 
     const redirectTo = await consumePendingInvitationRedirect({ user, session })
-    return response.redirect(redirectTo ?? '/')
+    return response.redirect(redirectTo ?? '/dashboard')
   }
 
   async logout({ auth, response }: HttpContext) {

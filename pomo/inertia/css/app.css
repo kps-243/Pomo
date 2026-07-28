@@ -1,8 +1,31 @@
+@import url('https://fonts.bunny.net/css?family=bagel-fat-one:400&display=swap');
 @import 'tailwindcss';
 @import '@nuxt/ui';
 
 @theme {
-  --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-sans: 'Kokoro', ui-sans-serif, system-ui, sans-serif;
+  --font-heading: 'Kumbh Sans', ui-sans-serif, system-ui, sans-serif;
+
+  --color-brand-50: #f2fdf9;
+  --color-brand-100: #dcfaee;
+  --color-brand-200: #b5f1de;
+  --color-brand-300: #84e8c7;
+  --color-brand-400: #4ed4b2;
+  --color-brand-500: #22c1a1;
+  --color-brand-600: #1ba889;
+  --color-brand-700: #158b72;
+  --color-brand-800: #126e5c;
+  --color-brand-900: #105a4c;
+  --color-brand-950: #06332b;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-heading);
 }
 
 html:not(.dark) {
@@ -37,6 +60,21 @@ html.dark {
   --ui-text-highlighted: #fff;
 
   --ui-border-accented: var(--ui-color-neutral-500);
+}
+
+/* On force les nuances "primary" de Nuxt UI sur le vert de marque Pomo */
+:root {
+  --ui-color-primary-50: var(--color-brand-50);
+  --ui-color-primary-100: var(--color-brand-100);
+  --ui-color-primary-200: var(--color-brand-200);
+  --ui-color-primary-300: var(--color-brand-300);
+  --ui-color-primary-400: var(--color-brand-400);
+  --ui-color-primary-500: var(--color-brand-500);
+  --ui-color-primary-600: var(--color-brand-600);
+  --ui-color-primary-700: var(--color-brand-700);
+  --ui-color-primary-800: var(--color-brand-800);
+  --ui-color-primary-900: var(--color-brand-900);
+  --ui-color-primary-950: var(--color-brand-950);
 }
 
 @layer base {
@@ -144,4 +182,31 @@ html.dark {
 
 .vuecal .vuecal__event.task-marker .vuecal__event-time {
   display: none;
+}
+
+/* Apparition au scroll (respecte reduced-motion) */
+.pomo-reveal-target {
+  opacity: 0;
+  transform: translateY(1.5rem);
+  transition:
+    opacity 0.6s ease-out,
+    transform 0.6s ease-out;
+}
+
+.pomo-reveal-target.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pomo-reveal-target,
+  .pomo-reveal-target.is-visible {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+.font-logo {
+  font-family: 'Bagel Fat One', system-ui, cursive;
 }

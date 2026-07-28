@@ -5,6 +5,7 @@ import SyncCalendarModal from '../components/calendar/SyncCalendarModal.vue'
 import VueCal from 'vue-cal'
 import 'vue-cal/dist/vuecal.css'
 import { computed, ref } from 'vue'
+import EmptyState from '~/components/EmptyState.vue'
 import { useForm } from '@inertiajs/vue3'
 
 const props = defineProps<{
@@ -128,7 +129,12 @@ const submitEvent = () => {
             </UBadge>
           </div>
 
-          <p v-if="!tasks.length" class="py-3 text-sm text-muted">Aucune tâche pour le moment.</p>
+          <EmptyState
+            v-if="!tasks.length"
+            icon="i-heroicons-check-circle"
+            title="Aucune tâche"
+            description="Vos tâches à venir apparaîtront ici."
+          />
         </div>
       </UCard>
     </div>
@@ -212,7 +218,12 @@ const submitEvent = () => {
             </div>
 
             <div class="flex justify-end gap-2 pt-1">
-              <UButton type="button" color="neutral" variant="ghost" @click="isEventModalOpen = false">
+              <UButton
+                type="button"
+                color="neutral"
+                variant="ghost"
+                @click="isEventModalOpen = false"
+              >
                 Annuler
               </UButton>
               <UButton

@@ -2,6 +2,9 @@
 import { computed } from 'vue'
 import { router } from '@inertiajs/vue3'
 import type { TaskStatus } from '~/types/todo'
+import { useConfetti } from '~/composables/use_confetti'
+
+const { celebrate } = useConfetti()
 
 const props = defineProps<{
   status: TaskStatus
@@ -32,11 +35,11 @@ const nextStatus: Record<TaskStatus, TaskStatus> = {
 const current = computed(() => config[props.status] ?? config.todo)
 
 const cycleStatus = () => {
-  router.put(
-    `/tasks/${props.taskId}`,
-    { status: nextStatus[props.status] },
-    { preserveScroll: true }
-  )
+  const target = nextStatus[props.status]
+  if (target === 'done') {
+    celebrate()
+  }
+  router.put(`/tasks/${props.taskId}`, { status: target }, { preserveScroll: true })
 }
 </script>
 

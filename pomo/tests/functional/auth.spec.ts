@@ -24,10 +24,10 @@ async function cleanUsers() {
 test.group('Register', (group) => {
   group.each.setup(() => cleanUsers())
 
-  test('crée un compte valide et redirige vers /', async ({ client, assert }) => {
+  test('crée un compte valide et redirige vers /dashboard', async ({ client, assert }) => {
     const response = await client.post('/register').json(VALID_USER).redirects(0)
     response.assertStatus(302)
-    response.assertHeader('location', '/')
+    response.assertHeader('location', '/dashboard')
 
     const user = await User.findBy('email', VALID_USER.email)
     assert.isNotNull(user)
@@ -85,13 +85,13 @@ test.group('Login', (group) => {
     await createUser()
   })
 
-  test('connecte un utilisateur valide et redirige vers /', async ({ client }) => {
+  test('connecte un utilisateur valide et redirige vers /dashboard', async ({ client }) => {
     const response = await client
       .post('/login')
       .json({ email: VALID_USER.email, password: VALID_USER.password })
       .redirects(0)
     response.assertStatus(302)
-    response.assertHeader('location', '/')
+    response.assertHeader('location', '/dashboard')
   })
 
   test('échoue avec un mauvais mot de passe', async ({ client }) => {

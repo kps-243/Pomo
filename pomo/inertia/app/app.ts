@@ -9,6 +9,7 @@ import { resolvePageComponent } from '@adonisjs/inertia/helpers'
 import ui from '@nuxt/ui/vue-plugin'
 import UApp from '@nuxt/ui/components/App.vue'
 import CookieConsent from '../components/CookieConsent.vue'
+import { router } from '@inertiajs/vue3'
 
 const appName = import.meta.env.VITE_APP_NAME || 'Pomo'
 
@@ -31,6 +32,23 @@ createInertiaApp({
       .mount(el)
   },
 })
+
+// Transition douce (fondu) entre les pages, si le navigateur le supporte.
+if (typeof document !== 'undefined' && 'startViewTransition' in document) {
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)')
+  let finish: (() => void) | null = null
+
+  router.on('start', () => {
+    if (reduce.matches) return
+    // @ts-expect-error - View Transitions API pas encore typée partout
+    document.startViewTransition(() => new Promise<void>((resolve) => (finish = resolve)))
+  })
+
+  router.on('finish', () => {
+    finish?.()
+    finish = null
+  })
+}
 
 router.on('navigate', () => {
   window.umami?.track()

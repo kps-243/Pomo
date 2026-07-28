@@ -111,7 +111,7 @@ const close = () => {
             <button
               type="button"
               class="flex h-8 w-8 items-center justify-center rounded-md text-dimmed transition hover:bg-error/10 hover:text-error focus:outline-none focus-visible:ring-2 focus-visible:ring-error"
-              aria-label="Supprimer la task"
+              aria-label="Supprimer la tâche"
               @click="confirmingDelete = true"
             >
               <UIcon name="i-heroicons-trash" class="h-5 w-5" />
@@ -130,7 +130,7 @@ const close = () => {
               v-if="confirmingDelete"
               class="absolute right-0 top-10 z-10 w-56 rounded-lg border border-default bg-default p-3 text-left shadow-lg"
             >
-              <p class="text-sm font-medium text-toned">Supprimer cette task ?</p>
+              <p class="text-sm font-medium text-toned">Supprimer cette tâche ?</p>
               <p class="mt-1 text-xs text-muted">Cette action est définitive.</p>
               <div class="mt-3 flex justify-end gap-2">
                 <button

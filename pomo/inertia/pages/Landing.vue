@@ -50,7 +50,7 @@ onBeforeUnmount(() => observer?.disconnect())
 </script>
 
 <template>
-  <Head title="Pomo | Plan smarter. Achieve together." />
+  <Head title="Pomo | Planifiez mieux, réussissez ensemble." />
 
   <div class="min-h-screen bg-default text-default">
     <!-- ============================= HEADER ============================= -->
@@ -72,7 +72,9 @@ onBeforeUnmount(() => observer?.disconnect())
           />
 
           <template v-if="user">
-            <UButton color="primary" @click="router.visit('/dashboard')">Mon dashboard</UButton>
+            <UButton color="primary" @click="router.visit('/dashboard')"
+              >Mon tableau de bord</UButton
+            >
           </template>
           <template v-else>
             <UButton
@@ -131,8 +133,8 @@ onBeforeUnmount(() => observer?.disconnect())
           Ne stressez plus. Pomo est là <span class="text-primary">pour vous.</span>
         </h1>
         <p class="mx-auto mt-4 max-w-xl text-lg text-muted">
-          Plan smarter, achieve together.. Pomo réunit vos tâches, votre calendrier et vos groupes
-          dans une seule application, simple et agréable.
+          Planifiez mieux, réussissez ensemble. Pomo réunit vos tâches, votre calendrier et vos
+          groupes dans une seule application, simple et agréable.
         </p>
 
         <div class="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
@@ -141,7 +143,7 @@ onBeforeUnmount(() => observer?.disconnect())
             color="primary"
             @click="router.visit(user ? '/dashboard' : '/register')"
           >
-            {{ user ? 'Aller à mon dashboard' : 'Commencer gratuitement' }}
+            {{ user ? 'Aller à mon tableau de bord' : 'Commencer gratuitement' }}
           </UButton>
           <UButton
             v-if="!user"
@@ -166,7 +168,11 @@ onBeforeUnmount(() => observer?.disconnect())
               pomo.app/dashboard
             </span>
           </div>
-          <img src="../../public/dashboard.png" alt="Aperçu du dashboard Pomo" class="w-full" />
+          <img
+            src="../../public/dashboard.png"
+            alt="Aperçu du tableau de bord Pomo"
+            class="w-full"
+          />
         </div>
       </div>
     </section>
@@ -333,7 +339,7 @@ onBeforeUnmount(() => observer?.disconnect())
             class="bg-default text-primary hover:bg-default/90"
             @click="router.visit(user ? '/dashboard' : '/register')"
           >
-            {{ user ? 'Aller à mon dashboard' : 'Créer mon compte gratuitement' }}
+            {{ user ? 'Aller à mon tableau de bord' : 'Créer mon compte gratuitement' }}
           </UButton>
         </div>
       </div>

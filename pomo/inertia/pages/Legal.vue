@@ -29,14 +29,14 @@ const lastUpdate = '21 juillet 2026'
       <section class="mt-8">
         <h2 class="text-lg font-semibold text-highlighted">1. Mentions légales</h2>
         <p class="mt-2 text-sm leading-relaxed text-toned">
-          Le site Pomo est édité par [nom de l'équipe / structure], dans le cadre d'un projet annuel
+          Le site Pomo est édité par Pomo Corp, dans le cadre d'un projet annuel
           de l'École Supérieure de Génie Informatique. Contact :
           <a
-            href="mailto:[adresse-email-de-contact]"
+            href="mailto:contact@willix.fr"
             class="text-primary underline underline-offset-2"
           >
-            [adresse-email-de-contact] </a
-          >. Hébergement : [nom de l'hébergeur du VPS].
+            contact@willix.fr </a
+          >. Hébergement : Digtal Ocean.
         </p>
       </section>
 
@@ -78,10 +78,10 @@ const lastUpdate = '21 juillet 2026'
           et de portabilité de vos données, ainsi que d'un droit d'opposition. Pour l'exercer,
           contactez-nous à
           <a
-            href="mailto:[adresse-email-de-contact]"
+            href="mailto:contact@willix.fr"
             class="text-primary underline underline-offset-2"
           >
-            [adresse-email-de-contact] </a
+            contact@willix.fr </a
           >.
         </p>
       </section>

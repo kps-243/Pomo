@@ -22,7 +22,7 @@ const year = new Date().getFullYear()
         <!-- Marque -->
         <div>
           <PomoLogo size="md" />
-          <p class="mt-3 max-w-xs text-sm text-muted">Plan smarter, achieve together.</p>
+          <p class="mt-3 max-w-xs text-sm text-muted">Planifiez mieux, réussissez ensemble.</p>
         </div>
 
         <!-- Colonne Infos -->
@@ -52,7 +52,7 @@ const year = new Date().getFullYear()
             <template v-if="user">
               <li>
                 <Link href="/dashboard" class="text-muted transition hover:text-highlighted">
-                  Mon dashboard
+                  Mon tableau de bord
                 </Link>
               </li>
               <li>

@@ -6,6 +6,7 @@ import VueCal from 'vue-cal'
 import 'vue-cal/dist/vuecal.css'
 import { computed, ref } from 'vue'
 import EmptyState from '~/components/EmptyState.vue'
+import { taskStatusLabel } from '~/utils/tasks'
 import { useForm } from '@inertiajs/vue3'
 
 const props = defineProps<{
@@ -42,6 +43,11 @@ const tasksParsed = computed(() =>
 const isEventModalOpen = ref(false)
 const selectedListId = ref<number | null>(props.toDoLists[0]?.id ?? null)
 
+// Vue active du calendrier. En vue mois/année une cellule couvre un jour ou un
+// mois entier : le clic doit seulement naviguer, pas ouvrir le modal de création.
+const activeView = ref('week')
+const canCreateFromCell = computed(() => activeView.value === 'week' || activeView.value === 'day')
+
 const eventForm = useForm({
   title: '',
   due_date: '',
@@ -55,6 +61,7 @@ const toDatetimeLocal = (date: Date): string =>
   `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`
 
 const onCellClick = (date: Date) => {
+  if (!canCreateFromCell.value) return
   eventForm.reset()
   eventForm.due_date = toDatetimeLocal(date)
   eventForm.duration = 60
@@ -82,7 +89,7 @@ const submitEvent = () => {
       >
         <template #header>
           <div class="flex items-center justify-between gap-2">
-            <CardTitle title="Calendar" />
+            <CardTitle title="Calendrier" />
             <UButton
               icon="i-heroicons-arrow-path"
               color="neutral"
@@ -95,8 +102,9 @@ const submitEvent = () => {
           </div>
         </template>
         <vue-cal
+          v-model:active-view="activeView"
           style="height: 400px"
-          default-view="week"
+          locale="fr"
           hide-view-selector
           :events="tasksParsed"
           time-at-cursor
@@ -107,7 +115,7 @@ const submitEvent = () => {
 
       <UCard class="w-full rounded-2xl border border-default shadow-md ring-0 lg:w-1/2">
         <template #header>
-          <CardTitle title="Tasks" />
+          <CardTitle title="Tâches" />
         </template>
         <div class="divide-y divide-default">
           <div
@@ -120,12 +128,8 @@ const submitEvent = () => {
               <span class="font-medium text-highlighted">{{ task.title }}</span>
               <span class="text-sm text-muted">⏱ {{ task.duration }} min</span>
             </div>
-            <UBadge
-              :color="task.status === 'done' ? 'success' : 'warning'"
-              variant="soft"
-              class="capitalize"
-            >
-              {{ task.status }}
+            <UBadge :color="task.status === 'done' ? 'success' : 'warning'" variant="soft">
+              {{ taskStatusLabel(task.status) }}
             </UBadge>
           </div>
 

@@ -9,6 +9,7 @@ import MemberAvatar from '~/components/todo/MemberAvatar.vue'
 import SyncCalendarModal from '~/components/calendar/SyncCalendarModal.vue'
 import GroupChat from '~/components/groups/GroupChat.vue'
 import { canManageEvent } from '~/utils/groups'
+import { formatDueDateShort } from '~/utils/date'
 import type { GroupChatBootstrap, GroupDetail, GroupEvent, GroupMember } from '~/types/group'
 
 const props = defineProps<{
@@ -51,6 +52,11 @@ const canManage = (event: GroupEvent) => canManageEvent(event, props.currentUser
 // --- Create event modal ---
 const isEventModalOpen = ref(false)
 
+// Vue active du calendrier. En vue mois/année une cellule couvre un jour ou un
+// mois entier : le clic doit seulement naviguer, pas ouvrir le modal de création.
+const activeView = ref('week')
+const canCreateFromCell = computed(() => activeView.value === 'week' || activeView.value === 'day')
+
 const eventForm = useForm({
   title: '',
   due_date: '',
@@ -64,6 +70,7 @@ const toDatetimeLocal = (date: Date): string =>
   `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`
 
 const onCellClick = (date: Date) => {
+  if (!canCreateFromCell.value) return
   eventForm.reset()
   eventForm.due_date = toDatetimeLocal(date)
   eventForm.duration = 60
@@ -196,8 +203,9 @@ const deleteGroup = () => {
             </div>
           </template>
           <vue-cal
+            v-model:active-view="activeView"
             style="height: 450px"
-            default-view="week"
+            locale="fr"
             hide-view-selector
             :events="eventsParsed"
             time-at-cursor
@@ -264,8 +272,7 @@ const deleteGroup = () => {
                 <div class="flex flex-col">
                   <span class="text-sm font-medium text-highlighted">{{ event.title }}</span>
                   <span class="text-xs text-muted">
-                    {{ new Date(event.dueDate as string).toLocaleString() }} · ⏱
-                    {{ event.duration }} min
+                    {{ formatDueDateShort(event.dueDate as string) }} · ⏱ {{ event.duration }} min
                   </span>
                   <span v-if="event.createdBy" class="text-xs text-dimmed">
                     par {{ event.createdBy.firstName }} {{ event.createdBy.lastName }}

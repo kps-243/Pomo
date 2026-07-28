@@ -123,7 +123,7 @@ const deleteList = () => {
         />
       </VueDraggable>
       <p v-if="!taskCount" class="px-1 py-6 text-center text-xs text-dimmed">
-        Aucune task pour le moment.
+        Aucune tâche pour le moment.
       </p>
     </div>
 

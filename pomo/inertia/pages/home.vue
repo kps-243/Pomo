@@ -6,6 +6,7 @@ import VueCal from 'vue-cal'
 import 'vue-cal/dist/vuecal.css'
 import { computed, ref } from 'vue'
 import EmptyState from '~/components/EmptyState.vue'
+import { useForm } from '@inertiajs/vue3'
 
 const props = defineProps<{
   tasks: {
@@ -16,6 +17,7 @@ const props = defineProps<{
     dueDate: string | null
     duration: number
   }[]
+  toDoLists: { id: number; name: string }[]
   calendarFeedUrl: string
 }>()
 
@@ -35,6 +37,41 @@ const tasksParsed = computed(() =>
       }
     })
 )
+
+// --- Création de tâche depuis le calendrier perso ---
+const isEventModalOpen = ref(false)
+const selectedListId = ref<number | null>(props.toDoLists[0]?.id ?? null)
+
+const eventForm = useForm({
+  title: '',
+  due_date: '',
+  duration: 60,
+  description: '',
+})
+
+const pad = (n: number) => String(n).padStart(2, '0')
+
+const toDatetimeLocal = (date: Date): string =>
+  `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`
+
+const onCellClick = (date: Date) => {
+  eventForm.reset()
+  eventForm.due_date = toDatetimeLocal(date)
+  eventForm.duration = 60
+  selectedListId.value = props.toDoLists[0]?.id ?? null
+  isEventModalOpen.value = true
+}
+
+const submitEvent = () => {
+  if (!selectedListId.value) return
+  eventForm.post(`/todolists/${selectedListId.value}/tasks`, {
+    preserveScroll: true,
+    onSuccess: () => {
+      isEventModalOpen.value = false
+      eventForm.reset()
+    },
+  })
+}
 </script>
 
 <template>
@@ -64,6 +101,7 @@ const tasksParsed = computed(() =>
           :events="tasksParsed"
           time-at-cursor
           xsmall
+          @cell-click="onCellClick"
         />
       </UCard>
 
@@ -100,6 +138,107 @@ const tasksParsed = computed(() =>
         </div>
       </UCard>
     </div>
+
+    <!-- Modal création de tâche depuis le calendrier perso -->
+    <UModal v-model:open="isEventModalOpen" title="Nouvelle tâche" :ui="{ content: 'sm:max-w-md' }">
+      <template #content>
+        <div class="px-5 py-4">
+          <h2 class="mb-4 text-base font-semibold text-highlighted">Nouvelle tâche</h2>
+
+          <form v-if="toDoLists.length" class="space-y-4" @submit.prevent="submitEvent">
+            <div>
+              <label for="event-title" class="mb-1 block text-sm font-medium text-toned"
+                >Titre *</label
+              >
+              <input
+                id="event-title"
+                v-model="eventForm.title"
+                type="text"
+                placeholder="Nom de la tâche"
+                autofocus
+                class="w-full rounded-lg border border-accented bg-default px-3 py-2 text-sm text-default transition placeholder:text-dimmed focus:border-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+              />
+              <p v-if="eventForm.errors.title" class="mt-1 text-xs text-error">
+                {{ eventForm.errors.title }}
+              </p>
+            </div>
+
+            <div>
+              <label for="event-list" class="mb-1 block text-sm font-medium text-toned"
+                >Liste *</label
+              >
+              <select
+                id="event-list"
+                v-model="selectedListId"
+                class="w-full rounded-lg border border-accented bg-default px-3 py-2 text-sm text-default transition focus:border-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+              >
+                <option v-for="list in toDoLists" :key="list.id" :value="list.id">
+                  {{ list.name }}
+                </option>
+              </select>
+            </div>
+
+            <div>
+              <label for="event-date" class="mb-1 block text-sm font-medium text-toned"
+                >Date et heure</label
+              >
+              <input
+                id="event-date"
+                v-model="eventForm.due_date"
+                type="datetime-local"
+                class="w-full rounded-lg border border-accented bg-default px-3 py-2 text-sm text-default transition placeholder:text-dimmed focus:border-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+              />
+            </div>
+
+            <div>
+              <label for="event-duration" class="mb-1 block text-sm font-medium text-toned">
+                Durée (minutes)
+              </label>
+              <input
+                id="event-duration"
+                v-model.number="eventForm.duration"
+                type="number"
+                min="5"
+                step="5"
+                class="w-full rounded-lg border border-accented bg-default px-3 py-2 text-sm text-default transition placeholder:text-dimmed focus:border-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+              />
+            </div>
+
+            <div>
+              <label for="event-description" class="mb-1 block text-sm font-medium text-toned">
+                Description
+              </label>
+              <textarea
+                id="event-description"
+                v-model="eventForm.description"
+                rows="2"
+                placeholder="Optionnel..."
+                class="w-full resize-none rounded-lg border border-accented bg-default px-3 py-2 text-sm text-default transition placeholder:text-dimmed focus:border-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+              />
+            </div>
+
+            <div class="flex justify-end gap-2 pt-1">
+              <UButton type="button" color="neutral" variant="ghost" @click="isEventModalOpen = false">
+                Annuler
+              </UButton>
+              <UButton
+                type="submit"
+                color="primary"
+                :loading="eventForm.processing"
+                :disabled="!eventForm.title.trim() || !selectedListId"
+              >
+                Créer
+              </UButton>
+            </div>
+          </form>
+
+          <p v-else class="text-sm text-muted">
+            Crée d'abord une todolist personnelle pour pouvoir y ajouter des tâches depuis le
+            calendrier.
+          </p>
+        </div>
+      </template>
+    </UModal>
 
     <SyncCalendarModal v-model:open="isSyncModalOpen" :feed-url="calendarFeedUrl" />
   </DashboardLayout>

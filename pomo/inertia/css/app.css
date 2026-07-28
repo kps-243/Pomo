@@ -112,6 +112,7 @@ html.dark {
   --vuecal-primary-color: var(--ui-primary);
   height: 256px;
   color: var(--ui-text);
+  isolation: isolate;
 }
 
 .vuecal .vuecal__title-bar {

@@ -7,6 +7,9 @@ import ToDoList from '#models/to_do_list'
 import User from '#models/user'
 import GroupInvitationMail from '#mails/group_invitation_mail'
 import { createOrRefreshInvitation } from '#services/group_invitation_service'
+import { issueChatTicket } from '#services/chat_ticket'
+import { listMessages } from '#services/group_chat_service'
+import { WS_PATH } from '#services/ws'
 import {
   createGroupValidator,
   updateGroupValidator,
@@ -73,6 +76,7 @@ export default class GroupsController {
       .firstOrFail()
 
     const calendarToken = await user.ensureCalendarToken()
+    const messages = await listMessages(group.id)
 
     return inertia.render('Groups/Show', {
       group: {
@@ -83,6 +87,11 @@ export default class GroupsController {
       },
       currentUserId: user.id,
       calendarFeedUrl: `${env.get('APP_URL')}/calendar/${calendarToken}/feed.ics`,
+      chat: {
+        token: issueChatTicket({ userId: user.id, groupId: group.id }),
+        path: WS_PATH,
+        messages,
+      },
       members: group.members.map((member) => ({
         id: member.id,
         firstName: member.first_name,

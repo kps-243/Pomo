@@ -1,4 +1,5 @@
 import Task from '#models/task'
+import ToDoList from '#models/to_do_list'
 import env from '#start/env'
 import type { HttpContext } from '@adonisjs/core/http'
 
@@ -9,6 +10,11 @@ export default class HomeController {
       .where('user_id', user.id)
       .orderBy('created_at', 'desc')
       .limit(10)
+
+    const toDoLists = await ToDoList.query()
+      .where('user_id', user.id)
+      .whereNull('group_id')
+      .orderBy('created_at', 'asc')
 
     const calendarToken = await user.ensureCalendarToken()
 
@@ -21,6 +27,7 @@ export default class HomeController {
         dueDate: task.due_date?.toISO() ?? null,
         duration: task.duration ?? 0,
       })),
+      toDoLists: toDoLists.map((list) => ({ id: list.id, name: list.name })),
       calendarFeedUrl: `${env.get('APP_URL')}/calendar/${calendarToken}/feed.ics`,
     })
   }

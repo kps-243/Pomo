@@ -4,6 +4,7 @@ import type { BelongsTo, HasMany, ManyToMany } from '@adonisjs/lucid/types/relat
 import User from '#models/user'
 import Task from '#models/task'
 import GroupInvitation from '#models/group_invitation'
+import GroupMessage from '#models/group_message'
 
 export default class Group extends BaseModel {
   @column({ isPrimary: true })
@@ -33,6 +34,9 @@ export default class Group extends BaseModel {
 
   @hasMany(() => GroupInvitation)
   declare invitations: HasMany<typeof GroupInvitation>
+
+  @hasMany(() => GroupMessage)
+  declare messages: HasMany<typeof GroupMessage>
 
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime

@@ -184,6 +184,32 @@ html.dark {
   display: none;
 }
 
+/* Évènement : un vrai bloc, du début à la fin */
+.vuecal .vuecal__event.event-marker {
+  --event-marker-color: var(--ui-primary);
+  padding: 2px 6px;
+  border: none;
+  border-left: 3px solid var(--event-marker-color);
+  border-radius: 6px;
+  background-color: color-mix(in oklab, var(--event-marker-color) 18%, var(--ui-bg));
+  color: var(--ui-text);
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.2;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.vuecal .vuecal__event.event-marker.group {
+  --event-marker-color: var(--ui-info);
+}
+
+.vuecal .vuecal__event.event-marker .vuecal__event-time {
+  display: block;
+  font-weight: 400;
+  opacity: 0.75;
+}
+
 /* Apparition au scroll (respecte reduced-motion) */
 .pomo-reveal-target {
   opacity: 0;

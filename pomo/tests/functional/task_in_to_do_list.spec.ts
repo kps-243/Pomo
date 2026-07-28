@@ -45,7 +45,6 @@ test.group('Tasks dans une ToDoList', (group) => {
     const response = await client.post(`/api/todolists/${ownerList.id}/tasks`).loginAs(owner).json({
       title: 'Ma task',
       status: 'todo',
-      duration: 25,
       due_date: new Date().toISOString(),
     })
 

@@ -155,6 +155,12 @@ router
     router.put('/groups/:groupId/tasks/:id', [TasksController, 'updateGroupTask'])
     router.delete('/groups/:groupId/tasks/:id', [TasksController, 'destroyGroupTask'])
 
+    // Évènements du calendrier : personnels ou partagés avec un groupe
+    router.post('/events', [EventsController, 'storeFromBoard'])
+    router.put('/events/:id', [EventsController, 'updateFromBoard'])
+    router.delete('/events/:id', [EventsController, 'destroyFromBoard'])
+    router.post('/groups/:groupId/events', [EventsController, 'storeForGroup'])
+
     // Synchronisation calendrier
     router.post('/calendar/token/regenerate', [CalendarFeedController, 'regenerate'])
   })

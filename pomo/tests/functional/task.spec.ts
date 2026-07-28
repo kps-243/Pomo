@@ -27,7 +27,6 @@ test.group('Tasks CRUD', (group) => {
       status: 'todo',
       userId: user.id,
       toDoListId: list.id,
-      duration: 25,
       due_date: DateTime.now(),
     })
   })
@@ -48,7 +47,6 @@ test.group('Tasks CRUD', (group) => {
       title: 'Test Task',
       description: 'This is a test task',
       status: 'todo',
-      duration: 25,
       due_date: new Date().toISOString(),
       to_do_list_id: list.id,
     })
@@ -67,7 +65,6 @@ test.group('Tasks CRUD', (group) => {
       title: 'Updated Test Task',
       description: 'This is an updated test task',
       status: 'done',
-      duration: 30,
       due_date: new Date().toISOString(),
     })
 

@@ -1,6 +1,7 @@
 import User from '#models/user'
 import ToDoList from '#models/to_do_list'
 import Task from '#models/task'
+import Event from '#models/event'
 import { BaseSeeder } from '@adonisjs/lucid/seeders'
 import { DateTime } from 'luxon'
 
@@ -28,7 +29,6 @@ export default class extends BaseSeeder {
         description: "Point rapide avec l'équipe",
         status: 'done',
         due_date: jour.plus({ hours: 9, minutes: 30 }),
-        duration: 15,
         userId: user.id,
         position: 0,
         toDoListId: sprint.id,
@@ -38,7 +38,6 @@ export default class extends BaseSeeder {
         description: 'Navigation mobile du dashboard',
         status: 'in_progress',
         due_date: jour.plus({ hours: 10 }),
-        duration: 90,
         userId: user.id,
         position: 1,
         toDoListId: sprint.id,
@@ -48,7 +47,6 @@ export default class extends BaseSeeder {
         description: 'Relire la PR du calendrier',
         status: 'todo',
         due_date: jour.plus({ hours: 14 }),
-        duration: 45,
         userId: user.id,
         position: 2,
         toDoListId: sprint.id,
@@ -58,7 +56,6 @@ export default class extends BaseSeeder {
         description: 'Documenter les routes /tasks',
         status: 'todo',
         due_date: jour.plus({ days: 1, hours: 11 }),
-        duration: 60,
         userId: user.id,
         position: 3,
         toDoListId: sprint.id,
@@ -68,7 +65,6 @@ export default class extends BaseSeeder {
         description: 'Compose multi-services',
         status: 'done',
         due_date: jour.minus({ days: 1 }).plus({ hours: 14 }),
-        duration: 90,
         userId: user.id,
         position: 0,
         toDoListId: revisions.id,
@@ -78,7 +74,6 @@ export default class extends BaseSeeder {
         description: 'Chapitres 4 à 6',
         status: 'todo',
         due_date: jour.plus({ days: 1, hours: 16 }),
-        duration: 120,
         userId: user.id,
         position: 1,
         toDoListId: revisions.id,
@@ -88,7 +83,6 @@ export default class extends BaseSeeder {
         description: 'Slides + démo du projet annuel',
         status: 'todo',
         due_date: jour.plus({ days: 2, hours: 10 }),
-        duration: 120,
         userId: user.id,
         position: 2,
         toDoListId: revisions.id,
@@ -98,7 +92,6 @@ export default class extends BaseSeeder {
         description: '1 km crawl',
         status: 'done',
         due_date: jour.minus({ days: 1 }).plus({ hours: 18, minutes: 30 }),
-        duration: 60,
         userId: user.id,
         position: 0,
         toDoListId: perso.id,
@@ -108,7 +101,6 @@ export default class extends BaseSeeder {
         description: 'Marché puis supermarché',
         status: 'todo',
         due_date: jour.plus({ hours: 18 }),
-        duration: 45,
         userId: user.id,
         position: 1,
         toDoListId: perso.id,
@@ -118,10 +110,39 @@ export default class extends BaseSeeder {
         description: 'Prendre rendez-vous',
         status: 'todo',
         due_date: jour.plus({ days: 2, hours: 9 }),
-        duration: 15,
         userId: user.id,
         position: 2,
         toDoListId: perso.id,
+      },
+    ])
+
+    await Event.createMany([
+      {
+        title: 'Cours de M1',
+        description: 'Amphi projet annuel',
+        start_date: jour.plus({ hours: 13 }),
+        end_date: jour.plus({ hours: 16 }),
+        location: 'Campus - Amphi B',
+        userId: user.id,
+        groupId: null,
+      },
+      {
+        title: 'Déjeuner avec Morgan',
+        description: null,
+        start_date: jour.plus({ days: 1, hours: 12, minutes: 30 }),
+        end_date: jour.plus({ days: 1, hours: 14 }),
+        location: 'Le Petit Bistrot',
+        userId: user.id,
+        groupId: null,
+      },
+      {
+        title: 'Séance de sport',
+        description: 'Renforcement musculaire',
+        start_date: jour.plus({ days: 3, hours: 18 }),
+        end_date: jour.plus({ days: 3, hours: 19, minutes: 30 }),
+        location: null,
+        userId: user.id,
+        groupId: null,
       },
     ])
   }

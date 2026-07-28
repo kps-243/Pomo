@@ -22,9 +22,6 @@ export default class Task extends BaseModel {
   declare due_date: DateTime | null
 
   @column()
-  declare duration: number | null
-
-  @column()
   declare position: number
 
   @column()

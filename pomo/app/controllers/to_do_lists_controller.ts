@@ -24,7 +24,7 @@ export default class ToDoListsController {
       })
       .preload('group')
       .preload('tasks', (taskQuery) =>
-        taskQuery.preload('members').orderBy('position', 'asc').orderBy('id', 'asc')
+        taskQuery.preload('members').preload('user').orderBy('position', 'asc').orderBy('id', 'asc')
       )
       .orderBy('created_at', 'asc')
 
@@ -39,6 +39,9 @@ export default class ToDoListsController {
           description: task.description,
           status: task.status,
           dueDate: task.due_date?.toISO() ?? null,
+          createdBy: task.user
+            ? { id: task.user.id, firstName: task.user.first_name, lastName: task.user.last_name }
+            : null,
           members: task.members.map((member) => ({
             id: member.id,
             firstName: member.first_name,

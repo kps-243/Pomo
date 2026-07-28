@@ -23,21 +23,6 @@ export interface GroupMember {
   role: GroupRole
 }
 
-export interface GroupEventCreator {
-  id: number
-  firstName: string
-  lastName: string
-}
-
-export interface GroupEvent {
-  id: number
-  title: string
-  description: string | null
-  dueDate: string | null
-  duration: number
-  createdBy: GroupEventCreator | null
-}
-
 export interface GroupMessageAuthor {
   id: number
   firstName: string

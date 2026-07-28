@@ -5,6 +5,7 @@ import SyncCalendarModal from '../components/calendar/SyncCalendarModal.vue'
 import VueCal from 'vue-cal'
 import 'vue-cal/dist/vuecal.css'
 import { computed, ref } from 'vue'
+import EmptyState from '~/components/EmptyState.vue'
 
 const props = defineProps<{
   tasks: {
@@ -90,7 +91,12 @@ const tasksParsed = computed(() =>
             </UBadge>
           </div>
 
-          <p v-if="!tasks.length" class="py-3 text-sm text-muted">Aucune tâche pour le moment.</p>
+          <EmptyState
+            v-if="!tasks.length"
+            icon="i-heroicons-check-circle"
+            title="Aucune tâche"
+            description="Vos tâches à venir apparaîtront ici."
+          />
         </div>
       </UCard>
     </div>

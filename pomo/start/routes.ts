@@ -110,7 +110,8 @@ router.get('/google/callback', async ({ ally, auth, response }) => {
 | Pages Inertia (réservées à l'utilisateur connecté)
 |--------------------------------------------------------------------------
 */
-router.get('/', [HomeController, 'index']).use(middleware.auth())
+router.get('/', ({ inertia }) => inertia.render('Landing')).use(middleware.silentAuth())
+router.get('/dashboard', [HomeController, 'index']).use(middleware.auth())
 router.get('/todolists', [ToDoListsController, 'page']).use(middleware.auth())
 router.get('/groups', [GroupsController, 'page']).use(middleware.auth())
 router.get('/groups/:id', [GroupsController, 'show']).use(middleware.auth())

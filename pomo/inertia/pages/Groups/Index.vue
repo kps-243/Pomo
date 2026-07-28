@@ -3,6 +3,7 @@ import DashboardLayout from '~/layouts/DashboardLayout.vue'
 import AddGroupCard from '~/components/groups/AddGroupCard.vue'
 import { formatMembersCount } from '~/utils/groups'
 import type { GroupSummary } from '~/types/group'
+import EmptyState from '~/components/EmptyState.vue'
 
 defineProps<{
   groups: GroupSummary[]
@@ -15,7 +16,6 @@ defineProps<{
       <div class="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h1 class="text-xl font-bold text-primary sm:text-2xl">Mes groupes</h1>
-          <p class="mt-1 text-sm text-muted">Partagez un calendrier avec d'autres utilisateurs.</p>
         </div>
         <AddGroupCard />
       </div>
@@ -49,7 +49,12 @@ defineProps<{
         </a>
       </div>
 
-      <p v-else class="text-sm text-muted">Vous n'appartenez à aucun groupe pour le moment.</p>
+      <EmptyState
+        v-if="!groups.length"
+        icon="i-heroicons-user-group"
+        title="Aucun groupe pour le moment"
+        description="Créez votre premier groupe pour commencer à partager un calendrier."
+      />
     </div>
   </DashboardLayout>
 </template>

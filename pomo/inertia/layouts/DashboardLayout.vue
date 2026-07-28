@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import PomoLogo from '~/components/PomoLogo.vue'
 import { ref, watch } from 'vue'
 import { router } from '@inertiajs/vue3'
 import { usePage } from '@inertiajs/vue3'
@@ -28,7 +29,7 @@ const logout = () => {
 }
 
 const links = [
-  { label: 'Dashboard', icon: 'i-heroicons-home', href: '/', exact: true },
+  { label: 'Dashboard', icon: 'i-heroicons-home', href: '/dashboard', exact: true },
   { label: 'To do lists', icon: 'i-heroicons-view-columns', href: '/todolists' },
   { label: 'Groupes', icon: 'i-heroicons-user-group', href: '/groups' },
   // À rebrancher quand les pages existeront (phase front) :
@@ -78,7 +79,7 @@ const items = [
           class="lg:hidden"
           @click="menuOpen = true"
         />
-        <h1 class="text-lg font-semibold text-highlighted">Pomo</h1>
+        <PomoLogo size="sm" />
       </div>
 
       <div class="flex items-center gap-2">

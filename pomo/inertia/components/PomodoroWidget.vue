@@ -2,7 +2,26 @@
 import { ref, computed, onMounted } from 'vue'
 import { usePomodoro } from '~/composables/use_pomodoro'
 
-const { state, formatted, progress, start, pause, reset, skip, setTask } = usePomodoro()
+const { state, formatted, progress, start, pause, reset, skip, setTask, setDurations } =
+  usePomodoro()
+
+const presets = [
+  { label: '25 / 5', work: 25, break: 5 },
+  { label: '50 / 10', work: 50, break: 10 },
+  { label: '15 / 3', work: 15, break: 3 },
+]
+
+function applyPreset(preset: { work: number; break: number }) {
+  setDurations(preset.work, preset.break)
+}
+
+function onWorkChange(event: Event) {
+  setDurations(Number((event.target as HTMLInputElement).value), state.breakMinutes)
+}
+
+function onBreakChange(event: Event) {
+  setDurations(state.workMinutes, Number((event.target as HTMLInputElement).value))
+}
 
 const open = ref(false)
 
@@ -73,7 +92,10 @@ onMounted(loadTasks)
           >
             {{ phaseLabel }}
           </span>
-          <span class="text-xs text-muted">{{ state.completedSessions }} 🍅</span>
+          <span class="flex items-center gap-1 text-xs text-muted">
+            <UIcon name="i-heroicons-clock" class="h-3.5 w-3.5" />
+            {{ state.completedSessions }}
+          </span>
         </div>
 
         <!-- Anneau + temps -->
@@ -148,6 +170,59 @@ onMounted(loadTasks)
             <option v-for="t in tasks" :key="t.id" :value="t.id">{{ t.title }}</option>
           </select>
         </div>
+
+        <!-- Durées personnalisables -->
+        <div class="mt-4 border-t border-default pt-3">
+          <p class="mb-2 text-xs font-medium text-toned">Durées (minutes)</p>
+          <div class="mb-2 flex flex-wrap gap-1.5">
+            <button
+              v-for="preset in presets"
+              :key="preset.label"
+              type="button"
+              class="rounded-full border px-2.5 py-0.5 text-xs transition disabled:opacity-50"
+              :class="
+                state.workMinutes === preset.work && state.breakMinutes === preset.break
+                  ? 'border-primary bg-primary text-inverted'
+                  : 'border-default text-toned hover:bg-elevated'
+              "
+              :disabled="state.running"
+              @click="applyPreset(preset)"
+            >
+              {{ preset.label }}
+            </button>
+          </div>
+          <div class="flex items-center gap-2">
+            <div class="flex-1">
+              <label for="pomo-work" class="mb-0.5 block text-[11px] text-muted">Travail</label>
+              <input
+                id="pomo-work"
+                type="number"
+                min="1"
+                max="120"
+                :value="state.workMinutes"
+                :disabled="state.running"
+                class="w-full rounded-lg border border-accented bg-default px-2 py-1 text-sm text-default focus:border-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:opacity-50"
+                @change="onWorkChange"
+              />
+            </div>
+            <div class="flex-1">
+              <label for="pomo-break" class="mb-0.5 block text-[11px] text-muted">Pause</label>
+              <input
+                id="pomo-break"
+                type="number"
+                min="1"
+                max="60"
+                :value="state.breakMinutes"
+                :disabled="state.running"
+                class="w-full rounded-lg border border-accented bg-default px-2 py-1 text-sm text-default focus:border-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:opacity-50"
+                @change="onBreakChange"
+              />
+            </div>
+          </div>
+          <p v-if="state.running" class="mt-1.5 text-[11px] text-dimmed">
+            Mettez en pause pour changer les durées.
+          </p>
+        </div>
       </div>
     </Transition>
 
@@ -158,7 +233,7 @@ onMounted(loadTasks)
       :aria-label="open ? 'Fermer le minuteur' : 'Ouvrir le minuteur Pomodoro'"
       @click="open = !open"
     >
-      <span class="text-xl">🍅</span>
+      <UIcon name="i-heroicons-clock" class="h-6 w-6" />
       <span v-if="state.running" class="font-heading font-semibold tabular-nums">
         {{ formatted }}
       </span>

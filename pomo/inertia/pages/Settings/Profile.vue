@@ -3,6 +3,8 @@ import { ref } from 'vue'
 import { Head, router, useForm } from '@inertiajs/vue3'
 import { useToast } from '@nuxt/ui/composables'
 import DashboardLayout from '~/layouts/DashboardLayout.vue'
+import { computed } from 'vue'
+import { usePage } from '@inertiajs/vue3'
 
 const props = defineProps<{
   profile: {
@@ -14,6 +16,44 @@ const props = defineProps<{
 }>()
 
 const toast = useToast()
+
+const page = usePage()
+
+// --- Photo de profil ---
+const avatarForm = useForm<{ avatar: File | null }>({ avatar: null })
+const avatarPreview = ref<string | null>(null)
+const fileInput = ref<HTMLInputElement | null>(null)
+
+const currentAvatarUrl = computed(() => {
+  const user = page.props.user as { avatarUrl: string | null } | null
+  return user?.avatarUrl ?? null
+})
+
+const initials = computed(() =>
+  `${props.profile.first_name?.[0] ?? ''}${props.profile.last_name?.[0] ?? ''}`.toUpperCase()
+)
+
+const onAvatarChange = (event: Event) => {
+  const file = (event.target as HTMLInputElement).files?.[0] ?? null
+  avatarForm.avatar = file
+  avatarPreview.value = file ? URL.createObjectURL(file) : null
+}
+
+const uploadAvatar = () => {
+  avatarForm.post('/settings/profile/avatar', {
+    forceFormData: true,
+    preserveScroll: true,
+    onSuccess: () => {
+      toast.add({ title: 'Photo de profil mise à jour', color: 'success' })
+      avatarForm.reset()
+      avatarPreview.value = null
+      if (fileInput.value) fileInput.value.value = ''
+    },
+    onError: () => {
+      toast.add({ title: "Échec de l'envoi de la photo", color: 'error' })
+    },
+  })
+}
 
 // --- Informations personnelles ---
 const form = useForm({
@@ -87,6 +127,62 @@ const deleteAccount = () => {
   <DashboardLayout>
     <div class="mx-auto max-w-xl space-y-6">
       <h1 class="text-xl font-bold text-highlighted">Mon profil</h1>
+
+      <!-- Photo de profil -->
+      <div class="rounded-2xl border border-default bg-default p-6 shadow-sm">
+        <h2 class="mb-4 font-semibold text-highlighted">Photo de profil</h2>
+
+        <div class="flex items-center gap-5">
+          <div class="h-20 w-20 shrink-0 overflow-hidden rounded-full border border-default">
+            <img
+              v-if="avatarPreview || currentAvatarUrl"
+              :src="avatarPreview ?? currentAvatarUrl ?? ''"
+              alt="Aperçu de la photo de profil"
+              class="h-full w-full object-cover"
+            />
+            <div
+              v-else
+              class="flex h-full w-full items-center justify-center bg-primary/10 text-lg font-semibold text-primary"
+            >
+              {{ initials }}
+            </div>
+          </div>
+
+          <div class="flex flex-col gap-2">
+            <input
+              ref="fileInput"
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              class="hidden"
+              @change="onAvatarChange"
+            />
+            <div class="flex flex-wrap gap-2">
+              <UButton
+                type="button"
+                color="neutral"
+                variant="outline"
+                icon="i-heroicons-arrow-up-tray"
+                @click="fileInput?.click()"
+              >
+                Choisir une image
+              </UButton>
+              <UButton
+                v-if="avatarForm.avatar"
+                type="button"
+                color="primary"
+                :loading="avatarForm.processing"
+                @click="uploadAvatar"
+              >
+                Enregistrer
+              </UButton>
+            </div>
+            <p class="text-xs text-muted">JPG, PNG ou WEBP — 2 Mo maximum.</p>
+            <p v-if="avatarForm.errors.avatar" class="text-xs text-error">
+              {{ avatarForm.errors.avatar }}
+            </p>
+          </div>
+        </div>
+      </div>
 
       <!-- Informations personnelles -->
       <div class="rounded-2xl border border-default bg-default p-6 shadow-sm">

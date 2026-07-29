@@ -307,9 +307,9 @@ onBeforeUnmount(() => observer?.disconnect())
         <div
           class="order-last flex aspect-[4/3] items-center justify-center rounded-2xl border border-default bg-default shadow-md md:order-first"
         >
-          <span class="text-sm text-dimmed"
-            >[ Aperçu des groupes — image à insérer quand j'aurais le screen de willix ]</span
-          >
+          <span class="text-xs text-dimmed">
+            <img src="../../public/groupes.png" alt="Aperçu des groupes Pomo" class="w-full" />
+          </span>
         </div>
         <div>
           <span class="text-sm font-semibold uppercase tracking-wide text-primary"

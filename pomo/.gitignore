@@ -35,3 +35,6 @@ public/uploads/
 # Artefacts Cypress
 cypress/screenshots/
 cypress/videos/
+
+# Fichiers uploadés à l'exécution
+pomo/public/uploads/avatars/*

@@ -197,6 +197,7 @@ router
     router.put('/settings/profile', [ProfileController, 'update'])
     router.post('/settings/profile/password-reset', [ProfileController, 'requestPasswordReset'])
     router.delete('/settings/profile', [ProfileController, 'destroy'])
+    router.post('/settings/profile/avatar', [ProfileController, 'uploadAvatar'])
   })
   .use(middleware.auth())
 

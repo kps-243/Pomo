@@ -41,7 +41,12 @@ export default class ToDoListsController {
           dueDate: task.due_date?.toISO() ?? null,
           timeSpent: task.timeSpent,
           createdBy: task.user
-            ? { id: task.user.id, firstName: task.user.first_name, lastName: task.user.last_name }
+            ? {
+                id: task.user.id,
+                firstName: task.user.first_name,
+                lastName: task.user.last_name,
+                avatarUrl: task.user.avatar ?? null,
+              }
             : null,
           members: task.members.map((member) => ({
             id: member.id,

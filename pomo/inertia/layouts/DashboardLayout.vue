@@ -23,6 +23,7 @@ const user = usePage().props.user as {
   first_name: string
   last_name: string
   email: string
+  avatarUrl: string | null
 } | null
 
 const logout = () => {
@@ -106,7 +107,18 @@ const items = [
             <span class="hidden text-sm font-medium text-highlighted sm:inline">
               {{ user.first_name }}
             </span>
-            <UIcon name="i-heroicons-user-circle" class="h-7 w-7 text-muted" />
+            <img
+              v-if="user.avatarUrl"
+              :src="user.avatarUrl"
+              alt=""
+              class="h-8 w-8 rounded-full border border-default object-cover"
+            />
+            <span
+              v-else
+              class="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-xs font-semibold text-primary"
+            >
+              {{ (user.first_name?.[0] ?? '') + (user.last_name?.[0] ?? '') }}
+            </span>
           </button>
         </UDropdownMenu>
 

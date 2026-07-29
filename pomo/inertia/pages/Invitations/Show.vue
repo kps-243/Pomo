@@ -46,7 +46,7 @@ const statusMessage = computed(() => {
 
   <div class="flex min-h-screen items-center justify-center bg-muted px-4 py-10 text-default">
     <div class="w-full max-w-md rounded-2xl border border-default bg-default p-8 shadow-lg">
-      <div class="mb-6 text-center">
+      <div class="mb-10 flex justify-center">
         <h1 class="text-2xl font-bold text-highlighted">Pomo</h1>
       </div>
 

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Head, Link } from '@inertiajs/vue3'
+import PomoLogo from '~/components/PomoLogo.vue'
 
 const lastUpdate = '21 juillet 2026'
 </script>
@@ -11,12 +12,12 @@ const lastUpdate = '21 juillet 2026'
     <!-- Barre supérieure -->
     <header class="border-b border-default bg-default">
       <div class="mx-auto flex max-w-3xl items-center justify-between px-4 py-4">
-        <Link href="/" class="text-lg font-semibold text-highlighted">Pomo</Link>
+        <Link href="/" class="text-lg font-semibold text-highlighted"><PomoLogo size="sm" /></Link>
         <Link
           href="/"
           class="rounded-md px-2 py-1 text-sm text-toned transition hover:text-highlighted focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
         >
-          ← Retour à l'accueil
+          ← Retour à l'accueil'
         </Link>
       </div>
     </header>

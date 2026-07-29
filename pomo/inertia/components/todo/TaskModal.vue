@@ -122,7 +122,7 @@ const close = () => {
     <template #content>
       <div class="flex max-h-[85vh] flex-col">
         <header
-          class="flex items-start justify-between gap-3 border-b border-default px-4 py-3 sm:px-6"
+          class="flex items-start justify-between gap-6 border-b border-default px-4 py-3 sm:px-6"
         >
           <div class="min-w-0 flex-1">
             <input
@@ -138,12 +138,12 @@ const close = () => {
               <StatusBadge :status="task.status" :task-id="task.id" />
               <DateBadge :due-date="task.dueDate" @click="isCalendarOpen = !isCalendarOpen" />
               <ListBadge :name="listName" />
-              <span
+              <div
                 class="inline-flex items-center gap-1 rounded-full bg-elevated px-2 py-0.5 text-xs font-medium text-toned"
               >
-                <UIcon name="i-heroicons-clock" class="h-3.5 w-3.5" />
-                {{ task.timeSpent }} {{ task.timeSpent > 1 ? 'min réalisées' : 'min réalisée' }}
-              </span>
+                <UIcon name="i-heroicons-clock" class="h-3.5 w-3.5" /> {{ task.timeSpent }}
+                {{ task.timeSpent > 1 ? 'min réalisées' : 'min réalisée' }}
+              </div>
             </div>
             <p v-if="task.createdBy" class="ml-1 mt-1.5 text-xs text-dimmed">
               Créée par {{ task.createdBy.firstName }} {{ task.createdBy.lastName }}

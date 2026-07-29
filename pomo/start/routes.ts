@@ -115,6 +115,8 @@ router.get('/google/callback', async ({ ally, auth, response }) => {
 */
 router.get('/', ({ inertia }) => inertia.render('Landing')).use(middleware.silentAuth())
 router.get('/dashboard', [HomeController, 'index']).use(middleware.auth())
+router.get('/calendar', [HomeController, 'calendar']).use(middleware.auth())
+router.get('/events', [EventsController, 'page']).use(middleware.auth())
 router.get('/todolists', [ToDoListsController, 'page']).use(middleware.auth())
 router.get('/groups', [GroupsController, 'page']).use(middleware.auth())
 router.get('/groups/:id', [GroupsController, 'show']).use(middleware.auth())

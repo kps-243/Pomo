@@ -211,14 +211,13 @@ onBeforeUnmount(() => observer?.disconnect())
               </p>
             </div>
             <div
-              class="mt-8 flex aspect-[4/3] items-center justify-center rounded-xl border border-default bg-muted"
+              class="mt-8 aspect-[4/3] overflow-hidden rounded-xl border border-default bg-muted"
             >
-              <span class="text-xs text-dimmed"
-                ><img
-                  src="../../public/calendrier.png"
-                  alt="Aperçu du calendrier Pomo"
-                  class="w-full"
-              /></span>
+              <img
+                src="../../public/calendrier.png"
+                alt="Aperçu du calendrier Pomo"
+                class="h-full w-full object-cover"
+              />
             </div>
           </article>
 
@@ -291,9 +290,11 @@ onBeforeUnmount(() => observer?.disconnect())
         <div
           class="flex aspect-[4/3] items-center justify-center rounded-2xl border border-default bg-muted shadow-md"
         >
-          <span class="text-sm text-dimmed"
-            >[ Aperçu du timer pomodoro — image à insérer quand j'aurai fini la feature timer]</span
-          >
+          <img
+            src="../../public/pomodoro.png"
+            alt="Aperçu du timer pomodoro"
+            class="h-full w-full object-cover"
+          />
         </div>
       </div>
     </section>
@@ -305,12 +306,15 @@ onBeforeUnmount(() => observer?.disconnect())
       >
         <!-- Placeholder : capture de la page groupes -->
         <div
-          class="order-last flex aspect-[4/3] items-center justify-center rounded-2xl border border-default bg-default shadow-md md:order-first"
+          class="order-last aspect-[4/3] overflow-hidden rounded-2xl border border-default bg-default shadow-md md:order-first"
         >
-          <span class="text-xs text-dimmed">
-            <img src="../../public/groupes.png" alt="Aperçu des groupes Pomo" class="w-full" />
-          </span>
+          <img
+            src="../../public/groupes.png"
+            alt="Aperçu des groupes Pomo"
+            class="h-full w-full object-cover"
+          />
         </div>
+
         <div>
           <span class="text-sm font-semibold uppercase tracking-wide text-primary"
             >Collaboration</span

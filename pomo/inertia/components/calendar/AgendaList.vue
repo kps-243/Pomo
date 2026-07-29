@@ -74,6 +74,14 @@ const creator = (item: AgendaItem) =>
           <template v-else>Sans échéance</template>
         </span>
 
+        <span
+          v-if="item.kind === 'task' && item.task.timeSpent > 0"
+          class="flex items-center gap-1 text-xs text-toned"
+        >
+          <UIcon name="i-heroicons-clock" class="h-3.5 w-3.5" />
+          Temps effectué : {{ formatDurationShort(item.task.timeSpent) }}
+        </span>
+
         <span v-if="creator(item)" class="text-xs text-dimmed">
           par {{ creator(item)?.firstName }} {{ creator(item)?.lastName }}
         </span>

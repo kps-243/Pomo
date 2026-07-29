@@ -32,11 +32,11 @@ const logout = () => {
 
 const links = [
   { label: 'Tableau de bord', icon: 'i-heroicons-home', href: '/dashboard', exact: true },
+  { label: 'Calendrier', icon: 'i-heroicons-calendar-days', href: '/calendar' },
+  { label: 'Évènements', icon: 'i-heroicons-sparkles', href: '/events' },
   { label: 'To do lists', icon: 'i-heroicons-view-columns', href: '/todolists' },
   { label: 'Groupes', icon: 'i-heroicons-user-group', href: '/groups' },
-  // À rebrancher quand les pages existeront (phase front) :
-  // { label: 'Évènements', icon: 'i-heroicons-sparkles', href: '/events' },
-  // { label: 'Tchats', icon: 'i-heroicons-chat-bubble-left-right', href: '/chats' },
+  { label: 'Légal', icon: 'i-heroicons-scale', href: '/legal' },
 ]
 
 const items = [
@@ -104,18 +104,18 @@ const items = [
             type="button"
             class="flex cursor-pointer items-center gap-2 rounded-md px-1 py-0.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
           >
-            <span class="hidden text-sm font-medium text-highlighted sm:inline">
+            <span class="hidden text-sm font-medium text-pink-500 sm:inline">
               {{ user.first_name }}
             </span>
             <img
               v-if="user.avatarUrl"
               :src="user.avatarUrl"
               alt=""
-              class="h-8 w-8 rounded-full border border-default object-cover"
+              class="h-8 w-8 rounded-full object-cover ring-2 ring-pink-500"
             />
             <span
               v-else
-              class="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-xs font-semibold text-primary"
+              class="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-xs font-semibold text-primary ring-2 ring-pink-500"
             >
               {{ (user.first_name?.[0] ?? '') + (user.last_name?.[0] ?? '') }}
             </span>
@@ -143,7 +143,7 @@ const items = [
     >
       <template #body>
         <nav id="navigation-mobile">
-          <UNavigationMenu orientation="vertical" :items="links" />
+          <UNavigationMenu orientation="vertical" :items="links" class="sidebar-nav" />
         </nav>
       </template>
     </USlideover>
@@ -151,7 +151,7 @@ const items = [
     <div class="flex flex-1 overflow-hidden">
       <!-- Navigation desktop -->
       <aside class="hidden w-64 shrink-0 border-r border-default p-4 lg:block">
-        <UNavigationMenu orientation="vertical" :items="links" />
+        <UNavigationMenu orientation="vertical" :items="links" class="sidebar-nav" />
       </aside>
       <main id="contenu" class="flex-1 overflow-y-auto p-4 lg:p-6">
         <slot />
@@ -160,3 +160,11 @@ const items = [
     <PomodoroWidget />
   </div>
 </template>
+
+<style>
+/* Force la taille des libellés de la sidebar à 16px, quelle que soit la largeur d'écran */
+.sidebar-nav a,
+.sidebar-nav a span {
+  font-size: 16px;
+}
+</style>

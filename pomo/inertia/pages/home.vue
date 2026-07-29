@@ -1,16 +1,13 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
+import { Head, Link } from '@inertiajs/vue3'
 import VueCal from 'vue-cal'
 import 'vue-cal/dist/vuecal.css'
 import DashboardLayout from '../layouts/DashboardLayout.vue'
-import CardTitle from '../components/CardTitle.vue'
-import SyncCalendarModal from '../components/calendar/SyncCalendarModal.vue'
-import AddToCalendarModal from '~/components/calendar/AddToCalendarModal.vue'
-import AgendaList from '~/components/calendar/AgendaList.vue'
-import EventModal from '~/components/calendar/EventModal.vue'
-import TaskModal from '~/components/todo/TaskModal.vue'
-import { buildAgenda, canManageItem, toCalendarEntries, visibleTimeRange } from '~/utils/calendar'
-import type { AgendaItem, CalendarEvent, CalendarTask } from '~/types/calendar'
+import { toCalendarEntries, eventEndIso } from '~/utils/calendar'
+import { formatDateRangeShort } from '~/utils/date'
+import type { CalendarEvent, CalendarTask } from '~/types/calendar'
+import EmptyState from '~/components/EmptyState.vue'
 
 const props = defineProps<{
   currentUserId: number
@@ -22,157 +19,143 @@ const props = defineProps<{
 }>()
 
 const entries = computed(() => toCalendarEntries(props.tasks, props.events))
-const agenda = computed(() => buildAgenda(props.tasks, props.events))
-const timeRange = computed(() => visibleTimeRange(props.tasks, props.events))
 
-const isSyncModalOpen = ref(false)
-
-// Vue active du calendrier. En vue mois/année une cellule couvre un jour ou un
-// mois entier : le clic doit seulement naviguer, pas ouvrir le modal de création.
-const activeView = ref('week')
-const canCreateFromCell = computed(() => activeView.value === 'week' || activeView.value === 'day')
-
-const isAddModalOpen = ref(false)
-const addDefaultDate = ref<string | null>(null)
-
-const openAddModal = (date?: Date) => {
-  addDefaultDate.value = date ? date.toISOString() : null
-  isAddModalOpen.value = true
-}
-
-const selectedTaskId = ref<number | null>(null)
-const selectedEventId = ref<number | null>(null)
-const isTaskModalOpen = ref(false)
-const isEventModalOpen = ref(false)
-
-const selectedTask = computed(
-  () => props.tasks.find((task) => task.id === selectedTaskId.value) ?? null
-)
-const selectedEvent = computed(
-  () => props.events.find((event) => event.id === selectedEventId.value) ?? null
+const now = Date.now()
+const upcomingEvents = computed(() =>
+  props.events
+    .filter((event) => new Date(event.endDate ?? event.startDate).getTime() >= now)
+    .slice(0, 3)
 )
 
-const canManageSelectedEvent = computed(() => {
-  const event = selectedEvent.value
-  if (!event) return false
-  const group = props.groups.find((candidate) => candidate.id === event.groupId)
-  return canManageItem(event.createdBy, props.currentUserId, group?.isOwner ?? false)
-})
-
-const openItem = (item: AgendaItem) => {
-  if (item.kind === 'task') {
-    selectedTaskId.value = item.task.id
-    isTaskModalOpen.value = true
-    return
-  }
-  selectedEventId.value = item.event.id
-  isEventModalOpen.value = true
-}
-
-let entryJustClicked = false
-
-const onEntryClick = (entry: { itemKey?: string }) => {
-  entryJustClicked = true
-  setTimeout(() => (entryJustClicked = false), 0)
-  const item = agenda.value.find((candidate) => candidate.key === entry.itemKey)
-  if (item) openItem(item)
-}
-
-const onCellClick = (date: Date) => {
-  if (!canCreateFromCell.value || entryJustClicked) return
-  openAddModal(date)
-}
+const activeTasks = computed(() => props.tasks.filter((task) => task.status !== 'done').slice(0, 4))
 </script>
 
 <template>
+  <Head title="Mon dashboard" />
   <DashboardLayout>
-    <div class="flex w-full flex-col gap-6 lg:h-full lg:flex-row">
-      <UCard
-        class="flex w-full flex-col overflow-hidden rounded-2xl border border-default shadow-md ring-0 lg:w-1/2"
-        :ui="{ body: 'flex min-h-0 flex-1 flex-col' }"
-      >
-        <template #header>
-          <div class="flex items-center justify-between gap-2">
-            <CardTitle title="Calendrier" />
-            <div class="flex items-center gap-1">
-              <UButton
-                icon="i-heroicons-plus"
-                color="primary"
-                variant="soft"
-                size="xs"
-                data-cy="add-to-calendar"
-                @click="openAddModal()"
-              >
-                Ajouter
-              </UButton>
-              <UButton
-                icon="i-heroicons-arrow-path"
-                color="neutral"
-                variant="ghost"
-                size="xs"
-                @click="isSyncModalOpen = true"
-              >
-                Synchroniser
-              </UButton>
+    <div class="flex flex-col gap-6">
+      <h1 class="text-xl font-bold text-primary sm:text-2xl">Mon dashboard</h1>
+
+      <div class="grid gap-5 lg:grid-cols-2">
+        <!-- Calendrier -->
+        <div class="flex flex-col rounded-2xl border border-default bg-default p-5 shadow-sm">
+          <div class="mb-3 flex items-center justify-between">
+            <h2 class="flex items-center gap-2 font-semibold text-highlighted">
+              <UIcon name="i-heroicons-calendar-days" class="h-5 w-5 text-primary" />
+              Calendrier
+            </h2>
+            <Link href="/calendar" class="text-sm font-medium text-primary hover:underline">
+              Ouvrir →
+            </Link>
+          </div>
+          <div class="min-h-0 flex-1">
+            <vue-cal
+              style="height: 260px"
+              locale="fr"
+              default-view="month"
+              hide-view-selector
+              events-on-month-view="short"
+              xsmall
+              :events="entries"
+            />
+          </div>
+        </div>
+
+        <!-- Évènements -->
+        <Link
+          href="/events"
+          class="flex flex-col rounded-2xl border border-default bg-default p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+        >
+          <div class="mb-3 flex items-center justify-between">
+            <h2 class="flex items-center gap-2 font-semibold text-highlighted">
+              <UIcon name="i-heroicons-sparkles" class="h-5 w-5 text-primary" />
+              Évènements à venir
+            </h2>
+            <UIcon name="i-heroicons-arrow-right" class="h-4 w-4 text-dimmed" />
+          </div>
+          <div v-if="upcomingEvents.length" class="flex flex-col gap-2">
+            <div
+              v-for="event in upcomingEvents"
+              :key="event.id"
+              class="rounded-lg bg-elevated/60 px-3 py-2"
+            >
+              <p class="truncate text-sm font-medium text-highlighted">{{ event.title }}</p>
+              <p class="text-xs text-muted">
+                {{ formatDateRangeShort(event.startDate, eventEndIso(event)) }}
+              </p>
             </div>
           </div>
-        </template>
-
-        <div class="h-100 lg:h-auto lg:min-h-0 lg:flex-1">
-          <vue-cal
-            v-model:active-view="activeView"
-            style="height: 100%"
-            locale="fr"
-            hide-view-selector
-            :events="entries"
-            :time-from="timeRange.from"
-            :time-to="timeRange.to"
-            time-at-cursor
-            xsmall
-            @cell-click="onCellClick"
-            @event-click="onEntryClick"
+          <EmptyState
+            v-else
+            compact
+            icon="i-heroicons-sparkles"
+            title="Aucun évènement à venir"
+            class="m-auto"
           />
-        </div>
-      </UCard>
+        </Link>
 
-      <UCard
-        class="flex w-full flex-col overflow-hidden rounded-2xl border border-default shadow-md ring-0 lg:w-1/2"
-        :ui="{ body: 'min-h-0 flex-1 overflow-y-auto' }"
-      >
-        <template #header>
-          <CardTitle title="Tâches et évènements" />
-        </template>
-        <AgendaList
-          :items="agenda"
-          empty-title="Rien de prévu"
-          empty-description="Ajoutez une tâche ou un évènement depuis le calendrier."
-          @select="openItem"
-        />
-      </UCard>
+        <!-- To-do lists -->
+        <Link
+          href="/todolists"
+          class="flex flex-col rounded-2xl border border-default bg-default p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+        >
+          <div class="mb-3 flex items-center justify-between">
+            <h2 class="flex items-center gap-2 font-semibold text-highlighted">
+              <UIcon name="i-heroicons-view-columns" class="h-5 w-5 text-primary" />
+              Tâches à venir
+            </h2>
+            <UIcon name="i-heroicons-arrow-right" class="h-4 w-4 text-dimmed" />
+          </div>
+          <div v-if="activeTasks.length" class="flex flex-col gap-2">
+            <div
+              v-for="task in activeTasks"
+              :key="task.id"
+              class="flex items-center gap-2 rounded-lg bg-elevated/60 px-3 py-2"
+            >
+              <span class="h-2 w-2 shrink-0 rounded-full bg-primary"></span>
+              <p class="truncate text-sm text-default">{{ task.title }}</p>
+            </div>
+          </div>
+          <EmptyState
+            v-else
+            compact
+            icon="i-heroicons-view-columns"
+            title="Aucune tâche en cours"
+            class="m-auto"
+          />
+        </Link>
+
+        <!-- Groupes -->
+        <Link
+          href="/groups"
+          class="flex flex-col rounded-2xl border border-default bg-default p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+        >
+          <div class="mb-3 flex items-center justify-between">
+            <h2 class="flex items-center gap-2 font-semibold text-highlighted">
+              <UIcon name="i-heroicons-user-group" class="h-5 w-5 text-primary" />
+              Groupes
+            </h2>
+            <UIcon name="i-heroicons-arrow-right" class="h-4 w-4 text-dimmed" />
+          </div>
+          <div v-if="groups.length" class="flex flex-col gap-2">
+            <div
+              v-for="group in groups.slice(0, 4)"
+              :key="group.id"
+              class="flex items-center gap-2 rounded-lg bg-elevated/60 px-3 py-2"
+            >
+              <UIcon name="i-heroicons-user-group" class="h-4 w-4 text-secondary" />
+              <p class="truncate text-sm text-default">{{ group.name }}</p>
+            </div>
+          </div>
+          <EmptyState
+            v-else
+            compact
+            icon="i-heroicons-user-group"
+            title="Aucun groupe"
+            class="m-auto"
+          />
+        </Link>
+      </div>
     </div>
-
-    <AddToCalendarModal
-      v-model:open="isAddModalOpen"
-      :to-do-lists="toDoLists"
-      :groups="groups"
-      :default-date="addDefaultDate"
-    />
-
-    <TaskModal
-      v-if="selectedTask"
-      v-model:open="isTaskModalOpen"
-      :task="selectedTask"
-      :list-name="selectedTask.groupName ?? selectedTask.listName"
-      :is-group-list="selectedTask.groupId !== null"
-    />
-
-    <EventModal
-      v-if="selectedEvent"
-      v-model:open="isEventModalOpen"
-      :event="selectedEvent"
-      :can-manage="canManageSelectedEvent"
-    />
-
-    <SyncCalendarModal v-model:open="isSyncModalOpen" :feed-url="calendarFeedUrl" />
   </DashboardLayout>
 </template>

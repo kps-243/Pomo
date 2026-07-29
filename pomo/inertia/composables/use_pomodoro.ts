@@ -4,11 +4,9 @@ import { useConfetti } from '~/composables/use_confetti'
 
 type Phase = 'work' | 'break'
 
-const WORK_MINUTES = 25
-const BREAK_MINUTES = 5
+const DEFAULT_WORK = 25
+const DEFAULT_BREAK = 5
 const STORAGE_KEY = 'pomo-timer'
-
-const phaseSeconds = (phase: Phase) => (phase === 'work' ? WORK_MINUTES : BREAK_MINUTES) * 60
 
 interface PomodoroState {
   phase: Phase
@@ -19,18 +17,25 @@ interface PomodoroState {
   taskTitle: string | null
   completedSessions: number
   loggedMinutes: number // minutes déjà créditées pour la session de travail en cours
+  workMinutes: number // durée de travail personnalisable
+  breakMinutes: number // durée de pause personnalisable
 }
 
 const state = reactive<PomodoroState>({
   phase: 'work',
   running: false,
   endsAt: null,
-  remaining: phaseSeconds('work'),
+  remaining: DEFAULT_WORK * 60,
   taskId: null,
   taskTitle: null,
   completedSessions: 0,
   loggedMinutes: 0,
+  workMinutes: DEFAULT_WORK,
+  breakMinutes: DEFAULT_BREAK,
 })
+
+const phaseSeconds = (phase: Phase) =>
+  (phase === 'work' ? state.workMinutes : state.breakMinutes) * 60
 
 const { celebrate } = useConfetti()
 let ticker: ReturnType<typeof setInterval> | null = null
@@ -46,7 +51,6 @@ function recomputeRemaining() {
   }
 }
 
-// Minutes de travail écoulées depuis le début de la session en cours.
 function workElapsedMinutes() {
   if (state.phase !== 'work') return 0
   return Math.floor((phaseSeconds('work') - state.remaining) / 60)
@@ -71,7 +75,7 @@ function completePhase() {
   const finished = state.phase
 
   if (finished === 'work') {
-    creditElapsed() // crédite les dernières minutes non comptées (jusqu'à 25)
+    creditElapsed()
     state.completedSessions += 1
     celebrate()
     state.phase = 'break'
@@ -79,7 +83,6 @@ function completePhase() {
     state.phase = 'work'
   }
 
-  // Nouvelle phase : on repart d'un crédit vierge et on enchaîne automatiquement.
   state.loggedMinutes = 0
   state.remaining = phaseSeconds(state.phase)
   state.endsAt = Date.now() + state.remaining * 1000
@@ -92,6 +95,8 @@ function startTicker() {
   ticker = setInterval(() => {
     if (!state.running) return
     recomputeRemaining()
+    // Crédite le temps en direct (une fois par minute écoulée).
+    creditElapsed()
     if (state.remaining <= 0) {
       completePhase()
     }
@@ -110,14 +115,13 @@ function start() {
 function pause() {
   if (!state.running) return
   recomputeRemaining()
-  creditElapsed() // on crédite le temps travaillé dès la pause
+  creditElapsed()
   state.running = false
   state.endsAt = null
   persist()
 }
 
 function reset() {
-  // reset = annulation : on ne crédite pas
   state.running = false
   state.endsAt = null
   state.phase = 'work'
@@ -139,11 +143,22 @@ function skip() {
 
 function setTask(task: { id: number; title: string } | null) {
   if (state.running) recomputeRemaining()
-  creditElapsed() // crédite l'ancienne tâche avant de changer
+  creditElapsed()
   state.taskId = task?.id ?? null
   state.taskTitle = task?.title ?? null
-  // la nouvelle tâche ne sera créditée que pour les minutes à venir
   state.loggedMinutes = workElapsedMinutes()
+  persist()
+}
+
+// Change les durées travail/pause. N'affecte le compte à rebours courant
+// que si le minuteur n'est pas en train de tourner.
+function setDurations(work: number, breakDuration: number) {
+  state.workMinutes = Math.min(120, Math.max(1, Math.round(work)))
+  state.breakMinutes = Math.min(60, Math.max(1, Math.round(breakDuration)))
+  if (!state.running) {
+    state.remaining = phaseSeconds(state.phase)
+    state.loggedMinutes = 0
+  }
   persist()
 }
 
@@ -185,7 +200,6 @@ export function usePomodoro() {
     reset,
     skip,
     setTask,
-    WORK_MINUTES,
-    BREAK_MINUTES,
+    setDurations,
   }
 }

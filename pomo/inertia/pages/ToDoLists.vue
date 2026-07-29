@@ -33,7 +33,7 @@ const filteredLists = computed(() => {
     <div class="flex h-full flex-col gap-4">
       <!-- Titre (gauche) + filtre & ajout d'une todolist (droite), façon Trello -->
       <div class="flex flex-wrap items-start justify-between gap-3">
-        <h1 class="text-xl font-bold text-primary sm:text-2xl">Mes ToDoLists</h1>
+        <h1 class="text-xl font-bold text-primary sm:text-2xl">Mes To do lists</h1>
 
         <div class="flex flex-wrap items-start gap-3">
           <!-- Filtre perso / partagées / les deux -->

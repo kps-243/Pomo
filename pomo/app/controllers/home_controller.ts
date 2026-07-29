@@ -2,6 +2,7 @@ import Task from '#models/task'
 import ToDoList from '#models/to_do_list'
 import Event from '#models/event'
 import Group from '#models/group'
+import User from '#models/user'
 import env from '#start/env'
 import db from '@adonisjs/lucid/services/db'
 import type { HttpContext } from '@adonisjs/core/http'
@@ -9,7 +10,15 @@ import type { HttpContext } from '@adonisjs/core/http'
 export default class HomeController {
   async index({ inertia, auth }: HttpContext) {
     const user = auth.getUserOrFail()
+    return inertia.render('home', await this.buildData(user))
+  }
 
+  async calendar({ inertia, auth }: HttpContext) {
+    const user = auth.getUserOrFail()
+    return inertia.render('Calendar', await this.buildData(user))
+  }
+
+  private async buildData(user: User) {
     const memberships = await db.from('group_members').where('user_id', user.id).select('group_id')
     const groupIds = memberships.map((membership) => membership.group_id as number)
 
@@ -43,7 +52,7 @@ export default class HomeController {
 
     const calendarToken = await user.ensureCalendarToken()
 
-    return inertia.render('home', {
+    return {
       currentUserId: user.id,
       tasks: tasks.map((task) => ({
         id: task.id,
@@ -96,6 +105,6 @@ export default class HomeController {
         isOwner: group.ownerId === user.id,
       })),
       calendarFeedUrl: `${env.get('APP_URL')}/calendar/${calendarToken}/feed.ics`,
-    })
+    }
   }
 }

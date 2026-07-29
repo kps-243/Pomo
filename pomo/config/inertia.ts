@@ -15,7 +15,13 @@ const inertiaConfig = defineConfig({
     user: (ctx) => {
       const user = ctx.auth.user as User | undefined
       return user
-        ? { id: user.id, first_name: user.first_name, last_name: user.last_name, email: user.email }
+        ? {
+            id: user.id,
+            first_name: user.first_name,
+            last_name: user.last_name,
+            email: user.email,
+            avatarUrl: user.avatar ?? null,
+          }
         : null
     },
   },

@@ -32,6 +32,7 @@ export interface MessageAuthorDto {
   id: number
   firstName: string
   lastName: string
+  avatarUrl: string | null
 }
 
 export interface MessageDto {
@@ -57,9 +58,13 @@ export interface MessageReportDto {
 }
 
 function toAuthorDto(user: User): MessageAuthorDto {
-  return { id: user.id, firstName: user.first_name, lastName: user.last_name }
+  return {
+    id: user.id,
+    firstName: user.first_name,
+    lastName: user.last_name,
+    avatarUrl: user.avatar ?? null,
+  }
 }
-
 /**
  * Sérialise un message pour le client. Le message doit avoir sa relation
  * `user` préchargée.

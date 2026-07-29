@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { Head, router } from '@inertiajs/vue3'
+import PomoLogo from '~/components/PomoLogo.vue'
 import SocialAuthButtons from '~/components/auth/SocialAuthButtons.vue'
 
 const form = ref({
@@ -49,6 +50,9 @@ const submit = async () => {
     <div class="w-full max-w-md rounded-2xl border border-default bg-default p-8 shadow-lg">
       <!-- Title -->
       <div class="mb-6 text-center">
+        <div class="mb-10 flex justify-center">
+          <PomoLogo size="sm" />
+        </div>
         <h1 class="text-2xl font-bold text-highlighted">Créer un compte</h1>
         <p class="mt-1 text-sm text-muted">Rejoignez Pomo en quelques secondes</p>
       </div>

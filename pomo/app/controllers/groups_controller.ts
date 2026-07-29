@@ -113,17 +113,24 @@ export default class GroupsController {
         description: task.description,
         status: task.status,
         dueDate: task.due_date?.toISO() ?? null,
+        timeSpent: task.timeSpent,
         listId: task.toDoListId,
         listName: group.name,
         groupId: group.id,
         groupName: group.name,
         createdBy: task.user
-          ? { id: task.user.id, firstName: task.user.first_name, lastName: task.user.last_name }
+          ? {
+              id: task.user.id,
+              firstName: task.user.first_name,
+              lastName: task.user.last_name,
+              avatarUrl: task.user.avatar ?? null,
+            }
           : null,
         members: task.members.map((member) => ({
           id: member.id,
           firstName: member.first_name,
           lastName: member.last_name,
+          avatarUrl: member.avatar ?? null,
         })),
       })),
       events: events.map((event) => ({
@@ -136,7 +143,12 @@ export default class GroupsController {
         groupId: event.groupId,
         groupName: group.name,
         createdBy: event.user
-          ? { id: event.user.id, firstName: event.user.first_name, lastName: event.user.last_name }
+          ? {
+              id: event.user.id,
+              firstName: event.user.first_name,
+              lastName: event.user.last_name,
+              avatarUrl: event.user.avatar ?? null,
+            }
           : null,
       })),
     })

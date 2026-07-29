@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { Head, router } from '@inertiajs/vue3'
+import PomoLogo from '~/components/PomoLogo.vue'
 
 defineProps<{ error: string | null }>()
 
@@ -27,6 +28,9 @@ const submit = () => {
   <div class="flex min-h-screen items-center justify-center bg-muted px-4 py-10 text-default">
     <div class="w-full max-w-md rounded-2xl border border-default bg-default p-8 shadow-lg">
       <div class="mb-6 text-center">
+        <div class="mb-10 flex justify-center">
+          <PomoLogo size="sm" />
+        </div>
         <div class="mb-3 flex justify-center">
           <div class="flex h-14 w-14 items-center justify-center rounded-full bg-primary/10">
             <UIcon name="i-heroicons-shield-check" class="h-7 w-7 text-primary" />

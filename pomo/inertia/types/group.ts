@@ -21,6 +21,7 @@ export interface GroupMember {
   lastName: string
   email: string
   role: GroupRole
+  avatarUrl: string | null
 }
 
 export interface GroupMessageAuthor {

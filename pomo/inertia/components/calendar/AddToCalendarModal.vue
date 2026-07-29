@@ -64,9 +64,7 @@ const eventDraft = computed({
   },
 })
 
-const invalidRange = computed(
-  () => new Date(eventForm.end_date) <= new Date(eventForm.start_date)
-)
+const invalidRange = computed(() => new Date(eventForm.end_date) <= new Date(eventForm.start_date))
 
 const reset = () => {
   const start = props.defaultDate ?? startOfNextHour()

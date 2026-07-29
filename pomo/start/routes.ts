@@ -138,6 +138,7 @@ router
     router.delete('/tasks/:id', [TasksController, 'destroyFromBoard'])
     router.post('/tasks/:id/members', [TasksController, 'joinTask'])
     router.delete('/tasks/:id/members', [TasksController, 'leaveTask'])
+    router.post('/tasks/:id/pomodoro', [TasksController, 'logPomodoro'])
 
     // Groupes & calendrier partagé
     router.post('/groups', [GroupsController, 'store'])
@@ -196,6 +197,7 @@ router
     router.put('/settings/profile', [ProfileController, 'update'])
     router.post('/settings/profile/password-reset', [ProfileController, 'requestPasswordReset'])
     router.delete('/settings/profile', [ProfileController, 'destroy'])
+    router.post('/settings/profile/avatar', [ProfileController, 'uploadAvatar'])
   })
   .use(middleware.auth())
 

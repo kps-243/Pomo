@@ -279,6 +279,21 @@ export default class TasksController {
     return response.redirect().back()
   }
 
+  async logPomodoro({ params, request, auth, response }: HttpContext) {
+    const user = auth.getUserOrFail()
+    const task = await this.manageableTask(params.id, user.id)
+    if (!task) {
+      return response.notFound({ message: 'Task not found' })
+    }
+    const minutes = Number(request.input('minutes'))
+    if (!Number.isFinite(minutes) || minutes <= 0) {
+      return response.badRequest({ message: 'Invalid minutes' })
+    }
+    task.timeSpent += Math.round(minutes)
+    await task.save()
+    return response.redirect().back()
+  }
+
   // CRUD générique des tasks de l'utilisateur connecté (toutes scopées à user.id)
   async index({ auth }: HttpContext) {
     const user = auth.getUserOrFail()

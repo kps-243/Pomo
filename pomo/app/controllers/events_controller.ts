@@ -3,6 +3,7 @@ import { DateTime } from 'luxon'
 import db from '@adonisjs/lucid/services/db'
 import Event from '#models/event'
 import Group from '#models/group'
+import ToDoList from '#models/to_do_list'
 import {
   createBoardEventValidator,
   createEventValidator,
@@ -35,6 +36,59 @@ export default class EventsController {
   index({ auth }: HttpContext) {
     const user = auth.getUserOrFail()
     return Event.query().where('user_id', user.id).orderBy('start_date', 'asc')
+  }
+
+  async page({ inertia, auth }: HttpContext) {
+    const user = auth.getUserOrFail()
+
+    const memberships = await db.from('group_members').where('user_id', user.id).select('group_id')
+    const groupIds = memberships.map((membership) => membership.group_id as number)
+
+    const events = await Event.query()
+      .where((query) => {
+        query.where((personal) => personal.where('user_id', user.id).whereNull('group_id'))
+        if (groupIds.length) query.orWhereIn('group_id', groupIds)
+      })
+      .preload('user')
+      .orderBy('start_date', 'asc')
+
+    const groups = groupIds.length
+      ? await Group.query().whereIn('id', groupIds).orderBy('name', 'asc')
+      : []
+    const groupNameById = new Map(groups.map((group) => [group.id, group.name]))
+
+    const toDoLists = await ToDoList.query()
+      .where('user_id', user.id)
+      .whereNull('group_id')
+      .orderBy('created_at', 'asc')
+
+    return inertia.render('Events', {
+      currentUserId: user.id,
+      events: events.map((event) => ({
+        id: event.id,
+        title: event.title,
+        description: event.description,
+        startDate: event.start_date.toISO(),
+        endDate: event.end_date?.toISO() ?? null,
+        location: event.location,
+        groupId: event.groupId,
+        groupName: event.groupId ? (groupNameById.get(event.groupId) ?? null) : null,
+        createdBy: event.user
+          ? {
+              id: event.user.id,
+              firstName: event.user.first_name,
+              lastName: event.user.last_name,
+              avatarUrl: event.user.avatar ?? null,
+            }
+          : null,
+      })),
+      groups: groups.map((group) => ({
+        id: group.id,
+        name: group.name,
+        isOwner: group.ownerId === user.id,
+      })),
+      toDoLists: toDoLists.map((list) => ({ id: list.id, name: list.name })),
+    })
   }
 
   async store({ request, auth, response }: HttpContext) {

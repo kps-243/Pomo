@@ -32,11 +32,11 @@ const logout = () => {
 
 const links = [
   { label: 'Tableau de bord', icon: 'i-heroicons-home', href: '/dashboard', exact: true },
+  { label: 'Calendrier', icon: 'i-heroicons-calendar-days', href: '/calendar' },
+  { label: 'Évènements', icon: 'i-heroicons-sparkles', href: '/events' },
   { label: 'To do lists', icon: 'i-heroicons-view-columns', href: '/todolists' },
   { label: 'Groupes', icon: 'i-heroicons-user-group', href: '/groups' },
-  // À rebrancher quand les pages existeront (phase front) :
-  // { label: 'Évènements', icon: 'i-heroicons-sparkles', href: '/events' },
-  // { label: 'Tchats', icon: 'i-heroicons-chat-bubble-left-right', href: '/chats' },
+  { label: 'Légal', icon: 'i-heroicons-scale', href: '/legal' },
 ]
 
 const items = [
@@ -143,7 +143,7 @@ const items = [
     >
       <template #body>
         <nav id="navigation-mobile">
-          <UNavigationMenu orientation="vertical" :items="links" />
+          <UNavigationMenu orientation="vertical" :items="links" class="sidebar-nav" />
         </nav>
       </template>
     </USlideover>
@@ -151,7 +151,7 @@ const items = [
     <div class="flex flex-1 overflow-hidden">
       <!-- Navigation desktop -->
       <aside class="hidden w-64 shrink-0 border-r border-default p-4 lg:block">
-        <UNavigationMenu orientation="vertical" :items="links" />
+        <UNavigationMenu orientation="vertical" :items="links" class="sidebar-nav" />
       </aside>
       <main id="contenu" class="flex-1 overflow-y-auto p-4 lg:p-6">
         <slot />
@@ -160,3 +160,11 @@ const items = [
     <PomodoroWidget />
   </div>
 </template>
+
+<style>
+/* Force la taille des libellés de la sidebar à 16px, quelle que soit la largeur d'écran */
+.sidebar-nav a,
+.sidebar-nav a span {
+  font-size: 16px;
+}
+</style>

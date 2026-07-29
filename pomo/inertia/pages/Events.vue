@@ -62,9 +62,9 @@ const openEvent = (event: CalendarEvent) => {
 <template>
   <Head title="Mes évènements" />
   <DashboardLayout>
-    <div class="mx-auto flex max-w-3xl flex-col gap-5">
+    <div class="flex flex-col gap-5">
       <div class="flex flex-wrap items-center justify-between gap-3">
-        <h1 class="text-xl font-bold text-highlighted">Mes évènements</h1>
+        <h1 class="text-xl font-bold text-primary sm:text-2xl">Mes évènements</h1>
         <UButton icon="i-heroicons-plus" color="primary" @click="isAddModalOpen = true">
           Nouvel évènement
         </UButton>

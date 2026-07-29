@@ -17,7 +17,7 @@ const lastUpdate = '21 juillet 2026'
           href="/"
           class="rounded-md px-2 py-1 text-sm text-toned transition hover:text-highlighted focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
         >
-          ← Retour à l'accueil'
+          ← Retour à l'accueil
         </Link>
       </div>
     </header>

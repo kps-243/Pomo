@@ -104,18 +104,18 @@ const items = [
             type="button"
             class="flex cursor-pointer items-center gap-2 rounded-md px-1 py-0.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
           >
-            <span class="hidden text-sm font-medium text-highlighted sm:inline">
+            <span class="hidden text-sm font-medium text-pink-500 sm:inline">
               {{ user.first_name }}
             </span>
             <img
               v-if="user.avatarUrl"
               :src="user.avatarUrl"
               alt=""
-              class="h-8 w-8 rounded-full border border-default object-cover"
+              class="h-8 w-8 rounded-full object-cover ring-2 ring-pink-500"
             />
             <span
               v-else
-              class="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-xs font-semibold text-primary"
+              class="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-xs font-semibold text-primary ring-2 ring-pink-500"
             >
               {{ (user.first_name?.[0] ?? '') + (user.last_name?.[0] ?? '') }}
             </span>

@@ -18,7 +18,7 @@ const props = defineProps<{
   <Head title="Mon calendrier" />
   <DashboardLayout>
     <div class="flex h-full flex-col gap-4">
-      <h1 class="text-xl font-bold text-highlighted">Mon calendrier</h1>
+      <h1 class="text-xl font-bold text-primary sm:text-2xl">Mon calendrier</h1>
       <div class="min-h-0 flex-1">
         <CalendarBoard v-bind="props" :show-agenda="false" />
       </div>
